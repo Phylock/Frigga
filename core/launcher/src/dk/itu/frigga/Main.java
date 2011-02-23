@@ -27,7 +27,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //Initialize
         File conf = new File(FELIX_CONFIG_FILE);
-        String test = "file:" + conf.getAbsolutePath();
         System.setProperty(FELIX_CONFIG_PROPERTIES, "file:" + conf.getAbsolutePath());
         
         if(!conf.exists())
