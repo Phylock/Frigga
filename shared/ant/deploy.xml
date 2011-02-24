@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+    <target depends="jar" name="-deploy-init">
+        <property file="nbproject/deploy.properties"/>
+    </target>
+    
+    <target depends="-deploy-init" name="deploy-boundle-auto">
+		<copy file="${dist.jar}" todir="${deploy.auto.dir}" overwrite="true" />
+    </target>
+    
+    <target depends="-deploy-init" name="deploy-boundle-manual">
+		<copy file="${dist.jar}" todir="${deploy.manual.dir}" overwrite="true" />
+    </target>
+    
+</project>
