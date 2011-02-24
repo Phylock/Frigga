@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 
-    <target depends="jar" name="-deploy-init">
+    <target depends="compile" name="-deploy-init">
         <property file="nbproject/deploy.properties"/>
     </target>
     
-    <target depends="-deploy-init" name="deploy-boundle-auto">
-		<copy file="${dist.jar}" todir="${deploy.auto.dir}" overwrite="true" />
+    <target depends="bnd-generate" name="deploy-boundle-auto">
+	<copy file="${dist.jar}" todir="${deploy.auto.dir}" overwrite="true" />
     </target>
     
-    <target depends="-deploy-init" name="deploy-boundle-manual">
-		<copy file="${dist.jar}" todir="${deploy.manual.dir}" overwrite="true" />
+    <target depends="bnd-generate" name="deploy-boundle-manual">
+	<copy file="${dist.jar}" todir="${deploy.manual.dir}" overwrite="true" />
     </target>
-    
+       
+    <target depends="-deploy-init" name="bnd-generate">
+       <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${deploy.bnd.jar}"/>
+       <bnd 
+         classpath="${build.classes.dir}"
+         eclipse="false" 
+         failok="false" 
+         exceptions="true" 
+         files="${deploy.bnd.file}"
+         output="${dist.dir}"/>
+    </target>
+
 </project>

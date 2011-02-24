@@ -44,7 +44,7 @@ public final class DeviceManager {
     private DeviceManager() {
     }
 
-    public final boolean deviceIsOnlne(final Device device) {
+    public final boolean deviceIsOnline(final Device device) {
         //todo: implement
         return false;
     }
