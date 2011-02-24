@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-Name: Service listener
+Bundle-Description: A bundle that displays messages at startup and when service events occur
+Bundle-Vendor: Frigga Dev Team
+Bundle-Version: 1.0.0
+Bundle-Activator: dk.itu.frigga.debug.service.ListenerActivator
+Import-Package: org.osgi.framework
+
+
