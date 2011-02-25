@@ -1,0 +1,5 @@
+version=2.1.0
+Export-Package: it.polito.elite.domotics.dog2.dog2leash.*;version=${version}
+Bundle-Version: ${version}
+Bundle-Name: Elite Dog JLeash
+Bundle-SymbolicName: dog-jleash

@@ -1,0 +1,5 @@
+version=3.1.2
+Export-Package: org.apache.xmlrpc.client.*;version=${version}
+Bundle-Version: ${version}
+Bundle-Name: Apache XMLRPC Client
+Bundle-SymbolicName: xmlrpc-client

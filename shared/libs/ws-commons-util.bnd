@@ -1,0 +1,5 @@
+version=1.0.2
+Export-Package: org.apache.ws.commons.*;version=${version}
+Bundle-Version: ${version}
+Bundle-Name: Apache WS Commons Util
+Bundle-SymbolicName: ws-commons-util

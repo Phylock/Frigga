@@ -1,0 +1,6 @@
+version=1.1
+Export-Package: org.apache.commons.logging;version=${version}
+Private-Package: org.apache.commons.logging.impl
+Bundle-Version: ${version}
+Bundle-Name: Apache Commons Logging
+Bundle-SymbolicName: commons-logging

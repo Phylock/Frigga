@@ -1,0 +1,6 @@
+version=3.1.2
+Export-Package: org.apache.xmlrpc.*;version=${version}
+Private-Package: org.apache.commons.logging.impl
+Bundle-Version: ${version}
+Bundle-Name: Apache XMLRPC Common
+Bundle-SymbolicName: xmlrpc-common
