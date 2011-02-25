@@ -31,11 +31,11 @@ import java.util.HashMap;
  */
 public class DeviceCategory {
     private final String type;
-    private final HashMap<String, IFunction> functions;
+    private final HashMap<String, Executable> functions;
     private final String[] variables;
     private final String[] listeners;
 
-    public DeviceCategory(String type, HashMap<String, IFunction> functions, String[] variables, String[] listeners) {
+    public DeviceCategory(String type, HashMap<String, Executable> functions, String[] variables, String[] listeners) {
         this.type = type;
         this.functions = functions;
         this.variables = variables;

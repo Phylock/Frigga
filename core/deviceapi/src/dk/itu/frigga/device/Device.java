@@ -32,13 +32,13 @@ public final class Device {
     private final DeviceId id;
     private final DeviceCategory type;
     private final HashMap<String, Variable> variables;
-    private final HashMap<String, IVariableListener> listeners;
+    private final HashMap<String, VariableListener> listeners;
     private final Location location;
     
     public Device(final DeviceId id,
             final DeviceCategory type,
             final HashMap<String, Variable> variables,
-            final HashMap<String, IVariableListener> listeners,
+            final HashMap<String, VariableListener> listeners,
             final Location location)
     {
         this.id = id;
@@ -52,7 +52,7 @@ public final class Device {
         return id;
     }
 
-    public HashMap<String, IVariableListener> getListeners() {
+    public HashMap<String, VariableListener> getListeners() {
         return listeners;
     }
 

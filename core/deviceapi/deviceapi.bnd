@@ -1,0 +1,3 @@
+Bundle-Version: 0.1
+Export-Package: dk.itu.frigga.device.*
+Bundle−Activator: dk.itu.frigga.device.manager.DeviceManagerActivator

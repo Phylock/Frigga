@@ -26,9 +26,9 @@ package dk.itu.frigga.device;
  *
  * @author phylock
  */
-public interface IFunction
+public interface Executable
 {
-    public IDriver associatedDriver();
+    public Driver associatedDriver();
     public FunctionResult execute(Device[] device, Parameter... parameters);
     public String getName();
 }

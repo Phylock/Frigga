@@ -26,6 +26,6 @@ package dk.itu.frigga.device;
  *
  * @author phylock
  */
-public interface IVariableListener {
+public interface VariableListener {
     public void StateChanged();
 }

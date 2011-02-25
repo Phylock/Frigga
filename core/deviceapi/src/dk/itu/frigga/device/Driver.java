@@ -9,7 +9,7 @@ package dk.itu.frigga.device;
  *
  * @author Tommy
  */
-public interface IDriver {
-    public FunctionResult callFunction(Device[] device, IFunction function, Parameter... parameters)
+public interface Driver {
+    public FunctionResult callFunction(Device[] device, Executable function, Parameter... parameters)
             throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException;
 }

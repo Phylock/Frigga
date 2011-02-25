@@ -18,7 +18,7 @@ public final class Filtering {
     {
         for (T elem : array)
         {
-            if (elem == element) return true;
+            if (elem.equals(element)) return true;
         }
 
         return false;

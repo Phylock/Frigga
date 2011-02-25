@@ -29,7 +29,7 @@ import java.util.LinkedList;
  * @author Tommy Andersen <toan@itu.dk>
  */
 public abstract class Variable {
-    protected final LinkedList<IVariableListener> listeners = new LinkedList<IVariableListener>();
+    protected final LinkedList<VariableListener> listeners = new LinkedList<VariableListener>();
     private final String name;
     protected final Device device;
 
@@ -39,12 +39,12 @@ public abstract class Variable {
         this.device = device;
     }
 
-    public void addVariableChangedListener(IVariableListener listener)
+    public void addVariableChangedListener(VariableListener listener)
     {
         listeners.add(listener);
     }
 
-    public void removeVariableChangedListener(IVariableListener listener)
+    public void removeVariableChangedListener(VariableListener listener)
     {
         listeners.remove(listener);
     }
