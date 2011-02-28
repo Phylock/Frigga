@@ -8,7 +8,7 @@ import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Executable;
-import dk.itu.frigga.device.manager.DeviceManager;
+import dk.itu.frigga.device.manager.impl.DeviceManagerImpl;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,7 +93,7 @@ public class ConfigMessageParser implements MessageParsable {
                 Element devicecategory = (Element) node;
                 String name = devicecategory.getAttribute("uri");
 
-                if (DeviceManager.getInstance().getDeviceCategory(name) != null) {
+                if (DeviceManagerImpl.getInstance().getDeviceCategory(name) != null) {
 
                     functionalies.clear();
                     variables.clear();
@@ -140,7 +140,7 @@ public class ConfigMessageParser implements MessageParsable {
                     DeviceCategory category = new DeviceCategory(name, functionalies,
                             variables.toArray(new String[variables.size()]),
                             listeners.toArray(new String[listeners.size()]));
-                    DeviceManager.getInstance().registerDeviceCategory(category);
+                    DeviceManagerImpl.getInstance().registerDeviceCategory(category);
                     if(unknown.isDeviceCategoryUnknown(name))
                     {
                         unknown.makeDeviceCategoryKnown(category);
@@ -204,7 +204,7 @@ public class ConfigMessageParser implements MessageParsable {
                 String devicecategory = device.getAttribute("devicecategory");
 
                 //if Device is unknown to DeviceManager
-                if (DeviceManager.getInstance().getDeviceById(id) == null) {
+                if (DeviceManagerImpl.getInstance().getDeviceById(id) == null) {
                     NodeList locations = device.getElementsByTagName("isIn");
 
                     for (int j = 0; j < locations.getLength(); j++) {
@@ -218,10 +218,10 @@ public class ConfigMessageParser implements MessageParsable {
                     }
 
 
-                    DeviceCategory category = DeviceManager.getInstance().getDeviceCategory(devicecategory);
+                    DeviceCategory category = DeviceManagerImpl.getInstance().getDeviceCategory(devicecategory);
                     if (category != null) {
                         Device d = new Device(id, category, null, null, null);
-                        DeviceManager.getInstance().registerDevice(d);
+                        DeviceManagerImpl.getInstance().registerDevice(d);
                     } else {
                         Device d = new Device(id, category, null, null, null);
                         unknown.addUnknownDeviceCategory(devicecategory, d);
