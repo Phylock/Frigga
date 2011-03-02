@@ -14,6 +14,7 @@
     </target>
        
     <target depends="-deploy-init" name="bnd-generate">
+	   <mkdir dir="${dist.dir}"/>
        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${deploy.bnd.jar}"/>
        <bnd 
          classpath="${build.classes.dir}"

@@ -12,125 +12,129 @@ import dk.itu.frigga.device.InvalidFunctionException;
 import dk.itu.frigga.device.InvalidParameterException;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.UnknownDeviceException;
+import dk.itu.frigga.device.manager.DeviceManager;
 import it.polito.elite.domotics.dog2.dog2leash.Dog2JLeash;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.xmlrpc.XmlRpcException;
+import org.osgi.service.log.LogService;
 
 /**
  *
  * @author phylock
  */
 public class DogDriver implements Driver {
+  //External services, initialized by DependencyManager
 
-    @Override
-    public FunctionResult callFunction(Device[] devices, Executable function, Parameter... parameters)
-            throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
-        return function.execute(devices, parameters);
+  private volatile DeviceManager devicemanager;
+  private volatile LogService log;
+  private DogParser listener;
+  private Dog2JLeash dogGateway;
+  /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
+  private static String defaultDogAddress = "http://localhost:65300/RPC2";
+  private String session;
+  private boolean connected;
+
+  @Override
+  public FunctionResult callFunction(Device[] devices, Executable function, Parameter... parameters)
+          throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
+    return function.execute(devices, parameters);
+  }
+
+  public DogDriver() {
+    log.log(LogService.LOG_INFO, "Dog Driver: Initialize");
+    listener = new DogParser(this);
+    connected = false;
+  }
+
+  public void connect(String address) throws XmlRpcException, IOException {
+    dogGateway = new Dog2JLeash();
+    session = dogGateway.connect(address);
+    dogGateway.addDog2MessageListener(listener);
+    connected = true;
+  }
+
+  public void disconnect() throws XmlRpcException, IOException {
+    if (connected) {
+      dogGateway.disconnect();
+      connected = false;
     }
-    private DogParser listener;
-    private Dog2JLeash dogGateway;
-    /*** assume that the Dog gateway is running on localhost */
-    private static String defaultDogAddress = "http://localhost:65300/RPC2";
-    private String session;
-    private boolean connected;
+  }
 
-    public DogDriver() {
-        listener = new DogParser(this);
-        connected = false;
+  public void send(DogMessage message) {
+    String command = message.generateXmlString(session);
+    try {
+      if (!Dog2JLeash.validate(command)) {
+        System.out.println("XmlMessage not valid. See console error for more information");
+        return;
+      }
+      System.out.println("Request:");
+      System.out.println(command);
+      if (!dogGateway.sendMessage(command)) {
+        System.out.println("Wrong session id");
+      } else {
+        //this.gui.clearXmlTextArea();
+      }
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  public void describeSystem() {
+    try {
+      DogMessage command = DogProtocol.generateDescribeDevice(null);
+      send(command);
+    } catch (ParserConfigurationException ex) {
+      Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  public void setLampState(boolean on) {
+    String devices[] = new String[]{"SimpleLamp_lamp7_livingroom"};
+    Command commands = new Command(devices, ((on) ? "on" : "off"), null);
+
+    try {
+      DogMessage command = DogProtocol.generateCommandMessage(commands);
+      send(command);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  public void LampStatus() {
+    String devices[] = new String[]{"SimpleLamp_lamp7_livingroom"};
+
+    try {
+      DogMessage command = DogProtocol.generateStatusRequest(devices);
+      send(command);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
     }
 
-    public void connect(String address) throws XmlRpcException, IOException {
-        dogGateway = new Dog2JLeash();
-        session = dogGateway.connect(address);
-        dogGateway.addDog2MessageListener(listener);
-        connected = true;
+  }
+
+  public static void main(String[] args) {
+    DogDriver driver = new DogDriver();
+    try {
+      driver.connect(defaultDogAddress);
+      driver.describeSystem();
+      Thread.sleep(1000 * 5);
+      /*driver.LampStatus();
+      Thread.sleep(1000 * 5);
+      driver.setLampState(true);
+      Thread.sleep(1000 * 10);*/
+
+
+
+      driver.disconnect();
+    } catch (InterruptedException ex) {
+      Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (XmlRpcException ex) {
+      Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IOException ex) {
+      Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    public void disconnect() throws XmlRpcException, IOException {
-        if (connected) {
-            dogGateway.disconnect();
-            connected = false;
-        }
-    }
-
-    public void send(DogMessage message)
-    {
-        String command = message.generateXmlString(session);
-        try {
-            if (!Dog2JLeash.validate(command)) {
-                System.out.println("XmlMessage not valid. See console error for more information");
-                return;
-            }
-            System.out.println("Request:");
-            System.out.println(command);
-            if (!dogGateway.sendMessage(command)) {
-                System.out.println("Wrong session id");
-            } else {
-                //this.gui.clearXmlTextArea();
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void describeSystem() {
-        try {
-            DogMessage command = DogProtocol.generateDescribeDevice(null);
-            send(command);
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-
-    }
-
-    public void setLampState(boolean on) {
-        String devices[] = new String[]{"SimpleLamp_lamp7_livingroom"};
-        Command commands = new Command(devices, ((on) ? "on" : "off"), null);
-
-        try {
-            DogMessage command = DogProtocol.generateCommandMessage(commands);
-            send(command);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void LampStatus() {
-        String devices[] = new String[]{"SimpleLamp_lamp7_livingroom"};
-
-        try {
-            DogMessage command = DogProtocol.generateStatusRequest(devices);
-            send(command);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-    }
-
-    public static void main(String[] args) {
-        DogDriver driver = new DogDriver();
-        try {
-            driver.connect(defaultDogAddress);
-            driver.describeSystem();
-            Thread.sleep(1000 * 5);
-            /*driver.LampStatus();
-            Thread.sleep(1000 * 5);
-            driver.setLampState(true);
-            Thread.sleep(1000 * 10);*/
-
-
-
-            driver.disconnect();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (XmlRpcException ex) {
-            Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(DogDriver.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+  }
 }
