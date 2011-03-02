@@ -15,6 +15,7 @@ import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.manager.DeviceManager;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Vector;
 import javax.swing.JFrame;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -101,9 +102,13 @@ public class MainWindow extends JFrame implements WindowListener {
       DeviceCategory category = manager.getDeviceCategory(strCategory);
       if(category != null)
       {
+        Vector<Device> devices = new Vector<Device>();
         Iterable<Device> iter = manager.getDevicesByType(category);
-        for
-
+        for(Device device : iter)
+        {
+            devices.add(device);
+        }
+        lst_devices.setListData(devices);
       }
       else
       {
