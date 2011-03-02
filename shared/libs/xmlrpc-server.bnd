@@ -1,5 +1,5 @@
 version=3.1.2
-Export-Package: org.apache.xmlrpc.server.*;version=${version}
+Export-Package: org.apache.xmlrpc.*;version=${version}
 Bundle-Version: ${version}
 Bundle-Name: Apache XMLRPC Server
 Bundle-SymbolicName: xmlrpc-server

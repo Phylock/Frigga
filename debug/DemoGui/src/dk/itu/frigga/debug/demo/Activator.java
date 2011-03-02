@@ -2,33 +2,41 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package dk.itu.frigga.debug.demo;
 
 import dk.itu.frigga.debug.demo.gui.MainWindow;
-import org.osgi.framework.BundleActivator;
+import dk.itu.frigga.device.manager.DeviceManager;
+import java.util.List;
+import org.apache.felix.dependencymanager.DependencyActivatorBase;
+import org.apache.felix.dependencymanager.DependencyManager;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
 
 /**
  *
  * @author phylock
  */
-public class Activator implements BundleActivator{
+public class Activator extends DependencyActivatorBase
+{
     private MainWindow window;
-	/**
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-      System.out.println("Start GUI");
+
+    @Override
+    public void destroy(BundleContext context, DependencyManager dm) throws Exception {
+        window.dispose();
+    }
+
+    @Override
+    public void init(BundleContext context, DependencyManager dm) throws Exception {
         window = new MainWindow(context);
         window.setVisible(true);
-	}
-
-	/**
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		window.dispose();
-        System.out.println("Stop GUI");
-	}
+        dm.add(createService()
+            .setImplementation(window)
+            .add(createServiceDependency()
+                .setService(DeviceManager.class)
+                .setRequired(true))
+            .add(createServiceDependency()
+                .setService(LogService.class)
+                .setRequired(false)));
+        List list = dm.getServices();
+    }
 }

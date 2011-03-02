@@ -24,16 +24,21 @@ package dk.itu.frigga.device.manager.impl;
 import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
+import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.manager.DeviceManager;
 import dk.itu.frigga.utility.Filtering;
 import dk.itu.frigga.utility.Applicable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  *
  * @author Tommy Andersen (toan@itu.dk)
+ * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
 public final class DeviceManagerImpl implements DeviceManager {
+
+    private ArrayList<Driver> devicedrivers;
 
     private final static DeviceManagerImpl instance = new DeviceManagerImpl();
     private final HashMap<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
@@ -125,6 +130,17 @@ public final class DeviceManagerImpl implements DeviceManager {
 
         return Filtering.filter(devices.values(), typeCheck);
     }
+
+
+
+    public void deviceDriverAdded(Driver driver) {
+        devicedrivers.add(driver);
+    }
+
+    public void removed(Driver driver) {
+        devicedrivers.remove(driver);
+    }
+
 
     /**
      * Since the class is singleton and we have made the constructor private,

@@ -12,4 +12,21 @@ package dk.itu.frigga.device;
 public interface Driver {
     public FunctionResult callFunction(Device[] device, Executable function, Parameter... parameters)
             throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException;
+
+    /**
+     * This is called whenever a service request a full update of all devices the driver handles
+     */
+    public void update();
+
+    /**
+     * This is called when we request an update of all devices in one or more categories
+     * @param devicecategories
+     */
+    public void update(String[] devicecategories);
+
+    /**
+     * This is called when we request an update of a number of known devices
+     * @param devices
+     */
+    public void update(DeviceId[] devices);
 }

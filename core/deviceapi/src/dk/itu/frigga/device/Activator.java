@@ -14,16 +14,22 @@ import org.osgi.framework.BundleContext;
  *
  * @author phylock
  */
-public class DeviceApiActivator extends DependencyActivatorBase {
+public class Activator extends DependencyActivatorBase {
 
   @Override
   public void init(BundleContext bc, DependencyManager dm) throws Exception {
+      System.out.println("Device Api Activated");
     dm.add(createService()
             .setInterface(DeviceManager.class.getName(), null)
-            .setImplementation(DeviceManagerImpl.getInstance()));
+            .setImplementation(DeviceManagerImpl.getInstance())
+            .add(createServiceDependency()
+                .setService(Driver.class)
+                .setRequired(false)
+                .setCallbacks("deviceDriverAdded", "deviceDriverRemoved")));
   }
 
   @Override
   public void destroy(BundleContext bc, DependencyManager dm) throws Exception {
+      System.out.println("Device Api Deactivated");
   }
 }
