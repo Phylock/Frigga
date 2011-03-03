@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+** Copy the following line to build script, correct path if needed
+<import file="../../shared/ant/deploy.xml"/>
+
+** Overwrite default jar target
+<target depends="generate-jar" name="jar"/>
+
+** To add automatic deployment, add one of the following lines 
+<target depends="deploy-boundle-auto" name="-post-jar"/>
+<target depends="deploy-boundle-manual" name="-post-jar"/>
+
+** deploy scrips has default parameters but looks for 
+   project specific overwrites in nbproject/deploy.properties
+-->
 <project name="deploy">
 	
     <target name="-deploy-init">
@@ -7,14 +22,17 @@
         <property file="nbproject/deploy.properties"/>
     </target>
     
-    <target depends="bnd-generate" name="deploy-boundle-auto">
+    <target name="deploy-boundle-auto">
 	<copy file="${dist.jar}" todir="${deploy.auto.dir}" overwrite="true" />
     </target>
     
-    <target depends="bnd-generate" name="deploy-boundle-manual">
+    <target name="deploy-boundle-manual">
 	<copy file="${dist.jar}" todir="${deploy.manual.dir}" overwrite="true" />
     </target>
-       
+    
+    <!-- TODO: Fix jar target overwrite instead of recompile after-->
+    <target depends="init,compile,-pre-jar, bnd-generate, -post-jar" description="Build JAR." name="generate-jar"/>    
+    
     <target depends="-deploy-init, compile" name="bnd-generate">
        <delete dir="${dist.dir}"/>
        <mkdir dir="${dist.dir}"/>
