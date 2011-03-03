@@ -61,6 +61,8 @@ public class DataManager extends Singleton
      */
     public void addConnection(final String group, DataConnection connection)
     {
+        assert(group != null) : "Null value cannot be used for group name in addConnection";
+        
         connections.put(group, connection);
     }
 
