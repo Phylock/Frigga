@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
-
-    <target depends="compile" name="-deploy-init">
+<project name="deploy">
+	
+    <target name="-deploy-init">
+		<dirname property="deploy.basedir" file="${ant.file.deploy}"/>
+		<property file="${deploy.basedir}/deploy.properties"/>
         <property file="nbproject/deploy.properties"/>
     </target>
     
@@ -13,7 +15,7 @@
 	<copy file="${dist.jar}" todir="${deploy.manual.dir}" overwrite="true" />
     </target>
        
-    <target depends="-deploy-init" name="bnd-generate">
+    <target depends="-deploy-init, compile" name="bnd-generate">
        <delete dir="${dist.dir}"/>
        <mkdir dir="${dist.dir}"/>
        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${deploy.bnd.jar}"/>

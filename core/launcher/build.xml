@@ -71,4 +71,9 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="-post-clean">
+        <delete dir="felix-cache"/>
+    </target>
+
+
 </project>
