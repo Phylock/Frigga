@@ -22,6 +22,7 @@
 
 package dk.itu.frigga.device;
 
+import dk.itu.frigga.utility.StringHelper;
 import java.util.HashMap;
 
 /**
@@ -78,6 +79,32 @@ public final class Device {
         return variables;
     }
 
+    @Override
+    public String toString() {
+        return id.toString();
+    }
 
-    
+    public String toFullString()
+    {
+        String listen_keys;
+        String variable_keys;
+
+        if(listeners != null && !listeners.isEmpty())
+        {
+            listen_keys = StringHelper.ImplodeString(listeners.keySet().toArray(new String[listeners.size()]), ", ");
+        }else
+        {
+            listen_keys = "None";
+        }
+        if(variables != null && !variables.isEmpty())
+        {
+            variable_keys = StringHelper.ImplodeString(variables.keySet().toArray(new String[variables.size()]), ", ");
+        }else
+        {
+            variable_keys = "None";
+        }
+
+        return String.format("Device{ id= %s, type= %s , variables= (%s) , listeners= (%s) , location= %s}",
+                id, type.getTypeString(), variable_keys, listen_keys, location);
+    }
 }

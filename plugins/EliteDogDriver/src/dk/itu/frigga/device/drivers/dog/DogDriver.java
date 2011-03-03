@@ -39,6 +39,21 @@ public class DogDriver implements Driver {
     private String session;
     private boolean connected;
 
+    public void addDeviceManager(DeviceManager manager)
+    {
+        devicemanager = manager;
+        listener.setDeviceManager(manager);
+    }
+
+    public void removeDeviceManager(DeviceManager manager)
+    {
+        //TODO: nullobject?? wait for devicemanager??
+        devicemanager = null;
+        listener.setDeviceManager(null);
+    }
+
+
+
     @Override
     public FunctionResult callFunction(Device[] devices, Executable function, Parameter... parameters)
             throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
@@ -69,15 +84,14 @@ public class DogDriver implements Driver {
         String command = message.generateXmlString(session);
         try {
             if (!Dog2JLeash.validate(command)) {
-                System.out.println("XmlMessage not valid. See console error for more information");
+                log.log(LogService.LOG_WARNING, "aborting, message did not validate");
                 return;
             }
-            System.out.println("Request:");
-            System.out.println(command);
+
             if (!dogGateway.sendMessage(command)) {
-                System.out.println("Wrong session id");
+                log.log(LogService.LOG_WARNING, "aborting, wrong session id ");
             } else {
-                //this.gui.clearXmlTextArea();
+                
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

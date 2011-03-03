@@ -38,8 +38,7 @@ import java.util.HashMap;
  */
 public final class DeviceManagerImpl implements DeviceManager {
 
-    private ArrayList<Driver> devicedrivers;
-
+    private ArrayList<Driver> devicedrivers = new ArrayList<Driver>();
     private final static DeviceManagerImpl instance = new DeviceManagerImpl();
     private final HashMap<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
     private final HashMap<String, DeviceCategory> categories = new HashMap<String, DeviceCategory>();
@@ -71,10 +70,10 @@ public final class DeviceManagerImpl implements DeviceManager {
         categories.remove(category.getTypeString());
     }
 
-    public final DeviceCategory getDeviceCategory(String id)
-    {
+    public final DeviceCategory getDeviceCategory(String id) {
         return categories.get(id);
     }
+
     /**
      * use this function to retrieve a specific device.
      *
@@ -131,16 +130,14 @@ public final class DeviceManagerImpl implements DeviceManager {
         return Filtering.filter(devices.values(), typeCheck);
     }
 
-
-
     public void deviceDriverAdded(Driver driver) {
         devicedrivers.add(driver);
+        driver.update();
     }
 
-    public void removed(Driver driver) {
+    public void deviceDriverRemoved(Driver driver) {
         devicedrivers.remove(driver);
     }
-
 
     /**
      * Since the class is singleton and we have made the constructor private,

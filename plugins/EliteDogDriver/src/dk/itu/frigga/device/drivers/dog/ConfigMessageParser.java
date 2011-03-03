@@ -8,6 +8,7 @@ import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Executable;
+import dk.itu.frigga.device.Location;
 import dk.itu.frigga.device.manager.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
@@ -95,7 +96,7 @@ public class ConfigMessageParser implements MessageParsable {
                 Element devicecategory = (Element) node;
                 String name = devicecategory.getAttribute("uri");
 
-                if (devicemanager.getDeviceCategory(name) != null) {
+                if (devicemanager.getDeviceCategory(name) == null) {
 
                     functionalies.clear();
                     variables.clear();
@@ -208,7 +209,7 @@ public class ConfigMessageParser implements MessageParsable {
                 //if Device is unknown to DeviceManager
                 if (devicemanager.getDeviceById(id) == null) {
                     NodeList locations = device.getElementsByTagName("isIn");
-
+                    
                     for (int j = 0; j < locations.getLength(); j++) {
                         Node locationnode = locations.item(j);
 
@@ -240,5 +241,9 @@ public class ConfigMessageParser implements MessageParsable {
                 Logger.getLogger(ConfigMessageParser.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public void setDeviceManager(DeviceManager manager) {
+        devicemanager = manager;
     }
 }

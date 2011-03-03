@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
+import dk.itu.frigga.device.manager.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import it.polito.elite.domotics.dog2.dog2leash.interfaces.Dog2MessageListener;
 import java.io.ByteArrayInputStream;
@@ -61,7 +62,6 @@ public class DogParser implements Dog2MessageListener {
 
     @Override
     public void newMessage(String message) {
-        System.out.println("Respond:");
         try {
             Document doc = builder.parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
             Element root = (Element) doc.getDocumentElement();
@@ -74,6 +74,14 @@ public class DogParser implements Dog2MessageListener {
             Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void setDeviceManager(DeviceManager manager)
+    {
+        for(MessageParsable parser : parsers.values())
+        {
+            parser.setDeviceManager(manager);
         }
     }
 }

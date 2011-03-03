@@ -59,6 +59,8 @@ public class DogMessage {
             DogProtocol.setPriority(doc, priority);
         }
 
+        DogProtocol.setSessionId(doc, session);
+        
         return xmlToString(doc);
     }
 

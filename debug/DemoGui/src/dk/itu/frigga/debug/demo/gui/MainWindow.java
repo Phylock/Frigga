@@ -50,37 +50,73 @@ public class MainWindow extends JFrame implements WindowListener {
         jScrollPane1 = new javax.swing.JScrollPane();
         lst_devices = new javax.swing.JList();
         btn_refresh = new javax.swing.JButton();
+        jToggleButton1 = new javax.swing.JToggleButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        device_name = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        lst_devices.setModel(new javax.swing.AbstractListModel() {
-
-            String[] strings = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
-
-            public int getSize() {
-                return strings.length;
-            }
-
-            public Object getElementAt(int i) {
-                return strings[i];
+        lst_devices.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lst_devicesValueChanged(evt);
             }
         });
         jScrollPane1.setViewportView(lst_devices);
 
-        btn_refresh.setText("jButton1");
+        btn_refresh.setText("Search");
         btn_refresh.addActionListener(new java.awt.event.ActionListener() {
-
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_refreshActionPerformed(evt);
             }
         });
 
+        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dk/itu/frigga/debug/demo/gui/lightbulb_off.png"))); // NOI18N
+        jToggleButton1.setRolloverEnabled(false);
+        jToggleButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/dk/itu/frigga/debug/demo/gui/lightbulb_on.png"))); // NOI18N
+
+        jLabel1.setText("Name:");
+
+        jLabel2.setText("State:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addContainerGap().addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false).addComponent(btn_refresh, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)).addContainerGap(436, Short.MAX_VALUE)));
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn_refresh, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(device_name, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE))
+                    .addComponent(jLabel2)
+                    .addComponent(jToggleButton1))
+                .addContainerGap())
+        );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addContainerGap().addComponent(btn_refresh).addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE).addContainerGap()));
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btn_refresh)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(device_name, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jToggleButton1)
+                        .addGap(105, 105, 105)))
+                .addContainerGap())
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -104,9 +140,27 @@ public class MainWindow extends JFrame implements WindowListener {
 
 
     }//GEN-LAST:event_btn_refreshActionPerformed
-// Variables declaration - do not modify//GEN-BEGIN:variables
+
+    private void lst_devicesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_devicesValueChanged
+        Object obj = lst_devices.getSelectedValue();
+        if(obj instanceof Device)
+        {
+            updateCurrentDeviceInfo((Device)obj);
+        }
+    }//GEN-LAST:event_lst_devicesValueChanged
+
+    private void updateCurrentDeviceInfo(Device device)
+    {
+        device_name.setText(device.getId().toString());
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_refresh;
+    private javax.swing.JLabel device_name;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JList lst_devices;
     // End of variables declaration//GEN-END:variables
 

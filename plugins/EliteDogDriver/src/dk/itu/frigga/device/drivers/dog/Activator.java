@@ -19,17 +19,36 @@ import org.osgi.service.log.LogService;
  */
 public class Activator extends DependencyActivatorBase implements BundleActivator{
   private DogDriver driver;
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        System.out.println("Dog Driver Activated");
+        driver = new DogDriver();
+
+        super.start(context);
+
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        System.out.println("Dog Driver Deactivated");
+        driver.disconnect();
+        driver = null;
+        
+        super.stop(context);
+    }
+
+
+
   @Override
   public void init(BundleContext bc, DependencyManager dm) throws Exception {
-      System.out.println("Dog Driver Activated");
-    driver = new DogDriver();
-
     dm.add(createService()
             .setInterface(Driver.class.getName(), null)
             .setImplementation(driver)
             .add(createServiceDependency()
                 .setService(DeviceManager.class)
-                .setRequired(true))
+                .setRequired(true)
+                .setCallbacks("addDeviceManager", "removeDeviceManager"))
             .add(createServiceDependency()
                 .setService(LogService.class)
                 .setRequired(false)
@@ -41,8 +60,6 @@ public class Activator extends DependencyActivatorBase implements BundleActivato
   @Override
   public void destroy(BundleContext bc, DependencyManager dm) throws Exception 
   {
-    driver.disconnect();
-    System.out.println("Dog Driver Deactivated");
-  }
 
+  }
 }

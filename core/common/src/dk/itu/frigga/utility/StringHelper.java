@@ -19,7 +19,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package dk.itu.frigga.utility;
 
 import java.nio.ByteBuffer;
@@ -29,70 +28,65 @@ import java.util.ArrayList;
  *
  * @author Tommy Andersen (toan@itu.dk)
  */
-public class StringHelper
-{
+public class StringHelper {
+
     private final static String HEX_STRING = "0123456789abcdef";
 
-    public static byte[] hexStringToByteArray(final String hex)
-    {
+    public static byte[] hexStringToByteArray(final String hex) {
         boolean hasFullByte = true;
         int b = 0;
         int bufferSize = 0;
         int bytesAdded = 0;
 
-        for (char c : hex.toCharArray())
-        {
-            if ((c >= '0' && c <= '9') ||
-                (c >= 'a' && c <= 'f') ||
-                (c >= 'A' || c <= 'F'))
-            {
+        for (char c : hex.toCharArray()) {
+            if ((c >= '0' && c <= '9')
+                    || (c >= 'a' && c <= 'f')
+                    || (c >= 'A' || c <= 'F')) {
                 bufferSize++;
             }
         }
 
         byte[] result = new byte[bufferSize / 2];
 
-        for (char c : hex.toCharArray())
-        {
+        for (char c : hex.toCharArray()) {
             int pos = HEX_STRING.indexOf(Character.toLowerCase(c));
 
-            if (pos > -1)
-            {
-               b = (b << 4) | (pos & 0xFF);
-               hasFullByte = !hasFullByte;
+            if (pos > -1) {
+                b = (b << 4) | (pos & 0xFF);
+                hasFullByte = !hasFullByte;
 
-               if (hasFullByte)
-               {
-                   result[bytesAdded] = (byte) (b & 0xFF);
-                   b = 0;
-                   bytesAdded++;
-               }
+                if (hasFullByte) {
+                    result[bytesAdded] = (byte) (b & 0xFF);
+                    b = 0;
+                    bytesAdded++;
+                }
             }
         }
 
         return result;
     }
 
-    public static ByteBuffer hexStringToByteBuffer(final String hex)
-    {
+    public static ByteBuffer hexStringToByteBuffer(final String hex) {
         byte[] bytes = hexStringToByteArray(hex);
         ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
         buffer.put(bytes);
 
         return buffer;
     }
-    
-    public static String[] splitStringBySeperator(final String str, final String seperator)
-    {
-        if (str == null)
-        {
+
+    public static String[] splitStringBySeperator(final String str, final String seperator) {
+        if (str == null) {
             return null;
         }
 
         String sep = seperator;
-        if (sep == null) sep = " ";
+        if (sep == null) {
+            sep = " ";
+        }
 
-        if (sep.equals("")) return new String[]{ str };
+        if (sep.equals("")) {
+            return new String[]{str};
+        }
 
         int len = str.length();
         int start = 0;
@@ -100,15 +94,28 @@ public class StringHelper
 
         ArrayList<String> substrings = new ArrayList<String>();
 
-        while (pos > start)
-        {
+        while (pos > start) {
             substrings.add(str.substring(start, pos));
             start = pos + sep.length();
             pos = str.indexOf(sep, start);
         }
-        
+
         substrings.add(str.substring(start, str.length()));
 
         return substrings.toArray(new String[substrings.size()]);
+    }
+
+    public static String ImplodeString(String[] strings, String seperator) {
+        if (strings.length == 0) {
+            return "";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(strings[0]);
+            for (int i = 1; i < strings.length; i++) {
+                sb.append(seperator);
+                sb.append(strings[i]);
+            }
+            return sb.toString();
+        }
     }
 }
