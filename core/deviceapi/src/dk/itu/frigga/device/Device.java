@@ -81,7 +81,7 @@ public final class Device {
 
     @Override
     public String toString() {
-        return id.toString();
+        return id.toString() + ":" +type.getTypeString();
     }
 
     public String toFullString()

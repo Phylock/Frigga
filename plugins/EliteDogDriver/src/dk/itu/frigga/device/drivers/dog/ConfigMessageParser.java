@@ -86,7 +86,6 @@ public class ConfigMessageParser implements MessageParsable {
     private void updateDeviceCategories(Document doc, Element categories) {
         NodeList devicecategries = categories.getElementsByTagName("devicecategory");
 
-        HashMap<String, Executable> functionalies = new HashMap<String, Executable>();
         ArrayList<String> variables = new ArrayList<String>();
         ArrayList<String> listeners = new ArrayList<String>();
 
@@ -98,7 +97,7 @@ public class ConfigMessageParser implements MessageParsable {
 
                 if (devicemanager.getDeviceCategory(name) == null) {
 
-                    functionalies.clear();
+                    HashMap<String, Executable> functionalies = new HashMap<String, Executable>();
                     variables.clear();
                     listeners.clear();
 
@@ -181,10 +180,10 @@ public class ConfigMessageParser implements MessageParsable {
                         if (commandnode.getNodeType() == Node.ELEMENT_NODE) {
                             Element command = (Element) commandnode;
                             String commandname = command.getAttribute("name");
-                            Executable function = new Function(driver, driver.getConnection(), name);
+                            Executable function = new Function(driver, driver.getConnection(), commandname);
 
                             int numparameters = Integer.parseInt(command.getAttribute("numparameters"));
-                            //TODO: add command to function
+                            //TODO: add parameters to function
 
                             list.add(function);
                         }

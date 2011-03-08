@@ -13,8 +13,10 @@ package dk.itu.frigga.debug.demo.gui;
 import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.manager.DeviceManager;
+import java.awt.event.ItemEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.JFrame;
 import org.osgi.framework.BundleContext;
@@ -74,6 +76,11 @@ public class MainWindow extends JFrame implements WindowListener {
         jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dk/itu/frigga/debug/demo/gui/lightbulb_off.png"))); // NOI18N
         jToggleButton1.setRolloverEnabled(false);
         jToggleButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/dk/itu/frigga/debug/demo/gui/lightbulb_on.png"))); // NOI18N
+        jToggleButton1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jToggleButton1ItemStateChanged(evt);
+            }
+        });
 
         jLabel1.setText("Name:");
 
@@ -143,17 +150,36 @@ public class MainWindow extends JFrame implements WindowListener {
 
     private void lst_devicesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_devicesValueChanged
         Object obj = lst_devices.getSelectedValue();
-        if(obj instanceof Device)
-        {
-            updateCurrentDeviceInfo((Device)obj);
+        if (obj instanceof Device) {
+            updateCurrentDeviceInfo((Device) obj);
         }
     }//GEN-LAST:event_lst_devicesValueChanged
 
-    private void updateCurrentDeviceInfo(Device device)
-    {
+    private void jToggleButton1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jToggleButton1ItemStateChanged
+        int state = evt.getStateChange();
+
+        Object selections[] = lst_devices.getSelectedValues();
+        DeviceCategory category = devicemanager.getDeviceCategory("SimpleLamp");
+        ArrayList<Device> devices = new ArrayList<Device>();
+
+        for (Object obj : selections) {
+            if (obj instanceof Device && ((Device) obj).isOfType(category)) {
+                devices.add((Device) obj);
+            }
+        }
+        if (!devices.isEmpty()) {
+            if (state == ItemEvent.SELECTED) {
+                System.out.println("Selected");
+                category.getFunction("on").execute(devices.toArray(new Device[devices.size()]));
+            } else {
+                category.getFunction("off").execute(devices.toArray(new Device[devices.size()]));
+            }
+        }
+    }//GEN-LAST:event_jToggleButton1ItemStateChanged
+
+    private void updateCurrentDeviceInfo(Device device) {
         device_name.setText(device.getId().toString());
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_refresh;
     private javax.swing.JLabel device_name;
