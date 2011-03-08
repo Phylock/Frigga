@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package dk.itu.frigga.device;
 
 import dk.itu.frigga.device.manager.DeviceManager;
@@ -18,7 +14,7 @@ public class Activator extends DependencyActivatorBase {
 
   @Override
   public void init(BundleContext bc, DependencyManager dm) throws Exception {
-      System.out.println("Device Api Activated");
+    System.out.println("Device Api Activated");
     dm.add(createService()
             .setInterface(DeviceManager.class.getName(), null)
             .setImplementation(DeviceManagerImpl.getInstance())

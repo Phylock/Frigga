@@ -32,7 +32,7 @@ public class Activator extends DependencyActivatorBase implements BundleActivato
     @Override
     public void stop(BundleContext context) throws Exception {
         System.out.println("Dog Driver Deactivated");
-        driver.disconnect();
+        driver.getConnection().disconnect();
         driver = null;
         
         super.stop(context);
@@ -42,6 +42,7 @@ public class Activator extends DependencyActivatorBase implements BundleActivato
 
   @Override
   public void init(BundleContext bc, DependencyManager dm) throws Exception {
+    driver.getConnection().connect(DogDriver.DEFAULT_DOG_ADDRESS);
     dm.add(createService()
             .setInterface(Driver.class.getName(), null)
             .setImplementation(driver)
@@ -53,8 +54,6 @@ public class Activator extends DependencyActivatorBase implements BundleActivato
                 .setService(LogService.class)
                 .setRequired(false)
                 .setDefaultImplementation(new NullLog())));
-
-    driver.connect(DogDriver.DEFAULT_DOG_ADDRESS);
   }
 
   @Override

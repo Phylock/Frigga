@@ -20,10 +20,12 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class Function implements Executable{
     private DogDriver driver;
+    private Connection connection;
     private String function;
 
-    public Function(DogDriver driver, String function) {
+    public Function(DogDriver driver, Connection connection, String function) {
         this.driver = driver;
+        this.connection = connection;
         this.function = function;
     }
 
@@ -42,7 +44,7 @@ public class Function implements Executable{
             //TODO: how to set parameters ??
             Command command = new Command(items, function, null);
             DogMessage message = DogProtocol.generateCommandMessage(command);
-            driver.send(message);
+            connection.send(message);
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(Function.class.getName()).log(Level.SEVERE, null, ex);
         }

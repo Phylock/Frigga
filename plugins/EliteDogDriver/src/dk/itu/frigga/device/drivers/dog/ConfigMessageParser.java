@@ -181,7 +181,7 @@ public class ConfigMessageParser implements MessageParsable {
                         if (commandnode.getNodeType() == Node.ELEMENT_NODE) {
                             Element command = (Element) commandnode;
                             String commandname = command.getAttribute("name");
-                            Executable function = new Function(driver, name);
+                            Executable function = new Function(driver, driver.getConnection(), name);
 
                             int numparameters = Integer.parseInt(command.getAttribute("numparameters"));
                             //TODO: add command to function
@@ -236,7 +236,7 @@ public class ConfigMessageParser implements MessageParsable {
             try {
                 //NOTE : possible loop, if the DOG gateway donsn't know the device, will this be a problem?
                 DogMessage message = DogProtocol.generateDescribeDeviceCategory(unknown.getUnknownDeviceCategories());
-                driver.send(message);
+                driver.getConnection().send(message);
             } catch (ParserConfigurationException ex) {
                 Logger.getLogger(ConfigMessageParser.class.getName()).log(Level.SEVERE, null, ex);
             }
