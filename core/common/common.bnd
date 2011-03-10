@@ -1,5 +1,6 @@
 Bundle-Version: 0.1
 Bundle-Name: Frigga Commons
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga
 Export-Package: dk.itu.frigga.*
 

@@ -17,25 +17,29 @@
 <project name="deploy">
 	
     <target name="-deploy-init">
-		<dirname property="deploy.basedir" file="${ant.file.deploy}"/>
-		<property file="${deploy.basedir}/deploy.properties"/>
+	<dirname property="deploy.basedir" file="${ant.file.deploy}"/>
+	<property file="${deploy.basedir}/deploy.properties"/>
         <property file="nbproject/deploy.properties"/>
     </target>
     
     <target name="deploy-boundle-auto">
-	<copy file="${dist.jar}" todir="${deploy.auto.dir}" overwrite="true" />
+      <copy todir="${deploy.auto.dir}" overwrite="true">
+        <fileset dir="${deploy.bundle.dir}/"/>
+      </copy>
     </target>
     
     <target name="deploy-boundle-manual">
-	<copy file="${dist.jar}" todir="${deploy.manual.dir}" overwrite="true" />
+      <copy todir="${deploy.manual.dir}" overwrite="true">
+        <fileset dir="${deploy.bundle.dir}/"/>
+      </copy>
     </target>
     
     <!-- TODO: Fix jar target overwrite instead of recompile after-->
     <target depends="init,compile,-pre-jar, bnd-generate, -post-jar" description="Build JAR." name="generate-jar"/>    
     
     <target depends="-deploy-init, compile" name="bnd-generate">
-       <delete dir="${dist.dir}"/>
-       <mkdir dir="${dist.dir}"/>
+       <delete dir="${deploy.bundle.dir}"/>
+       <mkdir dir="${deploy.bundle.dir}"/>
        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${deploy.bnd.jar}"/>
        <bnd 
          classpath="${build.classes.dir}"
@@ -43,7 +47,7 @@
          failok="false" 
          exceptions="true" 
          files="${deploy.bnd.file}"
-         output="${dist.dir}"/>
+         output="${deploy.bundle.dir}"/>
     </target>
 
 </project>
