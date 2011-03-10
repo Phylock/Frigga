@@ -5,10 +5,8 @@
 
 package dk.itu.frigga;
 
+import java.io.Console;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,8 +31,7 @@ public class Main {
         {
             //TODO: Generate default
         }
-
-
+        
         //Felix wrapper
         try {
             org.apache.felix.main.Main.main(args);

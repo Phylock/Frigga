@@ -35,7 +35,7 @@
     </target>
     
     <!-- TODO: Fix jar target overwrite instead of recompile after-->
-    <target depends="init,compile,-pre-jar, bnd-generate, -post-jar" description="Build JAR." name="generate-jar"/>    
+    <target depends="init,compile,-pre-jar, bnd-generate, -ipojo-meta, -post-jar" description="Build JAR." name="generate-jar"/>    
     
     <target depends="-deploy-init, compile" name="bnd-generate">
        <delete dir="${deploy.bundle.dir}"/>
@@ -48,6 +48,29 @@
          exceptions="true" 
          files="${deploy.bnd.file}"
          output="${deploy.bundle.dir}"/>
+         <!-- Store the output filename, there should only be one jar file -->
+         <fileset dir="${deploy.bundle.dir}" id="deploy.bundle.jar.files">
+           <include name="*.jar" />
+         </fileset>
+		 <property name="deploy.bundle.jar" refid="deploy.bundle.jar.files"/>
     </target>
+    
+    
+    <target depends = "-check-ipojo-file, bnd-generate" name="-ipojo-meta" if="${deploy.ipojo.meta.exists}">
+    <echo message="Call main"/>
+      <!-- Change the path to point on the iPOJO Ant task jar -->
+      <taskdef name="ipojo"
+        classname="org.apache.felix.ipojo.task.IPojoTask"
+        classpath="${deploy.ipojo.jar}" />
+      <ipojo
+        input="${deploy.bundle.jar}"
+        metadata = "${deploy.ipojo.file}"
+       />
+    </target>
+    
+    <target name="-check-ipojo-file" unless="file.exists">
+      <available property="deploy.ipojo.meta.exists" file="${deploy.ipojo.file}"/>
+    </target>
+
 
 </project>
