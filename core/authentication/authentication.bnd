@@ -1,0 +1,6 @@
+Bundle-Version: 0.1.0.SNAPSHOT
+Bundle-Name: Frigga Authentication Service
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.auth
+
+Private-Package: dk.itu.frigga.core.auth.*
