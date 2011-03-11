@@ -56,16 +56,19 @@
     </target>
     
     
-    <target depends = "-check-ipojo-file, bnd-generate" name="-ipojo-meta" if="${deploy.ipojo.meta.exists}">
+    <target depends = "-check-ipojo-file" name="-ipojo-meta" if="${deploy.ipojo.meta.exists}">
     <echo message="Call main"/>
       <!-- Change the path to point on the iPOJO Ant task jar -->
       <taskdef name="ipojo"
         classname="org.apache.felix.ipojo.task.IPojoTask"
         classpath="${deploy.ipojo.jar}" />
+        <!-- For some reason iPOJO task can't update the file -->
       <ipojo
-        input="${deploy.bundle.jar}"
+        input="${deploy.bundle.dir}/${deploy.bundle.jar}"
+        output="${deploy.bundle.dir}/${deploy.bundle.jar}.new"
         metadata = "${deploy.ipojo.file}"
        />
+        <move file="${deploy.bundle.dir}/${deploy.bundle.jar}.new" tofile="${deploy.bundle.dir}/${deploy.bundle.jar}"/>
     </target>
     
     <target name="-check-ipojo-file" unless="file.exists">
