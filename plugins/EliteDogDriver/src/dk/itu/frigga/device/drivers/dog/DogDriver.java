@@ -13,7 +13,7 @@ import dk.itu.frigga.device.InvalidFunctionException;
 import dk.itu.frigga.device.InvalidParameterException;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.UnknownDeviceException;
-import dk.itu.frigga.device.manager.DeviceManager;
+import dk.itu.frigga.device.DeviceManager;
 import javax.xml.parsers.ParserConfigurationException;
 import org.osgi.service.log.LogService;
 
@@ -24,31 +24,18 @@ import org.osgi.service.log.LogService;
 public class DogDriver implements Driver {
     //External services, initialized by DependencyManager
 
-    private volatile DeviceManager devicemanager;
-    private volatile LogService log = new NullLog();
+    //private volatile DeviceManager devicemanager;
+    private volatile LogService log;
     //Private member variables
     private Connection connection;
     /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
     public static String DEFAULT_DOG_ADDRESS = "http://localhost:65300/RPC2";
 
-    public void addDeviceManager(DeviceManager manager) {
-        devicemanager = manager;
-        connection.getParser().setDeviceManager(manager);
-    }
-
-    public void removeDeviceManager(DeviceManager manager) {
-        //TODO: nullobject?? wait for devicemanager??
-        devicemanager = null;
-        connection.getParser().setDeviceManager(null);
-    }
-
     public DogDriver() {
         log.log(LogService.LOG_INFO, "Dog Driver: Initialize");
         connection = new Connection(this);
-    }
-
-    public static void main(String[] args) {
-        DogDriver driver = new DogDriver();
+        //connection.getParser().setDeviceManager(devicemanager);
+        connection.connect(DogDriver.DEFAULT_DOG_ADDRESS);
     }
 
     public Connection getConnection() {

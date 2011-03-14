@@ -4,5 +4,3 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-SymbolicName: dk.itu.frigga.debug.demo
 
 Private-Package: dk.itu.frigga.debug.demo.gui.*
-Export-Package: dk.itu.frigga.debug.demo
-Bundle-Activator: dk.itu.frigga.debug.demo.Activator

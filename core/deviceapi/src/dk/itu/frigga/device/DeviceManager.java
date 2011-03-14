@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package dk.itu.frigga.device.manager;
+package dk.itu.frigga.device;
 
 import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;

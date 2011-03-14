@@ -5,7 +5,7 @@
 
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.manager.DeviceManager;
+import dk.itu.frigga.device.DeviceManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ipojo
+   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns='org.apache.felix.ipojo'
+   xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
+
+  <component name="DemoWindowImpl" classname="dk.itu.frigga.debug.demo.gui.MainWindow" public="false">
+    <requires field="log" optional="true"/>
+    <requires field="devicemanager"/>
+
+    <callback transition="validate" method="start"/>
+    <callback transition="invalidate" method="stop"/>
+    <!-- <requires field="datamanager" /> -->
+     </component>
+  <instance component="DemoWindowImpl" name="DemoWindow"/>
+
+</ipojo>

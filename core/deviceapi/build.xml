@@ -12,8 +12,8 @@
     <import file="nbproject/build-impl.xml"/>
     <import file="../../shared/ant/deploy.xml"/>
 
-    <target depends="generate-jar" name="jar"/>
-    <target depends="deploy-boundle-auto" name="-post-jar"/>
+  <target depends="generate-jar" name="jar"/>
+  <target depends="deploy-boundle-auto" name="-post-jar"/>
     <!--
 
     There exist several targets which are by default empty and which can be 

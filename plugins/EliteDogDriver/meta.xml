@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ipojo
+   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns='org.apache.felix.ipojo'
+   xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
+
+  <component name="DogDriverImpl" classname="dk.itu.frigga.device.drivers.dog.DogDriver">
+    <provides/>
+    
+    <requires field="log" optional="true" nullable="false"/>
+    <!-- <requires field="devicemanager"/> -->
+  </component>
+  <instance component="DogDriverImpl" name="DogDriver"/>
+
+</ipojo>

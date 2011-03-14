@@ -35,7 +35,8 @@
     </target>
     
     <!-- TODO: Fix jar target overwrite instead of recompile after-->
-    <target depends="init,compile,-pre-jar, bnd-generate, -ipojo-meta, -post-jar" description="Build JAR." name="generate-jar"/>    
+    <target depends="-do-jar-with-manifest,-do-jar-without-manifest,-do-jar-with-mainclass,-do-jar-with-libraries-and-splashscreen,-do-jar-with-libraries" description="Build JAR." name="-original-jar"/>
+    <target depends="init,compile,-pre-jar, -original-jar, bnd-generate, -ipojo-meta, -post-jar" description="Build JAR." name="generate-jar"/>    
     
     <target depends="-deploy-init, compile" name="bnd-generate">
        <delete dir="${deploy.bundle.dir}"/>

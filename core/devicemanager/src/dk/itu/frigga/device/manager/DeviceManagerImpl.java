@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dk.itu.frigga.device.manager.impl;
+package dk.itu.frigga.device.manager;
 
 import dk.itu.frigga.Singleton;
 import dk.itu.frigga.data.DataManager;
@@ -27,10 +27,11 @@ import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
-import dk.itu.frigga.device.manager.DeviceManager;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.Filtering;
 import dk.itu.frigga.utility.Applicable;
 import java.util.HashMap;
+import java.util.List;
 import org.osgi.service.log.LogService;
 
 /**
@@ -41,8 +42,8 @@ import org.osgi.service.log.LogService;
 public final class DeviceManagerImpl extends Singleton implements DeviceManager {
   /* iPOJO services */
   private LogService log;
-  private DataManager datamanager;
-  private Driver[] drivers;
+  //private DataManager datamanager;
+  private List<Driver> drivers;
 
   /* private */
   private final HashMap<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
@@ -51,7 +52,8 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   /**
    * We do not wish to have multiple instances, so the constructor is private.
    */
-  private DeviceManagerImpl() {
+  public DeviceManagerImpl() {
+    log.log(LogService.LOG_INFO, "Device Manager: Initialized");
   }
 
   public final boolean deviceIsOnline(final Device device) {
@@ -135,11 +137,13 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     return Filtering.filter(devices.values(), typeCheck);
   }
 
-  private void deviceDriverAdded(Driver driver) {
+  public void deviceDriverAdded(Driver driver) {
+    log.log(LogService.LOG_INFO, "Device Driver Added: ");
     driver.update();
   }
 
   public void deviceDriverRemoved(Driver driver) {
+    log.log(LogService.LOG_INFO, "Device Driver Removed: ");
     //TODO: set the devices that the driver is responsible of offline
   }
 }

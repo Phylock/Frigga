@@ -4,7 +4,7 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.manager.DeviceManager;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import it.polito.elite.domotics.dog2.dog2leash.interfaces.Dog2MessageListener;
 import java.io.ByteArrayInputStream;

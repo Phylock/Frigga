@@ -9,7 +9,7 @@ import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Executable;
 import dk.itu.frigga.device.Location;
-import dk.itu.frigga.device.manager.DeviceManager;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
 import java.util.HashMap;

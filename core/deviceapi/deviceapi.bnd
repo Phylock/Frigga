@@ -3,7 +3,5 @@ Bundle-Name: Frigga Device API
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-SymbolicName: dk.itu.frigga.device
 
-Export-Package: dk.itu.frigga.device, dk.itu.frigga.device.manager
-Private-Package: dk.itu.frigga.device.manager.impl.*
-Bundle-Activator: dk.itu.frigga.device.Activator
+Export-Package: dk.itu.frigga.device, dk.itu.frigga.device
 

@@ -3,6 +3,6 @@ Bundle-Name: Frigga Device Manager
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-SymbolicName: dk.itu.frigga.device.manager
 
-Private-Package: dk.itu.frigga.device.manager.impl.*
+Private-Package: dk.itu.frigga.device.manager.*
 
 

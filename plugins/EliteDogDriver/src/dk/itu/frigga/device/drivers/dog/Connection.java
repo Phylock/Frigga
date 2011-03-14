@@ -18,7 +18,7 @@ public class Connection {
     private boolean connected;
     private long retry_delay;
     private String session;
-    private LogService log = new NullLog();
+    private LogService log = new NullLogs();
     private DogParser parser;
 
     public Connection(DogDriver driver) {

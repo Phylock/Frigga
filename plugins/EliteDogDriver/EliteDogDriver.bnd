@@ -1,7 +1,6 @@
-Bundle-Version: 0.1
+Bundle-Version: 0.1.0.SNAPSHOT
 Bundle-Name: Frigga Dog Device Driver
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-SymbolicName: dk.itu.frigga.device.drivers.dog
 
-Bundle-Activator: dk.itu.frigga.device.drivers.dog.Activator
 Private-Package: dk.itu.frigga.device.drivers.dog.*

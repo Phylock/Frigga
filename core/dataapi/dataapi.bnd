@@ -1,5 +1,6 @@
-Bundle-Version: 0.1
-Bundle-Name: Frigga Config
+Bundle-Version: 0.1.0.SNAPSHOT
+Bundle-Name: Frigga Data API
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Activator: dk.itu.frigga.data.Activator
+Bundle-SymbolicName: dk.itu.frigga.data
+
 Export-Package: dk.itu.frigga.data.*
