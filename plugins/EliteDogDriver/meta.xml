@@ -6,9 +6,12 @@
 
   <component name="DogDriverImpl" classname="dk.itu.frigga.device.drivers.dog.DogDriver">
     <provides/>
+
+    <callback transition="validate" method="validate" />
+    <callback transition="invalidate" method="invalidate" />
     
-    <requires field="log" optional="true" nullable="false"/>
-    <!-- <requires field="devicemanager"/> -->
+    <requires field="log" optional="true"/>
+    <requires field="devicemanager"/>
   </component>
   <instance component="DogDriverImpl" name="DogDriver"/>
 

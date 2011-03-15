@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.osgi.service.log.LogService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -27,61 +28,61 @@ import org.xml.sax.SAXException;
  */
 public class DogParser implements Dog2MessageListener {
 
-    private DocumentBuilder builder;
-    private DogDriver driver;
-    private static final Map<String, MessageParsable> parsers;
+  private DocumentBuilder builder;
+  private DogDriver driver;
+  private LogService log;
+  private static final Map<String, MessageParsable> parsers;
 
-    static {
-        Map<String, MessageParsable> list = new HashMap<String, MessageParsable>();
+  static {
+    Map<String, MessageParsable> list = new HashMap<String, MessageParsable>();
 
-        //fill
-        list.put("configmessage", new ConfigMessageParser());
+    //fill
+    list.put("configmessage", new ConfigMessageParser());
 
-        //write protection + speed
-        parsers = Collections.unmodifiableMap(list);
+    //write protection + speed
+    parsers = Collections.unmodifiableMap(list);
 
+  }
+
+  public DogParser(DogDriver driver) {
+    try {
+      builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    } catch (ParserConfigurationException ex) {
+      Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
     }
+    this.driver = driver;
+  }
 
-    public DogParser(DogDriver driver) {
-        try {
-            builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.driver = driver;
+  public void parseMessage(Document doc, Element message) {
+    String type = message.getTagName();
+
+    if (parsers.containsKey(type)) {
+      MessageParsable handler = parsers.get(type);
+      handler.parse(driver, doc, message);
     }
+  }
 
-    public void parseMessage(Document doc, Element message) {
-        String type = message.getTagName();
+  @Override
+  public void newMessage(String message) {
+    log.log(LogService.LOG_INFO, "Recived message");
+    try {
+      Document doc = builder.parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
+      Element root = (Element) doc.getDocumentElement();
+      Element messagetype = XmlHelper.getFirstChildElement(root);
 
-        if (parsers.containsKey(type)) {
-            MessageParsable handler = parsers.get(type);
-            handler.parse(driver, doc, message);
-        }
+      parseMessage(doc, messagetype);
+
+      //TODO: get id and notify the waiting thread
+    } catch (SAXException ex) {
+      Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IOException ex) {
+      Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
 
-    @Override
-    public void newMessage(String message) {
-        try {
-            Document doc = builder.parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
-            Element root = (Element) doc.getDocumentElement();
-            //TODO: get id and notify the waiting thread
-            Element messagetype = XmlHelper.getFirstChildElement(root);
-
-            parseMessage(doc, messagetype);
-
-        } catch (SAXException ex) {
-            Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
-        }
+  public void setDeviceManager(DeviceManager manager) {
+    for (MessageParsable parser : parsers.values()) {
+      parser.setDeviceManager(manager);
     }
-
-    public void setDeviceManager(DeviceManager manager)
-    {
-        for(MessageParsable parser : parsers.values())
-        {
-            parser.setDeviceManager(manager);
-        }
-    }
+  }
 }
