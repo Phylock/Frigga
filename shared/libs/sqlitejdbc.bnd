@@ -1,0 +1,6 @@
+version=0.5.6
+Export-Package: org.sqlite.*;version=${version}
+Private-Package: org.ibex.*
+Bundle-Version: ${version}
+Bundle-Name: SQLite JDBC Driver
+Bundle-SymbolicName: org-sqlite
