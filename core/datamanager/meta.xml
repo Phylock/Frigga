@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ipojo
+   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns='org.apache.felix.ipojo'
+   xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
+
+    <component name="DataManagerImpl" classname="dk.itu.frigga.data.manager.DataManagerImpl">
+        <provides specifications="dk.itu.frigga.data.DataManager"/>
+    
+        <requires field="log" optional="true"/>
+    </component>
+    <instance component="DataManagerImpl" name="DataManager"/>
+
+</ipojo>

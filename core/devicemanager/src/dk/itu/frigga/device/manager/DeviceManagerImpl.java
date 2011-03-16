@@ -22,7 +22,10 @@
 package dk.itu.frigga.device.manager;
 
 import dk.itu.frigga.Singleton;
+import dk.itu.frigga.data.DataConnection;
+import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
+import dk.itu.frigga.data.UnknownDataDriverException;
 import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
@@ -30,8 +33,16 @@ import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.Filtering;
 import dk.itu.frigga.utility.Applicable;
+import dk.itu.frigga.utility.ReflectionHelper;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sourceforge.jnlp.util.Reflect;
 import org.osgi.service.log.LogService;
 
 /**
@@ -40,110 +51,126 @@ import org.osgi.service.log.LogService;
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
 public final class DeviceManagerImpl extends Singleton implements DeviceManager {
-  /* iPOJO services */
-  private LogService log;
-  //private DataManager datamanager;
-  private List<Driver> drivers;
 
-  /* private */
-  private final HashMap<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
-  private final HashMap<String, DeviceCategory> categories = new HashMap<String, DeviceCategory>();
+    private final static String DATAGROUP = "device";
 
-  /**
-   * We do not wish to have multiple instances, so the constructor is private.
-   */
-  public DeviceManagerImpl() {
-    log.log(LogService.LOG_INFO, "Device Manager: Initialized");
-  }
+    /* iPOJO services */
+    private LogService log;
+    private DataManager datamanager;
+    private List<Driver> drivers;
 
-  public final boolean deviceIsOnline(final Device device) {
-    //todo: implement
-    return false;
-  }
+    /* private */
+    private final HashMap<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
+    private final HashMap<String, DeviceCategory> categories = new HashMap<String, DeviceCategory>();
+    private DeviceDatabase connection;
 
-  public final void registerDevice(final Device device) {
-    devices.put(device.getId(), device);
-  }
+    /**
+     * We do not wish to have multiple instances, so the constructor is private.
+     */
+    public DeviceManagerImpl() {
+        log.log(LogService.LOG_INFO, "Device Manager: Initialized");
 
-  public final void unregisterDevice(final Device device) {
-    devices.remove(device.getId());
-  }
+    }
 
-  public final void registerDeviceCategory(final DeviceCategory category) {
-    categories.put(category.getTypeString(), category);
-  }
+    public final boolean deviceIsOnline(final Device device) {
+        //todo: implement
+        return false;
+    }
 
-  public final void unregisterDeviceCategory(final DeviceCategory category) {
-    categories.remove(category.getTypeString());
-  }
+    public final void registerDevice(final Device device) {
+        devices.put(device.getId(), device);
+    }
 
-  public final DeviceCategory getDeviceCategory(String id) {
-    return categories.get(id);
-  }
+    public final void unregisterDevice(final Device device) {
+        devices.remove(device.getId());
+    }
 
-  /**
-   * use this function to retrieve a specific device.
-   *
-   * @param id The unique id of the device.
-   *
-   * @return The device found, or null if no device was found.
-   */
-  public final Device getDeviceById(final DeviceId id) {
-    return devices.get(id);
-  }
+    public final void registerDeviceCategory(final DeviceCategory category) {
+        categories.put(category.getTypeString(), category);
+    }
 
-  /**
-   * Calls the getDevicesByType(String) internally with the type string of the
-   * category.
-   *
-   * @see getDevicesByType(String)
-   *
-   * @param type A DeviceCategory object identifying the type whose devices to
-   *             fetch.
-   *
-   * @return Returns an array of devices of the given type.
-   */
-  public final Iterable<Device> getDevicesByType(final DeviceCategory category) {
-    Applicable<Device> typeCheck = new Applicable<Device>() {
+    public final void unregisterDeviceCategory(final DeviceCategory category) {
+        categories.remove(category.getTypeString());
+    }
 
-      @Override
-      public boolean apply(final Device device) {
-        return device.isOfType(category);
-      }
-    };
+    public final DeviceCategory getDeviceCategory(String id) {
+        return categories.get(id);
+    }
 
-    return Filtering.filter(devices.values(), typeCheck);
-  }
+    /**
+     * use this function to retrieve a specific device.
+     *
+     * @param id The unique id of the device.
+     *
+     * @return The device found, or null if no device was found.
+     */
+    public final Device getDeviceById(final DeviceId id) {
+        return devices.get(id);
+    }
 
-  /**
-   * Returns an array of devices having a specified type. This function is
-   * generally a bit heavy to use, since it performs an O(n) search to find
-   * devices of the given type. As compared to retrieving a device by ID which
-   * takes advantage of the hash map and uses a O(1) search.
-   *
-   * @param type A string identifying the type whose devices to fetch.
-   *
-   * @return Returns an array of devices of the given type.
-   */
-  public final Iterable<Device> getDevicesByType(final String type) {
-    Applicable<Device> typeCheck = new Applicable<Device>() {
+    /**
+     * Calls the getDevicesByType(String) internally with the type string of the
+     * category.
+     *
+     * @see getDevicesByType(String)
+     *
+     * @param type A DeviceCategory object identifying the type whose devices to
+     *             fetch.
+     *
+     * @return Returns an array of devices of the given type.
+     */
+    public final Iterable<Device> getDevicesByType(final DeviceCategory category) {
+        Applicable<Device> typeCheck = new Applicable<Device>() {
 
-      @Override
-      public boolean apply(final Device device) {
-        return device.isOfType(type);
-      }
-    };
+            @Override
+            public boolean apply(final Device device) {
+                return device.isOfType(category);
+            }
+        };
 
-    return Filtering.filter(devices.values(), typeCheck);
-  }
+        return Filtering.filter(devices.values(), typeCheck);
+    }
 
-  public void deviceDriverAdded(Driver driver) {
-    log.log(LogService.LOG_INFO, "Device Driver Added: ");
-    driver.update();
-  }
+    /**
+     * Returns an array of devices having a specified type. This function is
+     * generally a bit heavy to use, since it performs an O(n) search to find
+     * devices of the given type. As compared to retrieving a device by ID which
+     * takes advantage of the hash map and uses a O(1) search.
+     *
+     * @param type A string identifying the type whose devices to fetch.
+     *
+     * @return Returns an array of devices of the given type.
+     */
+    public final Iterable<Device> getDevicesByType(final String type) {
+        Applicable<Device> typeCheck = new Applicable<Device>() {
 
-  public void deviceDriverRemoved(Driver driver) {
-    log.log(LogService.LOG_INFO, "Device Driver Removed: ");
-    //TODO: set the devices that the driver is responsible of offline
-  }
+            @Override
+            public boolean apply(final Device device) {
+                return device.isOfType(type);
+            }
+        };
+
+        return Filtering.filter(devices.values(), typeCheck);
+    }
+
+    public void deviceDriverAdded(Driver driver) {
+        log.log(LogService.LOG_INFO, "Device Driver Added: ");
+        driver.update();
+    }
+
+    public void deviceDriverRemoved(Driver driver) {
+        log.log(LogService.LOG_INFO, "Device Driver Removed: ");
+        //TODO: set the devices that the driver is responsible of offline
+    }
+
+    public void validate() {
+        connection = new DeviceDatabase(DATAGROUP, "devices.db");
+        try {
+            ReflectionHelper.updateSubclassFields("log", connection, log);
+            ReflectionHelper.updateSubclassFields("datamanager", connection, datamanager);
+        } catch (Exception ex) {
+        }
+
+        connection.initialize();
+    }
 }

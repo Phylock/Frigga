@@ -4,16 +4,18 @@
    xmlns='org.apache.felix.ipojo'
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
-  <component name="DeviceManagerImpl" classname="dk.itu.frigga.device.manager.DeviceManagerImpl">
-    <provides specifications="dk.itu.frigga.device.DeviceManager"/>
+    <component name="DeviceManagerImpl" classname="dk.itu.frigga.device.manager.DeviceManagerImpl">
+        <provides specifications="dk.itu.frigga.device.DeviceManager"/>
     
-    <requires field="log" optional="true"/>
-    <requires id="drivers" field="drivers" optional="true">
-      <callback type="bind" method="deviceDriverAdded" />
-      <callback type="unbind" method="deviceDriverRemoved" />
-    </requires>
-    <!-- <requires field="datamanager" /> -->
-     </component>
-  <instance component="DeviceManagerImpl" name="DeviceManager"/>
+        <requires field="log" optional="true"/>
+        <requires id="drivers" field="drivers" optional="true">
+            <callback type="bind" method="deviceDriverAdded" />
+            <callback type="unbind" method="deviceDriverRemoved" />
+        </requires>
+        <requires field="datamanager" />
+
+        <callback transition="validate" method="validate"/>
+    </component>
+    <instance component="DeviceManagerImpl" name="DeviceManager"/>
 
 </ipojo>

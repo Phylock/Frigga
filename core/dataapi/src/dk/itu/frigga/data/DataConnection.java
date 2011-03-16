@@ -38,8 +38,8 @@ public class DataConnection
      *
      * @throws UnknownDataDriverException
      */
-    protected void initialize() throws UnknownDataDriverException
-    {
+    public void initialize() throws UnknownDataDriverException
+    { /*
         if (!initialized)
         {
             try
@@ -52,7 +52,7 @@ public class DataConnection
                 // We don't need ex.
                 throw new UnknownDataDriverException(driverClass);
             }
-        }
+        }*/
     }
 
     /**
@@ -61,7 +61,7 @@ public class DataConnection
      *
      * @return The connection string to use with DriverManager
      */
-    protected String getConnectionUrl()
+    public String getConnectionUrl()
     {
         return String.format("%s:%s:%s", system, driver, dbUri);
     }
