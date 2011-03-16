@@ -14,7 +14,7 @@ import dk.itu.frigga.device.InvalidFunctionException;
 import dk.itu.frigga.device.InvalidParameterException;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.UnknownDeviceException;
-import java.lang.reflect.Field;
+import dk.itu.frigga.utility.ReflectionHelper;
 import javax.xml.parsers.ParserConfigurationException;
 import org.osgi.service.log.LogService;
 
@@ -39,13 +39,15 @@ public class DogDriver implements Driver {
         return connection;
     }
 
-    /** Implements Driver***/
+    /** Implements Driver **/
+
     @Override
     public FunctionResult callFunction(Device[] devices, Executable function, Parameter... parameters)
             throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
         return function.execute(devices, parameters);
     }
 
+    @Override
     public void update() {
         try {
             DogMessage command = DogProtocol.generateDescribeDevice(null);
@@ -54,7 +56,8 @@ public class DogDriver implements Driver {
             log.log(LogService.LOG_WARNING, null, ex);
         }
     }
-
+    
+    @Override
     public void update(String[] devicecategories) {
         try {
             DogMessage command = DogProtocol.generateDescribeDeviceCategory(devicecategories);
@@ -64,6 +67,7 @@ public class DogDriver implements Driver {
         }
     }
 
+    @Override
     public void update(DeviceId[] devices) {
         try {
             int length = devices.length;
@@ -77,14 +81,15 @@ public class DogDriver implements Driver {
             log.log(LogService.LOG_WARNING, null, ex);
         }
     }
+    /** iPOJO Callbacks **/
 
     private void validate() {
         if (connection == null) {
             connection = new Connection(this);
         }
         log.log(LogService.LOG_INFO, "DogDriver Validate");
-        updateSubclassFields(Connection.class, "log", connection, log);
-        updateSubclassFields(DogParser.class, "log", connection.getParser(), log);
+        updateSubclassFields("log", connection, log);
+        updateSubclassFields("log", connection.getParser(), log);
 
         connection.getParser().setDeviceManager(devicemanager);
 
@@ -106,15 +111,9 @@ public class DogDriver implements Driver {
      * @param obj the class instance to update
      * @param value the new value
      */
-    private void updateSubclassFields(Class clazz, String field, Object obj, Object value) {
+    private void updateSubclassFields(String field, Object obj, Object value) {
         try {
-            Field f = clazz.getDeclaredField(field);
-            boolean access = f.isAccessible();
-            
-            f.setAccessible(true);
-            f.set(obj, value);
-            f.setAccessible(access);
-
+            ReflectionHelper.updateSubclassFields(field, obj, value);
         } catch (Exception ex) {
             log.log(LogService.LOG_WARNING, String.format("Could not propergate iPOJO field %s to subclass %s", field, obj.getClass().getName()));
         }
