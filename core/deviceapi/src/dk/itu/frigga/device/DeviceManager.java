@@ -49,4 +49,6 @@ public interface DeviceManager {
    */
   Iterable<Device> getDevicesByType(final String type);
 
+
+  FunctionResult callFunction(String function, String[] devices, Parameter... parameters);
 }

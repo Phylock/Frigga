@@ -4,7 +4,7 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.CategoryData;
+import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceData;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Executable;
@@ -132,7 +132,7 @@ public class ConfigMessageParser implements MessageParsable {
                     }
                     contains = XmlHelper.getNextSiblingElement(contains);
                 }
-                CategoryData category = new CategoryData(name,
+                DeviceCategory category = new DeviceCategory(name,
                         functionalies.keySet().toArray(new String[functionalies.size()]),
                         variables.toArray(new String[variables.size()]));
                 transaction.addCategory(category);

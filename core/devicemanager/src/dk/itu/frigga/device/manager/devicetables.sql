@@ -1,9 +1,19 @@
-CREATE TABLE IF NOT EXISTS variables
+CREATE TABLE IF NOT EXISTS devicevariable
 (device_id INTEGER NOT NULL,
+variable_id INTEGER NOT NULL,
+value BLOB,
+PRIMARY KEY (device_id, variable_id));
+
+CREATE TABLE IF NOT EXISTS categoryvariable
+(category_id INTEGER NOT NULL,
+variable_id INTEGER NOT NULL,
+PRIMARY KEY (category_id, variable_id));
+
+CREATE TABLE IF NOT EXISTS variabletype
+(id INTEGER NOT NULL,
 name VARCHAR(25) NOT NULL,
 type INTEGER NOT NULL,
-value BLOB,
-PRIMARY KEY (device_id, name));
+PRIMARY KEY (id));
 
 CREATE TABLE IF NOT EXISTS category
 (id INTEGER NOT NULL,
@@ -28,7 +38,7 @@ PRIMARY KEY (device_id, category_id));
 CREATE TABLE IF NOT EXISTS device
 (id INTEGER NOT NULL,
 name VARCHAR(25),
-symbolic_name VARCHAR(25) NOT NULL,
+symbolic VARCHAR(25) NOT NULL,
 last_update VARCHAR(25),
 online CHAR(1),
 PRIMARY KEY (id));

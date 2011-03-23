@@ -166,11 +166,18 @@ public class MainWindow extends JFrame implements WindowListener {
           devices.add((Device) obj);
         }
       }
+
+      int length = devices.size();
+      String[] calldevices = new String[length];
+
+      for(int i =0; i < length; i++)
+          calldevices[i] = devices.get(i).getId().toString();
+
       if (!devices.isEmpty()) {
         if (state == ItemEvent.SELECTED) {
-          category.getFunction("on").execute(devices.toArray(new Device[devices.size()]));
+          devicemanager.callFunction("on",calldevices);
         } else {
-          category.getFunction("off").execute(devices.toArray(new Device[devices.size()]));
+          devicemanager.callFunction("off",calldevices);
         }
       }
     }//GEN-LAST:event_jToggleButton1ItemStateChanged

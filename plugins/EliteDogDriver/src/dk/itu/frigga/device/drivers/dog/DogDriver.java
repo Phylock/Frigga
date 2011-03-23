@@ -6,7 +6,6 @@ package dk.itu.frigga.device.drivers.dog;
 
 import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceId;
-import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.Executable;
@@ -28,7 +27,6 @@ public class DogDriver implements Driver {
 
     private LogService log;
     private Publisher event;
-    
     //Private member variables
     private Connection connection = null;
     /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
@@ -42,11 +40,19 @@ public class DogDriver implements Driver {
     }
 
     /** Implements Driver **/
-
     @Override
-    public FunctionResult callFunction(Device[] devices, Executable function, Parameter... parameters)
+    public FunctionResult callFunction(String[] devices, String function, Parameter... parameters)
             throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
-        return function.execute(devices, parameters);
+        try {
+            //TODO: how to set parameters ??
+            Command command = new Command(devices, function, null);
+            DogMessage message = DogProtocol.generateCommandMessage(command);
+            connection.send(message);
+        } catch (ParserConfigurationException ex) {
+            log.log(LogService.LOG_ERROR, "failed", ex);
+        }
+
+        return new FunctionResult();
     }
 
     @Override
@@ -58,7 +64,7 @@ public class DogDriver implements Driver {
             log.log(LogService.LOG_WARNING, null, ex);
         }
     }
-    
+
     @Override
     public void update(String[] devicecategories) {
         try {
@@ -83,8 +89,8 @@ public class DogDriver implements Driver {
             log.log(LogService.LOG_WARNING, null, ex);
         }
     }
-    /** iPOJO Callbacks **/
 
+    /** iPOJO Callbacks **/
     private void validate() {
         if (connection == null) {
             connection = new Connection(this);

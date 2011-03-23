@@ -29,11 +29,17 @@ import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.DeviceUpdateEvent;
+import dk.itu.frigga.device.FunctionResult;
+import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.utility.Filtering;
 import dk.itu.frigga.utility.Applicable;
 import dk.itu.frigga.utility.ReflectionHelper;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.osgi.service.log.LogService;
 
 /**
@@ -49,17 +55,15 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     private LogService log;
     private DataManager datamanager;
     private List<Driver> drivers;
-
+    private final Map<String, Driver> responsebility = new HashMap<String, Driver>();
     /* private */
     private final HashMap<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
-    private final HashMap<String, DeviceCategory> categories = new HashMap<String, DeviceCategory>();
     private DeviceDatabase connection;
 
     /**
      * We do not wish to have multiple instances, so the constructor is private.
      */
     public DeviceManagerImpl() {
-        
     }
 
     public final boolean deviceIsOnline(final Device device) {
@@ -67,29 +71,18 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
         return false;
     }
 
-    public final void registerDevice(final Device device) {
-        devices.put(device.getId(), device);
-    }
-
-    public final void unregisterDevice(final Device device) {
-        devices.remove(device.getId());
-    }
-
-    public final void registerDeviceCategory(final DeviceCategory category) {
-        categories.put(category.getTypeString(), category);
-    }
-
-    public final void unregisterDeviceCategory(final DeviceCategory category) {
-        categories.remove(category.getTypeString());
-    }
-
     public final DeviceCategory getDeviceCategory(String id) {
-        return categories.get(id);
+        return null;//categories.get(id);
     }
 
-    public void onDeviceEvent(DeviceUpdateEvent event)
-    {
-        System.out.println("event");
+    public void onDeviceEvent(DeviceUpdateEvent event) {
+        try {
+            connection.update(event.getDevices(), event.getCategories());
+        } catch (SQLException ex) {
+            log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
+        } catch (Exception ex) {
+            log.log(LogService.LOG_WARNING, "Device Update Error", ex);
+        }
     }
 
     /**
@@ -168,5 +161,59 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
         }
 
         connection.initialize();
+    }
+
+    /**
+     * Call a function on multiple devices
+     * @param function
+     * @param devices
+     * @param parameters
+     * @return
+     */
+    public FunctionResult callFunction(String function, String[] devices, Parameter... parameters) {
+        List<String> failed_block = new ArrayList<String>();
+        //if there is only one device, there can be only one responsible driver
+        if (devices.length > 1) {
+            List<String> calldevices = Arrays.asList(devices);
+            List<String> current_block = new ArrayList<String>();
+            boolean done = false;
+            while (!done) {
+                //pop the first and find all devices which uses the same driver
+                if (responsebility.containsKey(calldevices.get(0))) {
+                    Driver current = responsebility.get(calldevices.get(0));
+                    for (Map.Entry<String, Driver> entry : responsebility.entrySet()) {
+                        if (entry.getValue().equals(current)) {
+                            current_block.add(entry.getKey());
+                        }
+                    }
+
+                    try {
+                        current.callFunction(current_block.toArray(new String[current_block.size()]), function, parameters);
+                    } catch (Exception ex) {
+                        failed_block.add(devices[0]);
+                    }
+                    calldevices.removeAll(current_block);
+                    current_block.clear();
+
+                } else {
+                    failed_block.add(calldevices.get(0));
+                    calldevices.remove(0);
+                }
+                if (calldevices.isEmpty()) {
+                    done = true;
+                }
+
+            }
+        } else {
+            if (responsebility.containsKey(devices[0])) {
+                Driver d = responsebility.get(devices[0]);
+                try {
+                    d.callFunction(devices, function, parameters);
+                } catch (Exception ex) {
+                    failed_block.add(devices[0]);
+                }
+            }
+        }
+        return new FunctionResult(failed_block.isEmpty() ? "OK" : "Failed");
     }
 }

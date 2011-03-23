@@ -31,19 +31,13 @@ import java.util.HashMap;
  */
 public class DeviceCategory {
     private final String type;
-    private final HashMap<String, Executable> functions;
-    private final String[] function_names;
+    private final String[] functions;
     private final String[] variables;
-    private final String[] listeners;
 
-    public DeviceCategory(String type, HashMap<String, Executable> functions, String[] variables, String[] listeners) {
+    public DeviceCategory(String type, String[] functions, String[] variables) {
         this.type = type;
-        this.functions = functions;
         this.variables = variables;
-        this.listeners = listeners;
-
-        function_names = functions.keySet().toArray(new String[functions.size()]);
-        
+        this.functions = functions;
     }
 
     public final String getTypeString()
@@ -78,22 +72,13 @@ public class DeviceCategory {
         return true;
     }
 
-    public String[] getListeners() {
-        return listeners;
-    }
-
     public String[] getVariables() {
         return variables;
     }
 
     public String[] getFunctions()
     {
-        return function_names;
-    }
-
-    public Executable getFunction(String function)
-    {
-        return functions.get(function);
+        return functions;
     }
 
     /**

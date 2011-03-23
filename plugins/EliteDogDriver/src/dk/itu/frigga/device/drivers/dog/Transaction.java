@@ -1,11 +1,9 @@
 package dk.itu.frigga.device.drivers.dog;
 
-
-import dk.itu.frigga.device.CategoryData;
+import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceData;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /*
  * To change this template, choose Tools | Templates
@@ -18,19 +16,19 @@ import java.util.Map;
  */
 public class Transaction {
     private final List<DeviceData> devices = new LinkedList<DeviceData>();
-    private final List<CategoryData> categories = new LinkedList<CategoryData>();
+    private final List<DeviceCategory> categories = new LinkedList<DeviceCategory>();
     
     public void addDevice(DeviceData data)
     {
         devices.add(data);
     }
     
-    public void addCategory(CategoryData data)
+    public void addCategory(DeviceCategory data)
     {
         categories.add(data);
     }
 
-    public List<CategoryData> getCategories() {
+    public List<DeviceCategory> getCategories() {
         return categories;
     }
 
