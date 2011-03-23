@@ -2,6 +2,7 @@
 <ipojo
    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
    xmlns='org.apache.felix.ipojo'
+   xmlns:ev='org.apache.felix.ipojo.handlers.event'
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
   <component name="DogDriverImpl" classname="dk.itu.frigga.device.drivers.dog.DogDriver">
@@ -11,7 +12,8 @@
     <callback transition="invalidate" method="invalidate" />
     
     <requires field="log" optional="true"/>
-    <requires field="devicemanager"/>
+    <ev:publisher name="deviceevents" field="event" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
+    
   </component>
   <instance component="DogDriverImpl" name="DogDriver"/>
 

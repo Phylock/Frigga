@@ -4,14 +4,13 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.Device;
-import dk.itu.frigga.device.DeviceCategory;
+import dk.itu.frigga.device.CategoryData;
+import dk.itu.frigga.device.DeviceData;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Executable;
-import dk.itu.frigga.device.Location;
-import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -29,11 +28,8 @@ import org.w3c.dom.NodeList;
  */
 public class ConfigMessageParser implements MessageParsable {
 
-    private volatile DeviceManager devicemanager;
-
     private Map<String, LinkedList<Executable>> knownFunctionality;
     private Map<String, Executable> knownStates;
-
     private AsyncDeviceCategory unknown;
 
     public ConfigMessageParser() {
@@ -43,7 +39,7 @@ public class ConfigMessageParser implements MessageParsable {
     }
 
     @Override
-    public void parse(DogDriver driver, Document doc, Element element) {
+    public void parse(DogDriver driver, Transaction transaction, Document doc, Element element) {
         //detect message subtype
         Element response = XmlHelper.getFirstChildElement(element);
         String subtype = response.getAttribute("configtype");
@@ -52,14 +48,14 @@ public class ConfigMessageParser implements MessageParsable {
                 || subtype.equalsIgnoreCase("DESCRIBE")
                 || subtype.equalsIgnoreCase("DESCRIBE_DEVICE")) {
 
-            updateDeviceManager(driver, doc, response);
+            updateDeviceManager(driver, transaction, doc, response);
 
         } else if (subtype.equalsIgnoreCase("LISTENER")) {
             //TODO: implement
         }
     }
 
-    private void updateDeviceManager(DogDriver driver, Document doc, Element response) {
+    private void updateDeviceManager(DogDriver driver, Transaction transaction, Document doc, Element response) {
         Element functionalities = XmlHelper.getFirstElement(
                 response.getElementsByTagName("functionalities"));
         Element states = XmlHelper.getFirstElement(
@@ -70,20 +66,20 @@ public class ConfigMessageParser implements MessageParsable {
                 response.getElementsByTagName("devices"));
 
         if (functionalities != null) {
-            parseFunctionality(driver, doc, functionalities);
+            parseFunctionality(driver, transaction, doc, functionalities);
         }
         if (states != null) {
-            parseStates(doc, states);
+            parseStates(doc, transaction, states);
         }
         if (devicecategory != null) {
-            updateDeviceCategories(doc, devicecategory);
+            updateDeviceCategories(doc, transaction, devicecategory);
         }
         if (devices != null) {
-            updateDevice(driver, doc, devices);
+            updateDevice(driver, transaction, doc, devices);
         }
     }
 
-    private void updateDeviceCategories(Document doc, Element categories) {
+    private void updateDeviceCategories(Document doc, Transaction transaction, Element categories) {
         NodeList devicecategries = categories.getElementsByTagName("devicecategory");
 
         ArrayList<String> variables = new ArrayList<String>();
@@ -95,69 +91,63 @@ public class ConfigMessageParser implements MessageParsable {
                 Element devicecategory = (Element) node;
                 String name = devicecategory.getAttribute("uri");
 
-                if (devicemanager.getDeviceCategory(name) == null) {
+                HashMap<String, Executable> functionalies = new HashMap<String, Executable>();
+                variables.clear();
+                listeners.clear();
 
-                    HashMap<String, Executable> functionalies = new HashMap<String, Executable>();
-                    variables.clear();
-                    listeners.clear();
-
-                    Element contains = XmlHelper.getFirstChildElement(devicecategory);
-                    while (contains != null) {
-                        if (contains.getNodeName().equalsIgnoreCase("devicestates")) {
-                            NodeList states = contains.getElementsByTagName("devicestate");
-                            for (int j = 0; j < states.getLength(); j++) {
-                                Node statenode = states.item(j);
-                                if (statenode.getNodeType() == Node.ELEMENT_NODE) {
-                                    Element state = (Element) statenode;
-                                    variables.add(state.getTextContent());
-                                }
+                Element contains = XmlHelper.getFirstChildElement(devicecategory);
+                while (contains != null) {
+                    if (contains.getNodeName().equalsIgnoreCase("devicestates")) {
+                        NodeList states = contains.getElementsByTagName("devicestate");
+                        for (int j = 0; j < states.getLength(); j++) {
+                            Node statenode = states.item(j);
+                            if (statenode.getNodeType() == Node.ELEMENT_NODE) {
+                                Element state = (Element) statenode;
+                                variables.add(state.getTextContent());
                             }
+                        }
 
-                        } else if (contains.getNodeName().equalsIgnoreCase("devicefunctionalities")) {
-                            NodeList functionality = contains.getElementsByTagName("devicefunctionality");
-                            for (int j = 0; j < functionality.getLength(); j++) {
-                                Node functionalitynode = functionality.item(j);
-                                if (functionalitynode.getNodeType() == Node.ELEMENT_NODE) {
-                                    Element function = (Element) functionalitynode;
-                                    String func = function.getTextContent();
-                                    LinkedList<Executable> functions = knownFunctionality.get(func);
-                                    for(Executable f : functions)
-                                    {
-                                        functionalies.put(f.getName(), f);
-                                    }
-                                }
-                            }
-                        } else if (contains.getNodeName().equalsIgnoreCase("devicenotifications")) {
-                            NodeList notifications = contains.getElementsByTagName("devicenotification");
-                            for (int j = 0; j < notifications.getLength(); j++) {
-                                Node notificationnode = notifications.item(j);
-                                if (notificationnode.getNodeType() == Node.ELEMENT_NODE) {
-                                    Element notification = (Element) notificationnode;
-                                    listeners.add(notification.getTextContent());
+                    } else if (contains.getNodeName().equalsIgnoreCase("devicefunctionalities")) {
+                        NodeList functionality = contains.getElementsByTagName("devicefunctionality");
+                        for (int j = 0; j < functionality.getLength(); j++) {
+                            Node functionalitynode = functionality.item(j);
+                            if (functionalitynode.getNodeType() == Node.ELEMENT_NODE) {
+                                Element function = (Element) functionalitynode;
+                                String func = function.getTextContent();
+                                LinkedList<Executable> functions = knownFunctionality.get(func);
+                                for (Executable f : functions) {
+                                    functionalies.put(f.getName(), f);
                                 }
                             }
                         }
-                        contains = XmlHelper.getNextSiblingElement(contains);
+                    } else if (contains.getNodeName().equalsIgnoreCase("devicenotifications")) {
+                        NodeList notifications = contains.getElementsByTagName("devicenotification");
+                        for (int j = 0; j < notifications.getLength(); j++) {
+                            Node notificationnode = notifications.item(j);
+                            if (notificationnode.getNodeType() == Node.ELEMENT_NODE) {
+                                Element notification = (Element) notificationnode;
+                                listeners.add(notification.getTextContent());
+                            }
+                        }
                     }
-                    DeviceCategory category = new DeviceCategory(name, functionalies,
-                            variables.toArray(new String[variables.size()]),
-                            listeners.toArray(new String[listeners.size()]));
-                    devicemanager.registerDeviceCategory(category);
-                    if(unknown.isDeviceCategoryUnknown(name))
-                    {
-                        unknown.makeDeviceCategoryKnown(category);
-                    }
-
+                    contains = XmlHelper.getNextSiblingElement(contains);
                 }
+                CategoryData category = new CategoryData(name,
+                        functionalies.keySet().toArray(new String[functionalies.size()]),
+                        variables.toArray(new String[variables.size()]));
+                transaction.addCategory(category);
+                /*if (unknown.isDeviceCategoryUnknown(name)) {
+                unknown.makeDeviceCategoryKnown(category);
+                }*/
             }
         }
     }
 
-    private void parseStates(Document doc, Element states) {
+    private void parseStates(Document doc, Transaction transaction, Element states) {
         //TODO: implement
     }
 
-    private void parseFunctionality(DogDriver driver, Document doc, Element functionalities) {
+    private void parseFunctionality(DogDriver driver, Transaction transaction, Document doc, Element functionalities) {
         NodeList items = functionalities.getElementsByTagName("functionality");
 
         for (int i = 0; i
@@ -194,7 +184,7 @@ public class ConfigMessageParser implements MessageParsable {
         }
     }
 
-    private void updateDevice(DogDriver driver, Document doc, Element devices) {
+    private void updateDevice(DogDriver driver, Transaction transaction, Document doc, Element devices) {
         NodeList items = devices.getElementsByTagName("device");
 
         for (int i = 0; i < items.getLength(); i++) {
@@ -205,31 +195,32 @@ public class ConfigMessageParser implements MessageParsable {
                 DeviceId id = new DeviceId(device.getAttribute("uri"));
                 String devicecategory = device.getAttribute("devicecategory");
 
-                //if Device is unknown to DeviceManager
-                if (devicemanager.getDeviceById(id) == null) {
-                    NodeList locations = device.getElementsByTagName("isIn");
-                    
-                    for (int j = 0; j < locations.getLength(); j++) {
-                        Node locationnode = locations.item(j);
+                NodeList locations = device.getElementsByTagName("isIn");
 
-                        if (locationnode.getNodeType() == Node.ELEMENT_NODE) {
-                            Element location = (Element) locationnode;
-                            String locationname = location.getTextContent();
-                            //TODO: add location to device
-                        }
-                    }
+                for (int j = 0; j < locations.getLength(); j++) {
+                    Node locationnode = locations.item(j);
 
-
-                    DeviceCategory category = devicemanager.getDeviceCategory(devicecategory);
-                    if (category != null) {
-                        Device d = new Device(id, category, null, null, null);
-                        devicemanager.registerDevice(d);
-                    } else {
-                        Device d = new Device(id, category, null, null, null);
-                        unknown.addUnknownDeviceCategory(devicecategory, d);
+                    if (locationnode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element location = (Element) locationnode;
+                        String locationname = location.getTextContent();
+                        //TODO: add location to device
                     }
                 }
+
+
+                /*
+                DeviceCategory category = devicemanager.getDeviceCategory(devicecategory);
+                if (category != null) {
+                    Device d = new Device(id, category, null, null, null);
+                    devicemanager.registerDevice(d);
+                } else {
+                    Device d = new Device(id, category, null, null, null);
+                    unknown.addUnknownDeviceCategory(devicecategory, d);
+                }*/
+                DeviceData d = new DeviceData(id.toString().replaceAll("_", " "), id.toString(), new Date(), true, new String[]{devicecategory});
+                transaction.addDevice(d);
             }
+
         }
         if (unknown.hasUnknown()) {
             try {
@@ -240,9 +231,5 @@ public class ConfigMessageParser implements MessageParsable {
                 Logger.getLogger(ConfigMessageParser.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
-
-    public void setDeviceManager(DeviceManager manager) {
-        devicemanager = manager;
     }
 }

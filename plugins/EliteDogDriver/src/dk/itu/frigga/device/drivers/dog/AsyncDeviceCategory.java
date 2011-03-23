@@ -40,8 +40,6 @@ public class AsyncDeviceCategory {
     }
 
     public void addUnknownDeviceCategory(String devicecategory, Device device) {
-        //TODO: is devicecategory loaded?
-        //DeviceManager.getInstance()
         LinkedList<Device> devices;
         if (async_unknown.containsKey(devicecategory)) {
             devices = async_unknown.get(devicecategory);
@@ -62,7 +60,7 @@ public class AsyncDeviceCategory {
             {
                 Device newdevice= new Device(
                         device.getId(), devicecategory, device.getVariables(),
-                        device.getListeners(), device.getLocation());
+                        device.getLocation());
                 //TODO: devicemanager.registerDevice(newdevice);
             }
             async_unknown.remove(devicecategory.getTypeString());

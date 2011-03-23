@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,13 +61,12 @@ public class DeviceDatabase {
             try {
                 Statement st = conn.createStatement();
                 line = s.next();
-                line.replaceAll("\n", "");
                 if (line.trim().length() > 0) {
                     st.execute(line);
                 }
             } catch (SQLException ex) {
-                log.log(LogService.LOG_WARNING, "Error in line " + stmnum + ": " + line);
+                log.log(LogService.LOG_WARNING, "Error in line " + stmnum + ": " + line, ex);
             }
         }
-        }
+    }
 }

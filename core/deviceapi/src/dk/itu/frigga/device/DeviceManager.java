@@ -5,10 +5,6 @@
 
 package dk.itu.frigga.device;
 
-import dk.itu.frigga.device.Device;
-import dk.itu.frigga.device.DeviceCategory;
-import dk.itu.frigga.device.DeviceId;
-
 /**
  *
  * @author phylock
@@ -52,13 +48,5 @@ public interface DeviceManager {
    * @return Returns an array of devices of the given type.
    */
   Iterable<Device> getDevicesByType(final String type);
-
-  void registerDevice(final Device device);
-
-  void registerDeviceCategory(final DeviceCategory category);
-
-  void unregisterDevice(final Device device);
-
-  void unregisterDeviceCategory(final DeviceCategory category);
 
 }

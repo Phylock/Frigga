@@ -2,6 +2,7 @@
 <ipojo
    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
    xmlns='org.apache.felix.ipojo'
+   xmlns:ev='org.apache.felix.ipojo.handlers.event'
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
     <component name="DeviceManagerImpl" classname="dk.itu.frigga.device.manager.DeviceManagerImpl">
@@ -15,6 +16,14 @@
         <requires field="datamanager" />
 
         <callback transition="validate" method="validate"/>
+
+        <ev:subscriber
+			name="deviceevent"
+			callback="onDeviceEvent"
+			topics="dk/itu/frigga/device/drivers"
+			data-key="data"
+			data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
+
     </component>
     <instance component="DeviceManagerImpl" name="DeviceManager"/>
 

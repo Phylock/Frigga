@@ -22,27 +22,18 @@
 package dk.itu.frigga.device.manager;
 
 import dk.itu.frigga.Singleton;
-import dk.itu.frigga.data.DataConnection;
-import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
-import dk.itu.frigga.data.UnknownDataDriverException;
 import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
+import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.utility.Filtering;
 import dk.itu.frigga.utility.Applicable;
 import dk.itu.frigga.utility.ReflectionHelper;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sourceforge.jnlp.util.Reflect;
 import org.osgi.service.log.LogService;
 
 /**
@@ -68,8 +59,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
      * We do not wish to have multiple instances, so the constructor is private.
      */
     public DeviceManagerImpl() {
-        log.log(LogService.LOG_INFO, "Device Manager: Initialized");
-
+        
     }
 
     public final boolean deviceIsOnline(final Device device) {
@@ -95,6 +85,11 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
 
     public final DeviceCategory getDeviceCategory(String id) {
         return categories.get(id);
+    }
+
+    public void onDeviceEvent(DeviceUpdateEvent event)
+    {
+        System.out.println("event");
     }
 
     /**
@@ -164,6 +159,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     }
 
     public void validate() {
+        log.log(LogService.LOG_INFO, "Device Manager: Validate");
         connection = new DeviceDatabase(DATAGROUP, "devices.db");
         try {
             ReflectionHelper.updateSubclassFields("log", connection, log);

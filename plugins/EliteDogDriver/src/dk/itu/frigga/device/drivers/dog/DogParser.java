@@ -58,7 +58,9 @@ public class DogParser implements Dog2MessageListener {
 
     if (parsers.containsKey(type)) {
       MessageParsable handler = parsers.get(type);
-      handler.parse(driver, doc, message);
+      Transaction transaction = DogDeviceManager.instance().beginTransaction();
+      handler.parse(driver, transaction, doc, message);
+      DogDeviceManager.instance().commit(transaction);
     }
   }
 
@@ -77,12 +79,6 @@ public class DogParser implements Dog2MessageListener {
       Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
       Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
-
-  public void setDeviceManager(DeviceManager manager) {
-    for (MessageParsable parser : parsers.values()) {
-      parser.setDeviceManager(manager);
     }
   }
 }

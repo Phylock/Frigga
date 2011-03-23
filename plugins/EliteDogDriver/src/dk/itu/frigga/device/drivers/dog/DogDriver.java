@@ -17,6 +17,7 @@ import dk.itu.frigga.device.UnknownDeviceException;
 import dk.itu.frigga.utility.ReflectionHelper;
 import javax.xml.parsers.ParserConfigurationException;
 import org.osgi.service.log.LogService;
+import org.apache.felix.ipojo.handlers.event.publisher.Publisher;
 
 /**
  *
@@ -25,8 +26,9 @@ import org.osgi.service.log.LogService;
 public class DogDriver implements Driver {
     //External services, initialized by DependencyManager
 
-    private volatile DeviceManager devicemanager;
-    private volatile LogService log;
+    private LogService log;
+    private Publisher event;
+    
     //Private member variables
     private Connection connection = null;
     /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
@@ -91,12 +93,9 @@ public class DogDriver implements Driver {
         updateSubclassFields("log", connection, log);
         updateSubclassFields("log", connection.getParser(), log);
 
-        connection.getParser().setDeviceManager(devicemanager);
-
+        updateSubclassFields("event", DogDeviceManager.instance(), event);
 
         connection.connect(DogDriver.DEFAULT_DOG_ADDRESS);
-
-
 
     }
 

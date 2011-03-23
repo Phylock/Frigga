@@ -33,28 +33,21 @@ public final class Device {
     private final DeviceId id;
     private final DeviceCategory type;
     private final HashMap<String, Variable> variables;
-    private final HashMap<String, VariableListener> listeners;
     private final Location location;
     
     public Device(final DeviceId id,
             final DeviceCategory type,
             final HashMap<String, Variable> variables,
-            final HashMap<String, VariableListener> listeners,
             final Location location)
     {
         this.id = id;
         this.type = type;
         this.variables = variables;
-        this.listeners = listeners;
         this.location = location;
     }
 
     public DeviceId getId() {
         return id;
-    }
-
-    public HashMap<String, VariableListener> getListeners() {
-        return listeners;
     }
 
     public Location getLocation() {
@@ -86,16 +79,8 @@ public final class Device {
 
     public String toFullString()
     {
-        String listen_keys;
         String variable_keys;
 
-        if(listeners != null && !listeners.isEmpty())
-        {
-            listen_keys = StringHelper.ImplodeString(listeners.keySet().toArray(new String[listeners.size()]), ", ");
-        }else
-        {
-            listen_keys = "None";
-        }
         if(variables != null && !variables.isEmpty())
         {
             variable_keys = StringHelper.ImplodeString(variables.keySet().toArray(new String[variables.size()]), ", ");
@@ -104,7 +89,7 @@ public final class Device {
             variable_keys = "None";
         }
 
-        return String.format("Device{ id= %s, type= %s , variables= (%s) , listeners= (%s) , location= %s}",
-                id, type.getTypeString(), variable_keys, listen_keys, location);
+        return String.format("Device{ id= %s, type= %s , variables= (%s) , location= %s}",
+                id, type.getTypeString(), variable_keys,  location);
     }
 }
