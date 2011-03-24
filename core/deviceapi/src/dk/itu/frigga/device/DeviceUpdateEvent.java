@@ -12,10 +12,12 @@ import java.util.List;
  */
 public class DeviceUpdateEvent {
 
+    private final String responsible;
     private final List<DeviceData> devices;
     private final List<DeviceCategory> categories;
 
-    public DeviceUpdateEvent(List<DeviceData> devices, List<DeviceCategory> categories) {
+    public DeviceUpdateEvent(String responsible, List<DeviceData> devices, List<DeviceCategory> categories) {
+        this.responsible = responsible;
         this.devices = devices;
         this.categories = categories;
     }
@@ -26,6 +28,10 @@ public class DeviceUpdateEvent {
 
     public List<DeviceData> getDevices() {
         return devices;
+    }
+
+    public String getResponsible() {
+        return responsible;
     }
 
     public boolean hasCategories() {

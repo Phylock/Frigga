@@ -13,6 +13,7 @@ public interface Driver {
     public FunctionResult callFunction(String[] device, String function, Parameter... parameters)
             throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException;
 
+    public String getDriverId();
     /**
      * This is called whenever a service request a full update of all devices the driver handles
      */

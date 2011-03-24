@@ -25,6 +25,7 @@ import dk.itu.frigga.Singleton;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
+import dk.itu.frigga.device.DeviceData;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
@@ -54,10 +55,9 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     /* iPOJO services */
     private LogService log;
     private DataManager datamanager;
-    private List<Driver> drivers;
-    private final Map<String, Driver> responsebility = new HashMap<String, Driver>();
     /* private */
-    private final HashMap<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
+    private final Map<String, Driver> drivers  = new HashMap<String, Driver>();
+    private final Map<String, Driver> responsebility = new HashMap<String, Driver>();
     private DeviceDatabase connection;
 
     /**
@@ -76,6 +76,11 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     }
 
     public void onDeviceEvent(DeviceUpdateEvent event) {
+        Driver responsible = drivers.get(event.getResponsible());
+        for (DeviceData data : event.getDevices()) {
+            responsebility.put(data.getSymbolic(), responsible);
+        }
+
         try {
             connection.update(event.getDevices(), event.getCategories());
         } catch (SQLException ex) {
@@ -93,7 +98,10 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
      * @return The device found, or null if no device was found.
      */
     public final Device getDeviceById(final DeviceId id) {
-        return devices.get(id);
+        DeviceData data = connection.getDeviceBySymbolic(id.toString());
+        //TODO: fix Device vs DeviceData mismatch
+        Device d = new Device(new DeviceId(data.getSymbolic()), new DeviceCategory(data.getCategories()[0], null, null), null, null);
+        return d;
     }
 
     /**
@@ -108,15 +116,12 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
      * @return Returns an array of devices of the given type.
      */
     public final Iterable<Device> getDevicesByType(final DeviceCategory category) {
-        Applicable<Device> typeCheck = new Applicable<Device>() {
-
-            @Override
-            public boolean apply(final Device device) {
-                return device.isOfType(category);
-            }
-        };
-
-        return Filtering.filter(devices.values(), typeCheck);
+        List<DeviceData> data = connection.getDeviceByCategory(category.getTypeString());
+        List<Device> ret = new ArrayList<Device>();
+        for (DeviceData dd : data) {
+            ret.add(new Device(new DeviceId(dd.getSymbolic()), new DeviceCategory(dd.getCategories()[0], null, null), null, null));
+        }
+        return ret;
     }
 
     /**
@@ -130,23 +135,26 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
      * @return Returns an array of devices of the given type.
      */
     public final Iterable<Device> getDevicesByType(final String type) {
-        Applicable<Device> typeCheck = new Applicable<Device>() {
-
-            @Override
-            public boolean apply(final Device device) {
-                return device.isOfType(type);
-            }
-        };
-
-        return Filtering.filter(devices.values(), typeCheck);
+        List<DeviceData> data = connection.getDeviceByCategory(type);
+        List<Device> ret = new ArrayList<Device>();
+        for (DeviceData dd : data) {
+            ret.add(new Device(new DeviceId(dd.getSymbolic()), new DeviceCategory(dd.getCategories()[0], null, null), null, null));
+        }
+        return ret;
     }
 
     public void deviceDriverAdded(Driver driver) {
         log.log(LogService.LOG_INFO, "Device Driver Added: ");
+        synchronized (drivers) {
+            drivers.put(driver.getDriverId(), driver);
+        }
         driver.update();
     }
 
     public void deviceDriverRemoved(Driver driver) {
+        synchronized (drivers) {
+            drivers.remove(driver.getDriverId());
+        }
         log.log(LogService.LOG_INFO, "Device Driver Removed: ");
         //TODO: set the devices that the driver is responsible of offline
     }
@@ -181,9 +189,9 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
                 //pop the first and find all devices which uses the same driver
                 if (responsebility.containsKey(calldevices.get(0))) {
                     Driver current = responsebility.get(calldevices.get(0));
-                    for (Map.Entry<String, Driver> entry : responsebility.entrySet()) {
-                        if (entry.getValue().equals(current)) {
-                            current_block.add(entry.getKey());
+                    for (String device : devices) {
+                        if (responsebility.get(device).equals(current)) {
+                            current_block.add(device);
                         }
                     }
 

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS devicevariable
 (device_id INTEGER NOT NULL,
 variable_id INTEGER NOT NULL,
-value BLOB,
+variable_value BLOB,
 PRIMARY KEY (device_id, variable_id));
 
 CREATE TABLE IF NOT EXISTS categoryvariable
@@ -11,13 +11,13 @@ PRIMARY KEY (category_id, variable_id));
 
 CREATE TABLE IF NOT EXISTS variabletype
 (id INTEGER NOT NULL,
-name VARCHAR(25) NOT NULL,
-type INTEGER NOT NULL,
+varname VARCHAR(25) NOT NULL,
+vartype INTEGER NOT NULL,
 PRIMARY KEY (id));
 
 CREATE TABLE IF NOT EXISTS category
 (id INTEGER NOT NULL,
-name VARCHAR(25) NOT NULL,
+catname VARCHAR(25) UNIQUE NOT NULL,
 PRIMARY KEY (id));
 
 CREATE TABLE IF NOT EXISTS categoryfunction
@@ -37,8 +37,8 @@ PRIMARY KEY (device_id, category_id));
 
 CREATE TABLE IF NOT EXISTS device
 (id INTEGER NOT NULL,
-name VARCHAR(25),
-symbolic VARCHAR(25) NOT NULL,
+name VARCHAR(25) UNIQUE NOT NULL,
+symbolic VARCHAR(25) UNIQUE NOT NULL,
 last_update VARCHAR(25),
 online CHAR(1),
 PRIMARY KEY (id));

@@ -9,7 +9,7 @@
         <provides specifications="dk.itu.frigga.device.DeviceManager"/>
     
         <requires field="log" optional="true"/>
-        <requires id="drivers" field="drivers" optional="true">
+        <requires id="drivers" aggregate="true" specification="dk.itu.frigga.device.Driver" optional="true">
             <callback type="bind" method="deviceDriverAdded" />
             <callback type="unbind" method="deviceDriverRemoved" />
         </requires>

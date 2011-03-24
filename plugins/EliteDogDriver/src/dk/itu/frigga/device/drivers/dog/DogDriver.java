@@ -4,11 +4,9 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;
-import dk.itu.frigga.device.Executable;
 import dk.itu.frigga.device.InvalidFunctionException;
 import dk.itu.frigga.device.InvalidParameterException;
 import dk.itu.frigga.device.Parameter;
@@ -23,12 +21,14 @@ import org.apache.felix.ipojo.handlers.event.publisher.Publisher;
  * @author phylock
  */
 public class DogDriver implements Driver {
+    private static final String DRIVER_ID = "DogDriver";
     //External services, initialized by DependencyManager
-
     private LogService log;
     private Publisher event;
+
     //Private member variables
     private Connection connection = null;
+
     /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
     public static String DEFAULT_DOG_ADDRESS = "http://localhost:65300/RPC2";
 
@@ -122,5 +122,9 @@ public class DogDriver implements Driver {
         } catch (Exception ex) {
             log.log(LogService.LOG_WARNING, String.format("Could not propergate iPOJO field %s to subclass %s", field, obj.getClass().getName()));
         }
+    }
+
+    public String getDriverId() {
+        return DRIVER_ID;
     }
 }

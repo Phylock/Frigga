@@ -60,7 +60,10 @@ public class DogParser implements Dog2MessageListener {
       MessageParsable handler = parsers.get(type);
       Transaction transaction = DogDeviceManager.instance().beginTransaction();
       handler.parse(driver, transaction, doc, message);
-      DogDeviceManager.instance().commit(transaction);
+      DogDeviceManager.instance().commit(driver, transaction);
+    }else
+    {
+        log.log(LogService.LOG_INFO, "Unhandled dog event: " + type);
     }
   }
 
