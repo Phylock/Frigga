@@ -22,6 +22,7 @@ import org.osgi.service.log.LogService;
 public class DataManagerImpl extends Singleton implements DataManager
 {
     //NOTE: dependency for SQLite is never detected by osgi because of the way it is loaded :(
+    //NOTE: look at bundle.loadclass
     //TODO: Fix
     private org.sqlite.JDBC jdbc = new org.sqlite.JDBC();
     /* iPOJO */
