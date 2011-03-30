@@ -132,7 +132,7 @@ public class MainWindow extends JFrame implements WindowListener {
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
         lst_devices.removeAll();
 
-        final String category = "SimpleLamp";
+        final String category = "Tv";
 
         Vector<Device> devices = new Vector<Device>();
         Iterable<Device> iter = devicemanager.getDevicesByType(category);
