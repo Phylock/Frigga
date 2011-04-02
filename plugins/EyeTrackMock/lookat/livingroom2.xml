@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : livingroom.xml
+    Created on : April 2, 2011, 3:15 PM
+    Author     : phylock
+    Description:
+        Purpose of the document follows.
+-->
+
+<eyetrack>
+  <image url="livingroom2.jpg">
+	<point x= "50" y = "250" lookat="livingroom_window1"/>
+    <point x= "210" y = "220" lookat="livingroom_lamp1"/>
+    <point x= "260" y = "200" lookat="livingroom_tv1"/>
+    <point x= "500" y = "250" lookat="livingroom_kitchen_door"/>
+  </image>
+</eyetrack>
