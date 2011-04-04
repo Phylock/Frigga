@@ -29,8 +29,10 @@ import java.util.List;
  */
 public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener, MouseListener {
 
-  private static final int HALFSIZE = 10;
+  private static final int SIZE = 20;
+  private static final int HALFSIZE = SIZE / 2;
   private static final int MARGIN = 2;
+  private static final int PADDING = 1;
   private static final Color color_normal = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 100);
   private static final Color color_selected = new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), 100);
   private static final Color color_over = new Color(Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue(), 100);
@@ -104,6 +106,22 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
 
 
       for (Point p : points) {
+        int x = p.getX() - HALFSIZE;
+        int y = p.getY() - HALFSIZE;
+
+        int text_width = (int) font.getStringBounds(p.getLookat(), frc).getWidth();
+        int text_height = (int) font.getLineMetrics(p.getLookat(), frc).getHeight();
+
+        int text_x;
+        int text_y = y;
+        if (text_width + x < 640) {
+          text_x = x + (SIZE + (2 * MARGIN) + (2 * PADDING));
+        }
+        else
+        {
+          text_x = x - (text_width + (2 * MARGIN) + (2 * PADDING));
+        }
+
         if (p.equals(current)) {
           g.setColor(color_selected);
         } else if (p.equals(over)) {
@@ -111,18 +129,15 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
         } else {
           g.setColor(color_normal);
         }
-        g.fill3DRect(p.getX() - HALFSIZE, p.getY() - HALFSIZE, HALFSIZE * 2, HALFSIZE * 2, true);
 
-        int x = p.getX();
-        int y = p.getY();
-        int width = (int) font.getStringBounds(p.getLookat(), frc).getWidth();
-        int height = (int) font.getLineMetrics(p.getLookat(), frc).getHeight();
+        //Button
+        g.fill3DRect(x, y, SIZE, SIZE, true);
 
         g.setColor(color_background);
-        g2.fillRect(x + HALFSIZE + MARGIN, y - HALFSIZE, width + (2 * MARGIN), height + (2 * MARGIN));
+        g2.fillRect(text_x, y, text_width + (2 * MARGIN), text_height + (2 * MARGIN));
 
         g.setColor(Color.WHITE);
-        g.drawString(p.getLookat(), x + HALFSIZE + (2 * MARGIN), y + (HALFSIZE - MARGIN));
+        g.drawString(p.getLookat(), text_x, y + text_height);
       }
     }
   }
