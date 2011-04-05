@@ -116,16 +116,17 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
         int text_y = y;
         if (text_width + x < 640) {
           text_x = x + (SIZE + (2 * MARGIN) + (2 * PADDING));
-        }
-        else
-        {
+        } else {
           text_x = x - (text_width + (2 * MARGIN) + (2 * PADDING));
         }
+        boolean show_text = false;
 
         if (p.equals(current)) {
           g.setColor(color_selected);
+          show_text = true;
         } else if (p.equals(over)) {
           g.setColor(color_over);
+          show_text = true;
         } else {
           g.setColor(color_normal);
         }
@@ -133,11 +134,13 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
         //Button
         g.fill3DRect(x, y, SIZE, SIZE, true);
 
-        g.setColor(color_background);
-        g2.fillRect(text_x, y, text_width + (2 * MARGIN), text_height + (2 * MARGIN));
+        if (show_text) {
+          g.setColor(color_background);
+          g2.fillRect(text_x, y, text_width + (2 * MARGIN), text_height + (2 * MARGIN));
 
-        g.setColor(Color.WHITE);
-        g.drawString(p.getLookat(), text_x, y + text_height);
+          g.setColor(Color.WHITE);
+          g.drawString(p.getLookat(), text_x, y + text_height);
+        }
       }
     }
   }

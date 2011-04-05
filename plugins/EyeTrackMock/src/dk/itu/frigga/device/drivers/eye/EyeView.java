@@ -10,7 +10,6 @@
  */
 package dk.itu.frigga.device.drivers.eye;
 
-import dk.itu.frigga.utility.FileHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -125,8 +124,8 @@ public class EyeView extends javax.swing.JFrame {
       if (f.isDirectory()) {
         return true;
       }
-
-      String extension = FileHelper.getExtension(f);
+      return true;
+      /*String extension = FileHelper.getExtension(f);
       if (extension != null) {
         if (extension.equals("xml")) {
           return true;
@@ -135,7 +134,7 @@ public class EyeView extends javax.swing.JFrame {
         }
       }
 
-      return false;
+      return false;*/
     }
 
     //The description of this filter
