@@ -4,15 +4,18 @@ import dk.itu.frigga.data.DataConnection;
 import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.data.UnknownDataDriverException;
-import dk.itu.frigga.device.DeviceCategory;
-import dk.itu.frigga.device.DeviceData;
+import dk.itu.frigga.device.dao.CategoryDAO;
+import dk.itu.frigga.device.dao.DeviceDAO;
+import dk.itu.frigga.device.descriptor.CategoryDescriptor;
+import dk.itu.frigga.device.descriptor.DeviceDescriptor;
+import dk.itu.frigga.device.manager.dao.CategoryDaoSql;
+import dk.itu.frigga.device.manager.dao.DeviceDaoSql;
+import dk.itu.frigga.device.model.Category;
+import dk.itu.frigga.device.model.Device;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -30,191 +33,103 @@ import org.osgi.service.log.LogService;
  */
 public class DeviceDatabase {
 
-    private String groupname;
-    private String filename;
-    private static final String DRIVERNAME = "org.sqlite.JDBC";
-    private DataManager datamanager;
-    private LogService log;
-    private Connection conn;
-    private SQLStatements statement;
+  private String groupname;
+  private String filename;
+  private static final String DRIVERNAME = "org.sqlite.JDBC";
+  private DataManager datamanager;
+  private LogService log;
+  private Connection conn;
+  private DeviceDAO devicedao;
+  private CategoryDAO categorydao;
 
-    public DeviceDatabase(String groupname, String filename) {
-        this.groupname = groupname;
-        this.filename = filename;
+  public DeviceDatabase(String groupname, String filename) {
+    this.groupname = groupname;
+    this.filename = filename;
+  }
+
+  public void initialize() {
+    try {
+      if (!datamanager.hasConnection(groupname)) {
+        datamanager.addConnection(groupname, new DataConnection("jdbc", "sqlite", filename, DRIVERNAME));
+      }
+      conn = datamanager.requestConnection(groupname);
+      InputStream fs = DeviceDatabase.class.getResourceAsStream("devicetables.sql");
+      runStream(conn, fs, ";");
+
+      devicedao = new DeviceDaoSql();
+      devicedao.setConnection(conn);
+
+
+      categorydao = new CategoryDaoSql();
+      categorydao.setConnection(conn);
+    } catch (SQLException ex) {
+      Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (DataGroupNotFoundException ex) {
+      Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (UnknownDataDriverException ex) {
+      Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
 
-    public void initialize() {
-        try {
-            if (!datamanager.hasConnection(groupname)) {
-                datamanager.addConnection(groupname, new DataConnection("jdbc", "sqlite", filename, DRIVERNAME));
-            }
-            conn = datamanager.requestConnection(groupname);
-            InputStream fs = DeviceDatabase.class.getResourceAsStream("devicetables.sql");
-            runStream(conn, fs, ";");
+  public DeviceDAO getDeviceDao() {
+    return devicedao;
+  }
 
-            statement = new SQLStatements(conn);
-        } catch (SQLException ex) {
-            Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DataGroupNotFoundException ex) {
-            Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownDataDriverException ex) {
-            Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
+  public CategoryDAO getCategoryDao() {
+    return categorydao;
+  }
+
+  private void runStream(Connection conn, InputStream data, String delimiter) {
+
+    Scanner s = new Scanner(data);
+    s.useDelimiter(delimiter);
+    int stmnum = 0;
+    String line = "";
+    while (s.hasNext()) {
+      try {
+        Statement st = conn.createStatement();
+        line = s.next();
+        if (line.trim().length() > 0) {
+          st.execute(line);
         }
+      } catch (SQLException ex) {
+        log.log(LogService.LOG_WARNING, "Error in line " + stmnum + ": " + line, ex);
+      }
     }
+  }
 
-    private void runStream(Connection conn, InputStream data, String delimiter) {
+  public void update(List<DeviceDescriptor> devices, List<CategoryDescriptor> categories) throws SQLException {
 
-        Scanner s = new Scanner(data);
-        s.useDelimiter(delimiter);
-        int stmnum = 0;
-        String line = "";
-        while (s.hasNext()) {
-            try {
-                Statement st = conn.createStatement();
-                line = s.next();
-                if (line.trim().length() > 0) {
-                    st.execute(line);
-                }
-            } catch (SQLException ex) {
-                log.log(LogService.LOG_WARNING, "Error in line " + stmnum + ": " + line, ex);
-            }
+    updateCategory(categories);
+    updateDevice(devices);
+
+    //Categories <-> Devices
+    if (devices != null) {
+      for (DeviceDescriptor dd : devices) {
+        Device device = devicedao.findBySymbolic(dd.getName());
+        for (String cd : dd.getCategories()) {
+          Category category = new Category(cd);
+          devicedao.addToCategory(device, category);
         }
+      }
     }
+  }
 
-    public DeviceData getDeviceBySymbolic(String symbolic)
-    {
-        DeviceData dd = null;
-        try {
-            PreparedStatement select = statement.DEVICE_SELECT_BY_SYMBOLIC;
-            PreparedStatement categories = statement.CATEGORY_SELECT_BY_DEVICEID;
-            select.setString(1, symbolic);
-            ResultSet rs = select.executeQuery();
-            if(rs.next())
-            {
-                //id, name, symbolic, last_update, online
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                Date last_update = rs.getDate("last_update");
-                boolean online = rs.getBoolean("online");
-
-                categories.setInt(1, id);
-                ResultSet crs = categories.executeQuery();
-                List<String> list = new ArrayList<String>();
-                while(crs.next())
-                {
-                    list.add(crs.getString("catname"));
-                }
-            
-                dd = new DeviceData(name, symbolic, last_update, online, list.toArray(new String[list.size()]));
-            }
-        } catch (SQLException ex) {
-            log.log(LogService.LOG_WARNING, null, ex);
-        }
-        return dd;
+  private void updateDevice(List<DeviceDescriptor> devices) {
+    if (devices != null) {
+      for (DeviceDescriptor dd : devices) {
+        Device device = new Device(dd.getName(), dd.getSymbolic(), new Date(), true);
+        devicedao.makePersistent(device);
+      }
     }
+  }
 
-       public List<DeviceData> getDeviceByCategory(String category)
-    {
-        List<DeviceData> data = new ArrayList<DeviceData>();
-        try {
-            PreparedStatement select = statement.DEVICE_SELECT_BY_CATEGORY;
-            select.setString(1, category);
-            ResultSet rs = select.executeQuery();
-
-            while(rs.next())
-            {
-                //id, name, symbolic, last_update, online
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String symbolic = rs.getString("symbolic");
-                Date last_update = rs.getDate("last_update");
-                boolean online = rs.getBoolean("online");
-
-                data.add(new DeviceData(name, symbolic, last_update, online, new String[]{category}));
-            }
-        } catch (SQLException ex) {
-            log.log(LogService.LOG_WARNING, null, ex);
-        }
-        return data;
+  private void updateCategory(List<CategoryDescriptor> categories) {
+    if (categories != null) {
+      for (CategoryDescriptor cd : categories) {
+        Category category = new Category(cd.getName());
+        categorydao.makePersistent(category);
+      }
     }
-
-
-    public void update(List<DeviceData> devices, List<DeviceCategory> categories) throws SQLException {
-        conn.setAutoCommit(false);
-        updateCategory(categories);
-        conn.commit();
-        updateDevice(devices);
-        conn.commit();
-
-        //Categories <-> Devices
-        if (devices != null) {
-            PreparedStatement stmt = statement.CATEGORY_DEVICE_RELATIONSHIP;
-            for (DeviceData device : devices) {
-
-                for (String category : device.getCategories()) {
-                    try {
-                        stmt.setString(1, device.getSymbolic());
-                        stmt.setString(2, category);
-
-                        stmt.executeUpdate();
-                    } catch (SQLException ex) {
-                        log.log(LogService.LOG_WARNING, "could not link " + device.getSymbolic() + " <-> " + category);
-                    }
-                }
-            }
-        }
-
-        conn.commit();
-        conn.setAutoCommit(true);
-    }
-
-    private void updateDevice(List<DeviceData> devices) {
-        //Devices
-        if (devices != null) {
-            PreparedStatement select = statement.DEVICE_SELECT_BY_SYMBOLIC;
-            PreparedStatement insert = statement.DEVICE_INSERT;
-            for (DeviceData device : devices) {
-                try {
-                    select.setString(1, device.getSymbolic());
-                    ResultSet rs = select.executeQuery();
-                    if (rs.next()) {
-                        rs.updateString("name", device.getName());
-                        rs.updateDate("last_update", new java.sql.Date(device.getLast_updated().getTime()));
-                        rs.updateBoolean("online", device.isOnline());
-                        rs.updateRow();
-                    } else {
-                        insert.setString(1, device.getName());
-                        insert.setString(2, device.getSymbolic());
-                        insert.setDate(3, new java.sql.Date(device.getLast_updated().getTime()));
-                        insert.setBoolean(4, device.isOnline());
-                        insert.executeUpdate();
-                    }
-                } catch (SQLException ex) {
-                    log.log(LogService.LOG_WARNING, null, ex);
-                }
-            }
-        }
-    }
-
-    private void updateCategory(List<DeviceCategory> categories) {
-        //Categories
-        if (categories != null) {
-            PreparedStatement select = statement.CATEGORY_SELECT_BY_CATNAME;
-            PreparedStatement insert = statement.CATEGORY_INSERT;
-            for (DeviceCategory category : categories) {
-                try {
-                    select.setString(1, category.getTypeString());
-                    ResultSet rs = select.executeQuery();
-                    if (rs.next()) {
-                        //do nothing, we only have one column in category and we just checked for that
-                    } else {
-                        insert.setString(1, category.getTypeString());
-                        insert.executeUpdate();
-                    }
-                } catch (SQLException ex) {
-                    log.log(LogService.LOG_WARNING, null, ex);
-                }
-            }
-        }
-    }
+  }
 }

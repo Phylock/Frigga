@@ -5,11 +5,11 @@
 
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.Executable;
 import dk.itu.frigga.device.Parameter;
+import dk.itu.frigga.device.model.Device;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +39,7 @@ public class Function implements Executable{
         try {
             String[] items = new String[devices.length];
             for (int i = 0; i < devices.length; i++) {
-                items[i] = devices[i].getId().toString();
+                items[i] = devices[i].getSymbolic();
             }
             //TODO: how to set parameters ??
             Command command = new Command(items, function, null);

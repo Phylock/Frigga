@@ -22,6 +22,8 @@
 
 package dk.itu.frigga.device;
 
+import dk.itu.frigga.device.model.Device;
+
 /**
  *
  * @author phylock

@@ -4,6 +4,9 @@
  */
 package dk.itu.frigga.device;
 
+import dk.itu.frigga.device.descriptor.CategoryDescriptor;
+import dk.itu.frigga.device.descriptor.DeviceDescriptor;
+import dk.itu.frigga.device.model.Category;
 import java.util.List;
 
 /**
@@ -13,20 +16,20 @@ import java.util.List;
 public class DeviceUpdateEvent {
 
     private final String responsible;
-    private final List<DeviceData> devices;
-    private final List<DeviceCategory> categories;
+    private final List<DeviceDescriptor> devices;
+    private final List<CategoryDescriptor> categories;
 
-    public DeviceUpdateEvent(String responsible, List<DeviceData> devices, List<DeviceCategory> categories) {
+    public DeviceUpdateEvent(String responsible, List<DeviceDescriptor> devices, List<CategoryDescriptor> categories) {
         this.responsible = responsible;
         this.devices = devices;
         this.categories = categories;
     }
 
-    public List<DeviceCategory> getCategories() {
+    public List<CategoryDescriptor> getCategories() {
         return categories;
     }
 
-    public List<DeviceData> getDevices() {
+    public List<DeviceDescriptor> getDevices() {
         return devices;
     }
 

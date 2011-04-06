@@ -4,8 +4,8 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.DeviceCategory;
+import dk.itu.frigga.device.model.Device;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -58,9 +58,6 @@ public class AsyncDeviceCategory {
             int i = 0;
             for(Device device : devices)
             {
-                Device newdevice= new Device(
-                        device.getId(), devicecategory, device.getVariables(),
-                        device.getLocation());
                 //TODO: devicemanager.registerDevice(newdevice);
             }
             async_unknown.remove(devicecategory.getTypeString());

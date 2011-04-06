@@ -4,10 +4,10 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.DeviceCategory;
-import dk.itu.frigga.device.DeviceData;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Executable;
+import dk.itu.frigga.device.descriptor.CategoryDescriptor;
+import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
 import java.util.Date;
@@ -132,7 +132,7 @@ public class ConfigMessageParser implements MessageParsable {
                     }
                     contains = XmlHelper.getNextSiblingElement(contains);
                 }
-                DeviceCategory category = new DeviceCategory(name,
+                CategoryDescriptor category = new CategoryDescriptor(name,
                         functionalies.keySet().toArray(new String[functionalies.size()]),
                         variables.toArray(new String[variables.size()]));
                 transaction.addCategory(category);
@@ -217,7 +217,7 @@ public class ConfigMessageParser implements MessageParsable {
                     Device d = new Device(id, category, null, null, null);
                     unknown.addUnknownDeviceCategory(devicecategory, d);
                 }*/
-                DeviceData d = new DeviceData(id.toString().replaceAll("_", " "), id.toString(), new Date(), true, new String[]{devicecategory});
+                DeviceDescriptor d = new DeviceDescriptor(id.toString().replaceAll("_", " "), id.toString(), new String[]{devicecategory});
                 transaction.addDevice(d);
             }
 

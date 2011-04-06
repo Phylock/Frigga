@@ -1,7 +1,7 @@
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.DeviceCategory;
-import dk.itu.frigga.device.DeviceData;
+import dk.itu.frigga.device.descriptor.CategoryDescriptor;
+import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,24 +15,24 @@ import java.util.List;
  * @author phylock
  */
 public class Transaction {
-    private final List<DeviceData> devices = new LinkedList<DeviceData>();
-    private final List<DeviceCategory> categories = new LinkedList<DeviceCategory>();
+    private final List<DeviceDescriptor> devices = new LinkedList<DeviceDescriptor>();
+    private final List<CategoryDescriptor> categories = new LinkedList<CategoryDescriptor>();
     
-    public void addDevice(DeviceData data)
+    public void addDevice(DeviceDescriptor data)
     {
         devices.add(data);
     }
     
-    public void addCategory(DeviceCategory data)
+    public void addCategory(CategoryDescriptor data)
     {
         categories.add(data);
     }
 
-    public List<DeviceCategory> getCategories() {
+    public List<CategoryDescriptor> getCategories() {
         return categories;
     }
 
-    public List<DeviceData> getDevices() {
+    public List<DeviceDescriptor> getDevices() {
         return devices;
     }
 

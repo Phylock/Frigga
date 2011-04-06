@@ -5,10 +5,10 @@
 package dk.itu.frigga.device.drivers.dog;
 
 import dk.itu.frigga.Singleton;
-import dk.itu.frigga.device.Device;
-import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.DeviceUpdateEvent;
+import dk.itu.frigga.device.model.Category;
+import dk.itu.frigga.device.model.Device;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.felix.ipojo.handlers.event.publisher.Publisher;
@@ -21,7 +21,7 @@ public class DogDeviceManager extends Singleton {
     private Publisher event;
 
     private final Map<DeviceId, Device> devices = new HashMap<DeviceId, Device>();
-    private final Map<String, DeviceCategory> categories = new HashMap<String, DeviceCategory>();
+    private final Map<String, Category> categories = new HashMap<String, Category>();
 
     private static DogDeviceManager instance = new DogDeviceManager();
 

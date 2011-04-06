@@ -5,6 +5,9 @@
 
 package dk.itu.frigga.device;
 
+import dk.itu.frigga.device.model.Category;
+import dk.itu.frigga.device.model.Device;
+
 /**
  *
  * @author phylock
@@ -22,7 +25,7 @@ public interface DeviceManager {
    */
   Device getDeviceById(final DeviceId id);
 
-  DeviceCategory getDeviceCategory(String id);
+  Category getDeviceCategory(String id);
 
   /**
    * Calls the getDevicesByType(String) internally with the type string of the
@@ -35,7 +38,7 @@ public interface DeviceManager {
    *
    * @return Returns an array of devices of the given type.
    */
-  Iterable<Device> getDevicesByType(final DeviceCategory category);
+  Iterable<Device> getDevicesByType(final Category category);
 
   /**
    * Returns an array of devices having a specified type. This function is

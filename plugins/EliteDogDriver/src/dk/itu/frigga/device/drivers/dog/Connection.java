@@ -57,7 +57,7 @@ public class Connection {
       connected = true;
 
     } catch (XmlRpcException ex) {
-      log.log(LogService.LOG_ERROR, null, ex);
+      log.log(LogService.LOG_INFO, "Could not connect: " + ex.getLocalizedMessage());
     } catch (IOException ex) {
       log.log(LogService.LOG_ERROR, null, ex);
     } catch (Exception ex) {

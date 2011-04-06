@@ -23,6 +23,7 @@
 package dk.itu.frigga.device;
 
 import dk.itu.frigga.FriggaException;
+import dk.itu.frigga.device.model.Device;
 
 /**
  *

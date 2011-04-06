@@ -23,17 +23,17 @@ package dk.itu.frigga.device.manager;
 
 import dk.itu.frigga.Singleton;
 import dk.itu.frigga.data.DataManager;
-import dk.itu.frigga.device.Device;
-import dk.itu.frigga.device.DeviceCategory;
-import dk.itu.frigga.device.DeviceData;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Parameter;
-import dk.itu.frigga.utility.Filtering;
-import dk.itu.frigga.utility.Applicable;
+import dk.itu.frigga.device.dao.CategoryDAO;
+import dk.itu.frigga.device.dao.DeviceDAO;
+import dk.itu.frigga.device.descriptor.DeviceDescriptor;
+import dk.itu.frigga.device.model.Category;
+import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.ReflectionHelper;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,178 +50,169 @@ import org.osgi.service.log.LogService;
  */
 public final class DeviceManagerImpl extends Singleton implements DeviceManager {
 
-    private final static String DATAGROUP = "device";
+  private final static String DATAGROUP = "device";
 
-    /* iPOJO services */
-    private LogService log;
-    private DataManager datamanager;
-    /* private */
-    private final Map<String, Driver> drivers  = new HashMap<String, Driver>();
-    private final Map<String, Driver> responsebility = new HashMap<String, Driver>();
-    private DeviceDatabase connection;
+  /* iPOJO services */
+  private LogService log;
+  private DataManager datamanager;
+  /* private */
+  private final Map<String, Driver> drivers = new HashMap<String, Driver>();
+  private final Map<String, Driver> responsebility = new HashMap<String, Driver>();
+  private DeviceDatabase connection;
 
-    /**
-     * We do not wish to have multiple instances, so the constructor is private.
-     */
-    public DeviceManagerImpl() {
+  /**
+   * We do not wish to have multiple instances, so the constructor is private.
+   */
+  public DeviceManagerImpl() {
+  }
+
+  public final boolean deviceIsOnline(final Device device) {
+    //todo: implement
+    return false;
+  }
+
+  public final Category getDeviceCategory(String id) {
+    return null;//categories.get(id);
+  }
+
+  public void onDeviceEvent(DeviceUpdateEvent event) {
+    Driver responsible = drivers.get(event.getResponsible());
+    for (DeviceDescriptor data : event.getDevices()) {
+      responsebility.put(data.getSymbolic(), responsible);
     }
 
-    public final boolean deviceIsOnline(final Device device) {
-        //todo: implement
-        return false;
+    try {
+      connection.update(event.getDevices(), event.getCategories());
+    } catch (SQLException ex) {
+      log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
+    } catch (Exception ex) {
+      log.log(LogService.LOG_WARNING, "Device Update Error", ex);
+    }
+  }
+
+  /**
+   * use this function to retrieve a specific device.
+   *
+   * @param id The unique id of the device.
+   *
+   * @return The device found, or null if no device was found.
+   */
+  public final Device getDeviceById(final DeviceId id) {
+    DeviceDAO d = connection.getDeviceDao();
+    return d.findBySymbolic(id.toString());
+  }
+
+  /**
+   * Calls the getDevicesByType(String) internally with the type string of the
+   * category.
+   *
+   * @see getDevicesByType(String)
+   *
+   * @param type A DeviceCategory object identifying the type whose devices to
+   *             fetch.
+   *
+   * @return Returns an array of devices of the given type.
+   */
+  public final Iterable<Device> getDevicesByType(final Category category) {
+    DeviceDAO d = connection.getDeviceDao();
+    return d.findByCategory(category);
+  }
+
+  /**
+   * Returns an array of devices having a specified type. This function is
+   * generally a bit heavy to use, since it performs an O(n) search to find
+   * devices of the given type. As compared to retrieving a device by ID which
+   * takes advantage of the hash map and uses a O(1) search.
+   *
+   * @param type A string identifying the type whose devices to fetch.
+   *
+   * @return Returns an array of devices of the given type.
+   */
+  public final Iterable<Device> getDevicesByType(final String type) {
+    CategoryDAO c = connection.getCategoryDao();
+    Category category = c.findByName(type);
+    return getDevicesByType(category);
+  }
+
+  public void deviceDriverAdded(Driver driver) {
+    log.log(LogService.LOG_INFO, "Device Driver Added: ");
+    synchronized (drivers) {
+      drivers.put(driver.getDriverId(), driver);
+    }
+    driver.update();
+  }
+
+  public void deviceDriverRemoved(Driver driver) {
+    synchronized (drivers) {
+      drivers.remove(driver.getDriverId());
+    }
+    log.log(LogService.LOG_INFO, "Device Driver Removed: ");
+    //TODO: set the devices that the driver is responsible of offline
+  }
+
+  public void validate() {
+    log.log(LogService.LOG_INFO, "Device Manager: Validate");
+    connection = new DeviceDatabase(DATAGROUP, "devices.db");
+    try {
+      ReflectionHelper.updateSubclassFields("log", connection, log);
+      ReflectionHelper.updateSubclassFields("datamanager", connection, datamanager);
+    } catch (Exception ex) {
     }
 
-    public final DeviceCategory getDeviceCategory(String id) {
-        return null;//categories.get(id);
-    }
+    connection.initialize();
+  }
 
-    public void onDeviceEvent(DeviceUpdateEvent event) {
-        Driver responsible = drivers.get(event.getResponsible());
-        for (DeviceData data : event.getDevices()) {
-            responsebility.put(data.getSymbolic(), responsible);
-        }
-
-        try {
-            connection.update(event.getDevices(), event.getCategories());
-        } catch (SQLException ex) {
-            log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
-        } catch (Exception ex) {
-            log.log(LogService.LOG_WARNING, "Device Update Error", ex);
-        }
-    }
-
-    /**
-     * use this function to retrieve a specific device.
-     *
-     * @param id The unique id of the device.
-     *
-     * @return The device found, or null if no device was found.
-     */
-    public final Device getDeviceById(final DeviceId id) {
-        DeviceData data = connection.getDeviceBySymbolic(id.toString());
-        //TODO: fix Device vs DeviceData mismatch
-        Device d = new Device(new DeviceId(data.getSymbolic()), new DeviceCategory(data.getCategories()[0], null, null), null, null);
-        return d;
-    }
-
-    /**
-     * Calls the getDevicesByType(String) internally with the type string of the
-     * category.
-     *
-     * @see getDevicesByType(String)
-     *
-     * @param type A DeviceCategory object identifying the type whose devices to
-     *             fetch.
-     *
-     * @return Returns an array of devices of the given type.
-     */
-    public final Iterable<Device> getDevicesByType(final DeviceCategory category) {
-        List<DeviceData> data = connection.getDeviceByCategory(category.getTypeString());
-        List<Device> ret = new ArrayList<Device>();
-        for (DeviceData dd : data) {
-            ret.add(new Device(new DeviceId(dd.getSymbolic()), new DeviceCategory(dd.getCategories()[0], null, null), null, null));
-        }
-        return ret;
-    }
-
-    /**
-     * Returns an array of devices having a specified type. This function is
-     * generally a bit heavy to use, since it performs an O(n) search to find
-     * devices of the given type. As compared to retrieving a device by ID which
-     * takes advantage of the hash map and uses a O(1) search.
-     *
-     * @param type A string identifying the type whose devices to fetch.
-     *
-     * @return Returns an array of devices of the given type.
-     */
-    public final Iterable<Device> getDevicesByType(final String type) {
-        List<DeviceData> data = connection.getDeviceByCategory(type);
-        List<Device> ret = new ArrayList<Device>();
-        for (DeviceData dd : data) {
-            ret.add(new Device(new DeviceId(dd.getSymbolic()), new DeviceCategory(dd.getCategories()[0], null, null), null, null));
-        }
-        return ret;
-    }
-
-    public void deviceDriverAdded(Driver driver) {
-        log.log(LogService.LOG_INFO, "Device Driver Added: ");
-        synchronized (drivers) {
-            drivers.put(driver.getDriverId(), driver);
-        }
-        driver.update();
-    }
-
-    public void deviceDriverRemoved(Driver driver) {
-        synchronized (drivers) {
-            drivers.remove(driver.getDriverId());
-        }
-        log.log(LogService.LOG_INFO, "Device Driver Removed: ");
-        //TODO: set the devices that the driver is responsible of offline
-    }
-
-    public void validate() {
-        log.log(LogService.LOG_INFO, "Device Manager: Validate");
-        connection = new DeviceDatabase(DATAGROUP, "devices.db");
-        try {
-            ReflectionHelper.updateSubclassFields("log", connection, log);
-            ReflectionHelper.updateSubclassFields("datamanager", connection, datamanager);
-        } catch (Exception ex) {
-        }
-
-        connection.initialize();
-    }
-
-    /**
-     * Call a function on multiple devices
-     * @param function
-     * @param devices
-     * @param parameters
-     * @return
-     */
-    public FunctionResult callFunction(String function, String[] devices, Parameter... parameters) {
-        List<String> failed_block = new ArrayList<String>();
-        //if there is only one device, there can be only one responsible driver
-        if (devices.length > 1) {
-            List<String> calldevices = Arrays.asList(devices);
-            List<String> current_block = new ArrayList<String>();
-            boolean done = false;
-            while (!done) {
-                //pop the first and find all devices which uses the same driver
-                if (responsebility.containsKey(calldevices.get(0))) {
-                    Driver current = responsebility.get(calldevices.get(0));
-                    for (String device : devices) {
-                        if (responsebility.get(device).equals(current)) {
-                            current_block.add(device);
-                        }
-                    }
-
-                    try {
-                        current.callFunction(current_block.toArray(new String[current_block.size()]), function, parameters);
-                    } catch (Exception ex) {
-                        failed_block.add(devices[0]);
-                    }
-                    calldevices.removeAll(current_block);
-                    current_block.clear();
-
-                } else {
-                    failed_block.add(calldevices.get(0));
-                    calldevices.remove(0);
-                }
-                if (calldevices.isEmpty()) {
-                    done = true;
-                }
-
+  /**
+   * Call a function on multiple devices
+   * @param function
+   * @param devices
+   * @param parameters
+   * @return
+   */
+  public FunctionResult callFunction(String function, String[] devices, Parameter... parameters) {
+    List<String> failed_block = new ArrayList<String>();
+    //if there is only one device, there can be only one responsible driver
+    if (devices.length > 1) {
+      List<String> calldevices = Arrays.asList(devices);
+      List<String> current_block = new ArrayList<String>();
+      boolean done = false;
+      while (!done) {
+        //pop the first and find all devices which uses the same driver
+        if (responsebility.containsKey(calldevices.get(0))) {
+          Driver current = responsebility.get(calldevices.get(0));
+          for (String device : devices) {
+            if (responsebility.get(device).equals(current)) {
+              current_block.add(device);
             }
+          }
+
+          try {
+            current.callFunction(current_block.toArray(new String[current_block.size()]), function, parameters);
+          } catch (Exception ex) {
+            failed_block.add(devices[0]);
+          }
+          calldevices.removeAll(current_block);
+          current_block.clear();
+
         } else {
-            if (responsebility.containsKey(devices[0])) {
-                Driver d = responsebility.get(devices[0]);
-                try {
-                    d.callFunction(devices, function, parameters);
-                } catch (Exception ex) {
-                    failed_block.add(devices[0]);
-                }
-            }
+          failed_block.add(calldevices.get(0));
+          calldevices.remove(0);
         }
-        return new FunctionResult(failed_block.isEmpty() ? "OK" : "Failed");
+        if (calldevices.isEmpty()) {
+          done = true;
+        }
+
+      }
+    } else {
+      if (responsebility.containsKey(devices[0])) {
+        Driver d = responsebility.get(devices[0]);
+        try {
+          d.callFunction(devices, function, parameters);
+        } catch (Exception ex) {
+          failed_block.add(devices[0]);
+        }
+      }
     }
+    return new FunctionResult(failed_block.isEmpty() ? "OK" : "Failed");
+  }
 }
