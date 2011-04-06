@@ -1,5 +1,0 @@
-Bundle-Version: 0.1
-Bundle-Name: Frigga Config
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Activator: dk.itu.frigga.config.Activator
-Export-Package: dk.itu.frigga.config.*
