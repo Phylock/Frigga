@@ -36,7 +36,7 @@ public class LookLoader {
         //get the employee element
         Element el = (Element) nl.item(i);
         String url = file.getParent() + File.separator + el.getAttribute("url");
-        
+
         view.setImage(ImageIO.read(new File(url)));
         setImage(dom, el, view);
         view.repaint();
@@ -45,22 +45,35 @@ public class LookLoader {
   }
 
   private static void setImage(Document doc, Element element, ViewPanel view) {
-    view.getPoints().clear();
-    //get a nodelist of elements
-    NodeList nl = element.getElementsByTagName("point");
+    view.getDevices().clear();
+    extractDevices(element, view);
+  }
+
+  private static Point parsePoint(Element element) {
+    int x = Integer.parseInt(element.getAttribute("x"));
+    int y = Integer.parseInt(element.getAttribute("y"));
+    return new Point(x, y);
+  }
+
+  private static void extractDevices(Element element, ViewPanel view) throws NumberFormatException {
+
+    NodeList nl = element.getElementsByTagName("device");
     if (nl != null && nl.getLength() > 0) {
       for (int i = 0; i < nl.getLength(); i++) {
 
-        //get the employee element
         Element el = (Element) nl.item(i);
-        int x = Integer.parseInt(el.getAttribute("x"));
-        int y = Integer.parseInt(el.getAttribute("y"));
+
         String lookat = el.getAttribute("lookat");
-
-        view.getPoints().add(new Point(x, y, lookat));
-
+        Device device = new Device(lookat);
+        NodeList nl_points = el.getElementsByTagName("point");
+        if (nl != null && nl.getLength() > 0) {
+          for (int j = 0; j < nl_points.getLength(); j++) {
+            Element el_point = (Element) nl_points.item(j);
+            device.addPoint(parsePoint(el_point));
+          }
+        }
+        view.getDevices().add(device);
       }
     }
-
   }
 }

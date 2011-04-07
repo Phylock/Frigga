@@ -10,9 +10,26 @@
 
 <eyetrack>
   <image url="livingroom2.jpg">
-	<point x= "50" y = "250" lookat="livingroom_window1"/>
-    <point x= "210" y = "220" lookat="livingroom_lamp1"/>
-    <point x= "260" y = "200" lookat="livingroom_tv1"/>
-    <point x= "500" y = "250" lookat="livingroom_kitchen_door"/>
+    <device lookat="livingroom_window1">
+      <point x= "50" y = "250"/>
+    </device>
+    <device lookat="livingroom_lamp1">
+      <point x= "210" y = "220"/>
+    </device>
+    <device lookat="livingroom_lamp_siling1">
+      <point x= "430" y = "20" />
+    </device>
+    <device lookat="livingroom_airwent">
+      <point x= "285" y = "110" />
+    </device>
+    <device lookat="livingroom_aircondition">
+      <point x= "121" y = "235" />
+    </device>
+    <device lookat="livingroom_tv1">
+      <point x= "260" y = "200"/>
+    </device>
+    <device lookat="livingroom_kitchen_door">
+      <point x= "500" y = "250" />
+    </device>
   </image>
 </eyetrack>

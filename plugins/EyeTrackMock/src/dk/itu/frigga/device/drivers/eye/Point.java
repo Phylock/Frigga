@@ -12,16 +12,10 @@ package dk.itu.frigga.device.drivers.eye;
 public class Point {
   private int x;
   private int y;
-  private String lookat;
 
-  public Point(int x, int y, String lookat) {
+  public Point(int x, int y) {
     this.x = x;
     this.y = y;
-    this.lookat = lookat;
-  }
-
-  public String getLookat() {
-    return lookat;
   }
 
   public int getX() {

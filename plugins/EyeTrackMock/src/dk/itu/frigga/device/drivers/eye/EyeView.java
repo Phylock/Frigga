@@ -10,11 +10,15 @@
  */
 package dk.itu.frigga.device.drivers.eye;
 
+import dk.itu.frigga.utility.FileHelper;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -33,8 +37,8 @@ public class EyeView extends javax.swing.JFrame {
     fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
     fc.setAcceptAllFileFilterUsed(false);
     fc.setFileFilter(new XMLFilter());
-    setBounds(getX(), getY(), 640, 480 + jMenuBar1.getHeight());
-    setResizable(false);
+    viewPanel1.addMouseMotionListener(new EyeTrackListener(jLabel1));
+    pack();
   }
 
   /** This method is called from within the constructor to
@@ -47,22 +51,53 @@ public class EyeView extends javax.swing.JFrame {
   private void initComponents() {
 
     viewPanel1 = new dk.itu.frigga.device.drivers.eye.ViewPanel();
+    jPanel2 = new javax.swing.JPanel();
+    jLabel1 = new javax.swing.JLabel();
     jMenuBar1 = new javax.swing.JMenuBar();
     file = new javax.swing.JMenu();
     file_open = new javax.swing.JMenuItem();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setMinimumSize(new java.awt.Dimension(640, 480));
+    setResizable(false);
+
+    viewPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+    viewPanel1.setMinimumSize(new java.awt.Dimension(640, 480));
 
     javax.swing.GroupLayout viewPanel1Layout = new javax.swing.GroupLayout(viewPanel1);
     viewPanel1.setLayout(viewPanel1Layout);
     viewPanel1Layout.setHorizontalGroup(
       viewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 400, Short.MAX_VALUE)
+      .addGap(0, 638, Short.MAX_VALUE)
     );
     viewPanel1Layout.setVerticalGroup(
       viewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 273, Short.MAX_VALUE)
+      .addGap(0, 485, Short.MAX_VALUE)
     );
+
+    getContentPane().add(viewPanel1, java.awt.BorderLayout.CENTER);
+
+    jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+    jPanel2.setPreferredSize(new java.awt.Dimension(412, 25));
+
+    jLabel1.setText("jLabel1");
+
+    javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+    jPanel2.setLayout(jPanel2Layout);
+    jPanel2Layout.setHorizontalGroup(
+      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+        .addContainerGap(588, Short.MAX_VALUE)
+        .addComponent(jLabel1))
+    );
+    jPanel2Layout.setVerticalGroup(
+      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addComponent(jLabel1)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
 
     file.setText("File");
 
@@ -77,17 +112,6 @@ public class EyeView extends javax.swing.JFrame {
     jMenuBar1.add(file);
 
     setJMenuBar(jMenuBar1);
-
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(viewPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(viewPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-    );
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -115,7 +139,9 @@ public class EyeView extends javax.swing.JFrame {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenu file;
   private javax.swing.JMenuItem file_open;
+  private javax.swing.JLabel jLabel1;
   private javax.swing.JMenuBar jMenuBar1;
+  private javax.swing.JPanel jPanel2;
   private dk.itu.frigga.device.drivers.eye.ViewPanel viewPanel1;
   // End of variables declaration//GEN-END:variables
   private class XMLFilter extends FileFilter {
@@ -124,8 +150,8 @@ public class EyeView extends javax.swing.JFrame {
       if (f.isDirectory()) {
         return true;
       }
-      return true;
-      /*String extension = FileHelper.getExtension(f);
+      
+      String extension = FileHelper.getExtension(f);
       if (extension != null) {
         if (extension.equals("xml")) {
           return true;
@@ -134,12 +160,28 @@ public class EyeView extends javax.swing.JFrame {
         }
       }
 
-      return false;*/
+      return false;
     }
 
     //The description of this filter
     public String getDescription() {
       return "look at files (*.xml)";
+    }
+  }
+  private class EyeTrackListener implements MouseMotionListener
+  {
+    private static final String FORMAT = "(%d,%d)";
+    private JLabel label;
+    public EyeTrackListener(JLabel label)
+    {
+      this.label = label;
+    }
+
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    public void mouseMoved(MouseEvent e) {
+      label.setText(String.format(FORMAT, e.getX(), e.getY()));
     }
   }
 }

@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -33,19 +34,19 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
   private static final int HALFSIZE = SIZE / 2;
   private static final int MARGIN = 2;
   private static final int PADDING = 1;
-  private static final Color color_normal = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 100);
-  private static final Color color_selected = new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), 100);
-  private static final Color color_over = new Color(Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue(), 100);
-  private static final Color color_background = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), 150);
+  private static final Color COLOR_NORMAL = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 100);
+  private static final Color COLOR_SELECTED = new Color(Color.GREEN.getRed(), Color.GREEN.getGreen(), Color.GREEN.getBlue(), 100);
+  private static final Color COLOR_OVER = new Color(Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue(), 100);
+  private static final Color COLOR_BACKGROUND = new Color(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue(), 150);
   private BufferedImage image;
-  private List<Point> points;
-  private Point current;
-  private Point over;
+  private List<Device> devices;
+  private Device current;
+  private Device over;
 
   /** Creates new form ViewPanel */
   public ViewPanel() {
     initComponents();
-    points = new ArrayList<Point>();
+    devices = new ArrayList<Device>();
     current = null;
     over = null;
     this.addMouseListener(this);
@@ -60,12 +61,12 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
     this.image = image;
   }
 
-  public List<Point> getPoints() {
-    return points;
+  public List<Device> getDevices() {
+    return devices;
   }
 
-  public void setPoints(List<Point> points) {
-    this.points = points;
+  public void setDevices(List<Device> devices) {
+    this.devices = devices;
   }
 
   /** This method is called from within the constructor to
@@ -105,61 +106,122 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
       g2.setFont(font);
 
 
-      for (Point p : points) {
-        int x = p.getX() - HALFSIZE;
-        int y = p.getY() - HALFSIZE;
-
-        int text_width = (int) font.getStringBounds(p.getLookat(), frc).getWidth();
-        int text_height = (int) font.getLineMetrics(p.getLookat(), frc).getHeight();
-
-        int text_x;
-        int text_y = y;
-        if (text_width + x < 640) {
-          text_x = x + (SIZE + (2 * MARGIN) + (2 * PADDING));
-        } else {
-          text_x = x - (text_width + (2 * MARGIN) + (2 * PADDING));
-        }
-        boolean show_text = false;
-
-        if (p.equals(current)) {
-          g.setColor(color_selected);
-          show_text = true;
-        } else if (p.equals(over)) {
-          g.setColor(color_over);
-          show_text = true;
-        } else {
-          g.setColor(color_normal);
-        }
-
-        //Button
-        g.fill3DRect(x, y, SIZE, SIZE, true);
-
-        if (show_text) {
-          g.setColor(color_background);
-          g2.fillRect(text_x, y, text_width + (2 * MARGIN), text_height + (2 * MARGIN));
-
-          g.setColor(Color.WHITE);
-          g.drawString(p.getLookat(), text_x, y + text_height);
+      for (Device d : devices) {
+        switch (d.getType()) {
+          case Point:
+            drawPoint(g, d, d.getPoints().get(0), font, frc);
+            break;
+          case Area:
+            drawArea(g, d, d.getPoints(), font, frc);
+            break;
         }
       }
     }
+  }
+
+  private void drawArea(Graphics g, Device device, List<Point> points, Font font, FontRenderContext frc) {
+
+    int x = points.get(0).getX() - HALFSIZE;
+    int y = points.get(0).getY() - HALFSIZE;
+
+    int text_width = (int) font.getStringBounds(device.getLookat(), frc).getWidth();
+    int text_height = (int) font.getLineMetrics(device.getLookat(), frc).getHeight();
+
+    int text_x;
+    int text_y = y;
+    if (text_width + x < 640) {
+      text_x = x + (SIZE + (2 * MARGIN) + (2 * PADDING));
+    } else {
+      text_x = x - (text_width + (2 * MARGIN) + (2 * PADDING));
+    }
+    boolean show_text = false;
+
+    if (device.equals(current)) {
+      g.setColor(COLOR_SELECTED);
+      show_text = true;
+    } else if (device.equals(over)) {
+      g.setColor(COLOR_OVER);
+      show_text = true;
+    } else {
+      g.setColor(COLOR_NORMAL);
+    }
+
+    //Button
+    int size = points.size();
+    int[] px = new int[size];
+    int[] py = new int[size];
+    for (int i = 0; i < size; i++) {
+      px[i] = points.get(i).getX();
+      py[i] = points.get(i).getY();
+    }
+
+    g.fillPolygon(px, py, size);
+
+    if (show_text) {
+      paintLabel(g, device.getLookat(), text_x, text_y, text_width, text_height);
+    }
+
+  }
+
+  private void drawPoint(Graphics g, Device device, Point point, Font font, FontRenderContext frc) {
+
+    int x = point.getX() - HALFSIZE;
+    int y = point.getY() - HALFSIZE;
+
+    int text_width = (int) font.getStringBounds(device.getLookat(), frc).getWidth();
+    int text_height = (int) font.getLineMetrics(device.getLookat(), frc).getHeight();
+
+    int text_x;
+    int text_y = y;
+    if (text_width + x < 640) {
+      text_x = x + (SIZE + (2 * MARGIN) + (2 * PADDING));
+    } else {
+      text_x = x - (text_width + (2 * MARGIN) + (2 * PADDING));
+    }
+    boolean show_text = false;
+
+    if (device.equals(current)) {
+      g.setColor(COLOR_SELECTED);
+      show_text = true;
+    } else if (device.equals(over)) {
+      g.setColor(COLOR_OVER);
+      show_text = true;
+    } else {
+      g.setColor(COLOR_NORMAL);
+    }
+
+    //Button
+    g.fill3DRect(x, y, SIZE, SIZE, true);
+
+    if (show_text) {
+      paintLabel(g, device.getLookat(), text_x, text_y, text_width, text_height);
+    }
+
+  }
+
+  private void paintLabel(Graphics g, String label, int x, int y, int width, int height) {
+    g.setColor(COLOR_BACKGROUND);
+    g.fillRect(x, y, width + (2 * MARGIN), height + (2 * MARGIN));
+
+    g.setColor(Color.WHITE);
+    g.drawString(label, x, y + height);
   }
 
   public void mouseDragged(MouseEvent e) {
   }
 
   public void mouseMoved(MouseEvent e) {
-    Point p = isOver(e.getX(), e.getY());
+    Device d = isOver(e.getX(), e.getY());
     boolean repaint = false;
-    if (p == null && over != null) {
+    if (d == null && over != null) {
       repaint = true;
-    } else if (over == null && p != null) {
+    } else if (over == null && d != null) {
       repaint = true;
-    } else if (p != null && !p.equals(over)) {
+    } else if (d != null && !d.equals(over)) {
       repaint = true;
     }
 
-    over = p;
+    over = d;
     if (repaint) {
       repaint();
     }
@@ -167,17 +229,17 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
   }
 
   public void mouseClicked(MouseEvent e) {
-    Point p = isOver(e.getX(), e.getY());
+    Device d = isOver(e.getX(), e.getY());
     boolean repaint = false;
-    if (p == null && current != null) {
+    if (d == null && current != null) {
       repaint = true;
-    } else if (current == null && p != null) {
+    } else if (current == null && d != null) {
       repaint = true;
-    } else if (p != null && !p.equals(current)) {
+    } else if (d != null && !d.equals(current)) {
       repaint = true;
     }
 
-    current = p;
+    current = d;
 
     if (repaint) {
       repaint();
@@ -196,17 +258,36 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
   public void mouseExited(MouseEvent e) {
   }
 
-  private Point isOver(int x, int y) {
-    for (Point p : points) {
-      int dx = Math.abs(x - p.getX());
-      int dy = Math.abs(y - p.getY());
+  private Device isOver(int x, int y) {
+    for (Device d : devices) {
+      switch (d.getType()) {
+        case Point:
 
-      if (dx <= HALFSIZE && dy <= HALFSIZE) {
-        return p;
-      } else if (p.equals(over)) {
-        return null;
+          Point p = d.getPoints().get(0);
+          int dx = Math.abs(x - p.getX());
+          int dy = Math.abs(y - p.getY());
+
+          if (dx <= HALFSIZE && dy <= HALFSIZE) {
+            return d;
+          } else if (d.equals(over)) {
+            return null;
+          }
+          break;
+        case Area:
+          //TODO: this is called many times optimize :d
+          Polygon poly = new Polygon();
+          for(Point point: d.getPoints())
+          {
+            poly.addPoint(point.getX(), point.getY());
+          }
+          if(poly.contains(x, y))
+          {
+            return d;
+          }
+          
       }
     }
     return null;
   }
+
 }

@@ -10,7 +10,15 @@
 
 <eyetrack>
   <image url="livingroom.jpg">
-    <point x= "200" y = "225" lookat="livingroom_tv"/>
-    <point x= "425" y = "325" lookat="livingroom_sterio"/>
+    <device lookat="livingroom_stereo">
+      <point x= "425" y = "325"/>
+    </device>
+     
+    <device lookat="livingroom_tv">
+      <point x= "258" y = "190"/>
+      <point x= "258" y = "250"/>
+      <point x= "155" y = "250"/>
+      <point x= "155" y = "190"/>
+    </device>
   </image>
 </eyetrack>
