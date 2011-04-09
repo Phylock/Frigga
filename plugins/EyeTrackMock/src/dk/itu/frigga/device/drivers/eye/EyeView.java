@@ -10,7 +10,7 @@
  */
 package dk.itu.frigga.device.drivers.eye;
 
-import dk.itu.frigga.utility.FileHelper;
+import dk.itu.frigga.utility.FileExtensionFilter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
@@ -19,7 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -29,6 +28,7 @@ import org.xml.sax.SAXException;
  */
 public class EyeView extends javax.swing.JFrame {
 
+  private static final String FORMAT_TITLE = "Frigga Eye Tracking (Mock): %s";
   final JFileChooser fc = new JFileChooser();
 
   /** Creates new form EyeView */
@@ -36,9 +36,10 @@ public class EyeView extends javax.swing.JFrame {
     initComponents();
     fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
     fc.setAcceptAllFileFilterUsed(false);
-    fc.setFileFilter(new XMLFilter());
-    viewPanel1.addMouseMotionListener(new EyeTrackListener(jLabel1));
+    fc.setFileFilter(new FileExtensionFilter(new String[]{"xml"}, "lookat file(*.xml)"));
+    viewPanel1.addMouseMotionListener(new EyeTrackListener(jLabel1, viewPanel1));
     pack();
+    setTitle(String.format(FORMAT_TITLE, "None"));
   }
 
   /** This method is called from within the constructor to
@@ -123,7 +124,7 @@ public class EyeView extends javax.swing.JFrame {
         try {
           File f = fc.getSelectedFile();
           //This is where a real application would open the file.
-          System.out.println("Opening: " + f.getName() + ".");
+          setTitle(String.format(FORMAT_TITLE, f.getName()));
           LookLoader.load(f, viewPanel1);
         } catch (IOException ex) {
           Logger.getLogger(EyeView.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,8 +133,6 @@ public class EyeView extends javax.swing.JFrame {
         } catch (ParserConfigurationException ex) {
           Logger.getLogger(EyeView.class.getName()).log(Level.SEVERE, null, ex);
         }
-      } else {
-        System.out.println("Open command cancelled by user.");
       }
     }//GEN-LAST:event_file_openActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -144,36 +143,16 @@ public class EyeView extends javax.swing.JFrame {
   private javax.swing.JPanel jPanel2;
   private dk.itu.frigga.device.drivers.eye.ViewPanel viewPanel1;
   // End of variables declaration//GEN-END:variables
-  private class XMLFilter extends FileFilter {
 
-    public boolean accept(File f) {
-      if (f.isDirectory()) {
-        return true;
-      }
-      
-      String extension = FileHelper.getExtension(f);
-      if (extension != null) {
-        if (extension.equals("xml")) {
-          return true;
-        } else {
-          return false;
-        }
-      }
+  private class EyeTrackListener implements MouseMotionListener {
 
-      return false;
-    }
-
-    //The description of this filter
-    public String getDescription() {
-      return "look at files (*.xml)";
-    }
-  }
-  private class EyeTrackListener implements MouseMotionListener
-  {
-    private static final String FORMAT = "(%d,%d)";
+    private static final String FORMAT_GLOBAL = "Global (%d,%d)";
+    private static final String FORMAT_LOCAL = "Local (%d,%d) " + FORMAT_GLOBAL;
     private JLabel label;
-    public EyeTrackListener(JLabel label)
-    {
+    private ViewPanel viewpanel;
+
+    public EyeTrackListener(JLabel label, ViewPanel viewpanel) {
+      this.viewpanel = viewpanel;
       this.label = label;
     }
 
@@ -181,7 +160,14 @@ public class EyeView extends javax.swing.JFrame {
     }
 
     public void mouseMoved(MouseEvent e) {
-      label.setText(String.format(FORMAT, e.getX(), e.getY()));
+      Device d = viewpanel.getOver();
+      if (d != null) {
+        Point p = d.toLocal(e.getX(), e.getY());
+        label.setText(String.format(FORMAT_LOCAL, p.getX(), p.getY(), e.getX(), e.getY()));
+      } else {
+        label.setText(String.format(FORMAT_GLOBAL, e.getX(), e.getY()));
+      }
+
     }
   }
 }

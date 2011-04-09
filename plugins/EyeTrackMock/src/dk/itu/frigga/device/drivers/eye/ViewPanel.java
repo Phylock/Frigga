@@ -30,8 +30,8 @@ import java.util.List;
  */
 public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener, MouseListener {
 
-  private static final int SIZE = 20;
-  private static final int HALFSIZE = SIZE / 2;
+  private static final int SIZE = Device.POINT_SIZE;
+  private static final int HALFSIZE = Device.POINT_HALFSIZE;
   private static final int MARGIN = 2;
   private static final int PADDING = 1;
   private static final Color COLOR_NORMAL = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 100);
@@ -91,6 +91,12 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
   // End of variables declaration//GEN-END:variables
+
+  public Device getOver() {
+    return over;
+  }
+
+
 
   @Override
   protected void paintComponent(Graphics g) {
@@ -260,34 +266,10 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
 
   private Device isOver(int x, int y) {
     for (Device d : devices) {
-      switch (d.getType()) {
-        case Point:
-
-          Point p = d.getPoints().get(0);
-          int dx = Math.abs(x - p.getX());
-          int dy = Math.abs(y - p.getY());
-
-          if (dx <= HALFSIZE && dy <= HALFSIZE) {
-            return d;
-          } else if (d.equals(over)) {
-            return null;
-          }
-          break;
-        case Area:
-          //TODO: this is called many times optimize :d
-          Polygon poly = new Polygon();
-          for(Point point: d.getPoints())
-          {
-            poly.addPoint(point.getX(), point.getY());
-          }
-          if(poly.contains(x, y))
-          {
-            return d;
-          }
-          
+      if (d.contains(x, y)) {
+        return d;
       }
     }
     return null;
   }
-
 }
