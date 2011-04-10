@@ -5,14 +5,19 @@
 package dk.itu.frigga;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.felix.main.AutoProcessor;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
@@ -24,8 +29,10 @@ public class Main {
 
   private static final String VERSION = "0.1.0.SNAPSHOT";
   private static final String PROJECTNAME = "Frigga";
-  private static final String FELIX_CONFIG_FILE = "conf/config.properties";
-  private static final String FELIX_CONFIG_PROPERTIES = "felix.config.properties";
+  private static final String FELIX_CONFIG_DIR = "conf/";
+  private static final String FELIX_CONFIG_APPLICATION_DIR = FELIX_CONFIG_DIR + "application/";
+  private static final String FELIX_CONFIG_FILE = FELIX_CONFIG_DIR + "config.properties";
+  
   private Framework framework = null;
   private Properties config;
 
@@ -47,6 +54,8 @@ public class Main {
       if (file.exists()) {
         master.load(new FileInputStream(file));
         config.putAll(master);
+        config.put("felix.fileinstall.dir", FELIX_CONFIG_APPLICATION_DIR);
+        config.put("felix.fileinstall.filter", "*.cfg");
       }
     } catch (IOException ex) {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,12 +73,17 @@ public class Main {
 
   private void initializeFramework() throws Exception {
     framework = getFrameworkFactory().newFramework(config);
+    framework.init();
+    framework.start();
+    AutoProcessor.process(config, framework.getBundleContext());
   }
 
   private void initializeCore() throws Exception {
+    BundleLoader.loadDirectory(framework, new File("bundle"));
   }
 
   private void initializePlugins() throws Exception {
+    BundleLoader.loadDirectory(framework, new File("plugins"));
   }
 
   public void printBanner() {
@@ -78,9 +92,6 @@ public class Main {
   }
 
   public void run() throws Exception {
-    framework.init();
-    AutoProcessor.process(config, framework.getBundleContext());
-    framework.start();
     framework.waitForStop(0);
   }
 
@@ -94,7 +105,7 @@ public class Main {
       main.load();
       main.initialize();
 
-      //blocking call, returns at sustem exit
+      //blocking call, returns at system exit
       main.run();
 
       System.exit(0);

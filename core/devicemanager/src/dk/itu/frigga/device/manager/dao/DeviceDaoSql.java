@@ -36,6 +36,10 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   @SuppressWarnings("unchecked")
   public List findByCategory(Category category) {
     List<Device> list = new ArrayList<Device>();
+    if (category == null) {
+      return list;
+    }
+
     try {
       SELECT_BY_CATEGORY.setString(/*Category*/1, category.getName());
       ResultSet rs = SELECT_BY_CATEGORY.executeQuery();
