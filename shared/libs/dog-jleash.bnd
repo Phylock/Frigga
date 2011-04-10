@@ -3,3 +3,16 @@ Export-Package: it.polito.elite.domotics.dog2.dog2leash.*;version=${version}
 Bundle-Version: ${version}
 Bundle-Name: Elite Dog JLeash
 Bundle-SymbolicName: dog-jleash
+Import-Package: \
+ com.sun.org.apache.xml.internal.serialize;resolution:=optional, \
+ javax.xml.parsers, \
+ javax.xml.transform, \
+ javax.xml.transform.dom, \
+ javax.xml.transform.stream, \
+ javax.xml.validation, \
+ org.apache.xmlrpc, \
+ org.apache.xmlrpc.client, \
+ org.apache.xmlrpc.server, \
+ org.apache.xmlrpc.webserver, \
+ org.w3c.dom, \
+ org.xml.sax

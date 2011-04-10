@@ -3,3 +3,15 @@ Export-Package: org.apache.xmlrpc.*;version=${version}
 Bundle-Version: ${version}
 Bundle-Name: Apache XMLRPC Server
 Bundle-SymbolicName: xmlrpc-server
+Import-Package:\
+ javax.servlet;resolution:=optional, \
+ javax.servlet.http;resolution:=optional, \
+ javax.xml.bind, \
+ org.apache.commons.logging;resolution:=optional, \
+ org.apache.xmlrpc, \
+ org.apache.xmlrpc.common, \
+ org.apache.xmlrpc.parser, \
+ org.apache.xmlrpc.serializer, \
+ org.apache.xmlrpc.util, \
+ org.w3c.dom, \
+ org.xml.sax

@@ -5,16 +5,19 @@
    xmlns:ev='org.apache.felix.ipojo.handlers.event'
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
-  <component name="DogDriverImpl" classname="dk.itu.frigga.device.drivers.dog.DogDriver">
+  <component name="DogDriver" classname="dk.itu.frigga.device.drivers.dog.DogDriver">
     <provides/>
 
     <callback transition="validate" method="validate" />
     <callback transition="invalidate" method="invalidate" />
     
     <requires field="log" optional="true"/>
+
+    <properties updated="updated" propagation="true">
+		<property name="url" field="url" value="http://localhost:65300/RPC2"/>
+	</properties>
+
     <ev:publisher name="deviceevents" field="event" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
     
   </component>
-  <instance component="DogDriverImpl" name="DogDriver"/>
-
 </ipojo>

@@ -24,14 +24,14 @@
     <property file="${deploy.basedir}/deploy.properties"/>
   </target>
     
-  <target name="deploy-boundle-auto">
-    <copy todir="${deploy.auto.dir}" overwrite="true">
+  <target name="deploy-bundle-core">
+    <copy todir="${deploy.core.dir}" overwrite="true">
       <fileset dir="${deploy.bundle.dir}/"/>
     </copy>
   </target>
     
-  <target name="deploy-boundle-manual">
-    <copy todir="${deploy.manual.dir}" overwrite="true">
+  <target name="deploy-bundle-plugins">
+    <copy todir="${deploy.plugins.dir}" overwrite="true">
       <fileset dir="${deploy.bundle.dir}/"/>
     </copy>
   </target>

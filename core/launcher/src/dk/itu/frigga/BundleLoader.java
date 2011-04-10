@@ -46,7 +46,10 @@ public class BundleLoader {
     for(Bundle bundle: installed)
     {
       try {
-        bundle.start();
+        if(bundle.getState() != Bundle.ACTIVE)
+        {
+          bundle.start();
+        }
       } catch (BundleException ex) {
         System.out.println("Bundle start error: " + ex);
       }

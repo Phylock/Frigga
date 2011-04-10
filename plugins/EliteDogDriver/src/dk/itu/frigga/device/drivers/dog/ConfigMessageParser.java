@@ -10,7 +10,6 @@ import dk.itu.frigga.device.descriptor.CategoryDescriptor;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;

@@ -12,10 +12,10 @@ import dk.itu.frigga.device.InvalidParameterException;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.UnknownDeviceException;
 import dk.itu.frigga.utility.ReflectionHelper;
+import java.util.Dictionary;
 import javax.xml.parsers.ParserConfigurationException;
 import org.osgi.service.log.LogService;
 import org.apache.felix.ipojo.handlers.event.publisher.Publisher;
-import org.apache.xmlrpc.XmlRpcException;
 
 /**
  *
@@ -23,15 +23,17 @@ import org.apache.xmlrpc.XmlRpcException;
  */
 public class DogDriver implements Driver {
 
-  private static final String DRIVER_ID = "DogDriver";
+  private static final String DRIVER_ID = "DogDriver-%s";
   //External services, initialized by DependencyManager
   private LogService log;
   private Publisher event;
   //Private member variables
   private Connection connection = null;
-  /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
-  public static String DEFAULT_DOG_ADDRESS = "http://localhost:65300/RPC2";
+  private String url;
+  private String id;
 
+  /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
+  //public static String DEFAULT_DOG_ADDRESS = "http://localhost:65300/RPC2";
   public DogDriver() {
   }
 
@@ -100,8 +102,8 @@ public class DogDriver implements Driver {
     updateSubclassFields("log", connection.getParser(), log);
 
     updateSubclassFields("event", DogDeviceManager.instance(), event);
-    
-      connection.connect(DogDriver.DEFAULT_DOG_ADDRESS);
+
+    connection.connect(url);
 
   }
 
@@ -110,7 +112,7 @@ public class DogDriver implements Driver {
   }
 
   /**
-   * Update referance in subclass, even if its private
+   * Update reference in subclass, even if its private
    * @param clazz the class to update
    * @param field the field name
    * @param obj the class instance to update
@@ -124,7 +126,17 @@ public class DogDriver implements Driver {
     }
   }
 
+  public void updated(Dictionary conf) {
+    id = parseID(conf.get("felix.fileinstall.filename").toString());
+  }
+
+  private static String parseID(String filename)
+  {
+    int start = filename.lastIndexOf('-')+1;
+    int end = filename.lastIndexOf('.');
+    return filename.substring(start, end);
+  }
   public String getDriverId() {
-    return DRIVER_ID;
+    return String.format(DRIVER_ID, id);
   }
 }

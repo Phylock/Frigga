@@ -3,3 +3,16 @@ Export-Package: org.apache.xmlrpc.client.*;version=${version}
 Bundle-Version: ${version}
 Bundle-Name: Apache XMLRPC Client
 Bundle-SymbolicName: xmlrpc-client
+Import-Package: \
+ javax.net, \
+ javax.net.ssl;resolution:=optional, \
+ org.apache.commons.httpclient;resolution:=optional, \
+ org.apache.commons.httpclient.auth;resolution:=optional, \
+ org.apache.commons.httpclient.methods;resolution:=optional, \
+ org.apache.commons.httpclient.params;resolution:=optional, \
+ org.apache.xmlrpc, \
+ org.apache.xmlrpc.common, \
+ org.apache.xmlrpc.parser, \
+ org.apache.xmlrpc.serializer, \
+ org.apache.xmlrpc.util, \
+ org.xml.sax

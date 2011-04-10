@@ -4,3 +4,12 @@ Private-Package: org.apache.commons.logging.impl
 Bundle-Version: ${version}
 Bundle-Name: Apache XMLRPC Common
 Bundle-SymbolicName: xmlrpc-common
+Import-Package: \
+ javax.xml.bind, \
+ javax.xml.namespace, \
+ javax.xml.parsers, \
+ org.apache.ws.commons.serialize, \
+ org.apache.ws.commons.util, \
+ org.w3c.dom, \
+ org.xml.sax, \
+ org.xml.sax.helpers

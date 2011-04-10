@@ -3,3 +3,9 @@ Export-Package: org.apache.ws.commons.*;version=${version}
 Bundle-Version: ${version}
 Bundle-Name: Apache WS Commons Util
 Bundle-SymbolicName: ws-commons-util
+Import-Package: \
+ javax.xml.namespace, \
+ org.w3c.dom, \
+ org.xml.sax, \
+ org.xml.sax.ext, \
+ org.xml.sax.helpers

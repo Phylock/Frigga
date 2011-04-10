@@ -55,7 +55,8 @@ public class Main {
         master.load(new FileInputStream(file));
         config.putAll(master);
         config.put("felix.fileinstall.dir", FELIX_CONFIG_APPLICATION_DIR);
-        config.put("felix.fileinstall.filter", "*.cfg");
+        config.put("felix.fileinstall.filter", ".*\\.cfg");
+        config.put("felix.fileinstall.log.level", "-1");
       }
     } catch (IOException ex) {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
