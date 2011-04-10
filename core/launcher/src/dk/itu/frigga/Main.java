@@ -5,19 +5,13 @@
 package dk.itu.frigga;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.felix.main.AutoProcessor;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
@@ -84,7 +78,7 @@ public class Main {
   }
 
   private void initializePlugins() throws Exception {
-    BundleLoader.loadDirectory(framework, new File("plugins"));
+    //BundleLoader.loadDirectory(framework, new File("plugins"));
   }
 
   public void printBanner() {
