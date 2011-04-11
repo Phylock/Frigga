@@ -22,10 +22,10 @@ public class LogTableModel extends AbstractTableModel {
   public static final int MESSAGE_INDEX = 3;
   public static final int ERROR_INDEX = 4;
   private static final String[] COLUMNS = new String[]{"", "Time", "Bundle","Message", "Error"};
-  private List<Entry> entries;
+  private List<LogEntryModel> entries;
 
   public LogTableModel() {
-    entries = new ArrayList<Entry>();
+    entries = new ArrayList<LogEntryModel>();
   }
 
   public int getRowCount() {
@@ -58,7 +58,7 @@ public class LogTableModel extends AbstractTableModel {
   }
 
   public Object getValueAt(int rowIndex, int columnIndex) {
-    Entry row = entries.get(rowIndex);
+    LogEntryModel row = entries.get(rowIndex);
     switch (columnIndex) {
       case TYPE_INDEX:
         return TypeImageIcon.getIcon(row.getType());
@@ -75,7 +75,12 @@ public class LogTableModel extends AbstractTableModel {
     }
   }
 
-  public void addEntry(Entry entry) {
+  public LogEntryModel getRowEntry(int i)
+  {
+    return entries.get(i);
+  }
+
+  public void addEntry(LogEntryModel entry) {
     entries.add(entry);
   }
 }

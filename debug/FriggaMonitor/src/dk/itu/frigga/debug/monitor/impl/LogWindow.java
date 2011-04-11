@@ -14,6 +14,10 @@ import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
 import javax.swing.JTable;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.TableRowSorter;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
@@ -24,16 +28,44 @@ import org.osgi.service.log.LogService;
  * @author phylock
  */
 public class LogWindow extends JFrame implements LogListener {
-private BundleContext bc;
+
+  private BundleContext bc;
+  private LogFilter logfilter;
+
   /** Creates new form LogWindow */
   public LogWindow(BundleContext bc) {
     this.bc = bc;
     initComponents();
+    initLogTable();
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+  }
+
+  private void initLogTable() {
+    logfilter = new LogFilter();
     jTable1.setDefaultRenderer(Date.class, new DateCellRenderer());
     jTable1.setRowHeight(32);
     jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
     jTable1.getColumnModel().getColumn(0).setMaxWidth(32);
+    updateBundleList();
+    updateLogFilter();
+    select_message.getDocument().addDocumentListener(new DocumentListener() {
+
+      public void insertUpdate(DocumentEvent e) {
+        updateMessageFilter();
+      }
+
+      public void removeUpdate(DocumentEvent e) {
+        updateMessageFilter();
+      }
+
+      public void changedUpdate(DocumentEvent e) {
+        updateMessageFilter();
+      }
+    });
+    filter_debug.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Debug));
+    filter_error.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Error));
+    filter_warning.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Warning));
+    filter_info.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Info));
   }
 
   /** This method is called from within the constructor to
@@ -46,65 +78,186 @@ private BundleContext bc;
   private void initComponents() {
 
     jTabbedPane1 = new javax.swing.JTabbedPane();
-    jPanel1 = new javax.swing.JPanel();
+    tab_log = new javax.swing.JPanel();
     jScrollPane1 = new javax.swing.JScrollPane();
     jTable1 = new javax.swing.JTable();
-    jPanel2 = new javax.swing.JPanel();
+    jPanel3 = new javax.swing.JPanel();
+    filter_type_group = new javax.swing.JPanel();
+    filter_warning = new javax.swing.JToggleButton();
+    filter_debug = new javax.swing.JToggleButton();
+    filter_error = new javax.swing.JToggleButton();
+    filter_info = new javax.swing.JToggleButton();
+    label_bundle = new javax.swing.JLabel();
+    select_bundle = new javax.swing.JComboBox();
+    label_message = new javax.swing.JLabel();
+    select_message = new javax.swing.JTextField();
+    tab_bundles = new javax.swing.JPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
     jTable2 = new javax.swing.JTable();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+    tab_log.setLayout(new java.awt.BorderLayout());
+
     jTable1.setModel(new LogTableModel());
     jScrollPane1.setViewportView(jTable1);
 
-    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-    jPanel1.setLayout(jPanel1Layout);
-    jPanel1Layout.setHorizontalGroup(
-      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
-    );
-    jPanel1Layout.setVerticalGroup(
-      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
-    );
+    tab_log.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-    jTabbedPane1.addTab("Log", jPanel1);
+    jPanel3.setPreferredSize(new java.awt.Dimension(399, 24));
+    jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.X_AXIS));
+
+    filter_type_group.setPreferredSize(new java.awt.Dimension(110, 24));
+    filter_type_group.setLayout(new java.awt.GridLayout(1, 0));
+
+    filter_warning.setSelected(true);
+    filter_warning.setText("W");
+    filter_warning.setToolTipText("Warning");
+    filter_warning.setPreferredSize(new java.awt.Dimension(25, 25));
+    filter_warning.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        filter_warningActionPerformed(evt);
+      }
+    });
+    filter_type_group.add(filter_warning);
+
+    filter_debug.setSelected(true);
+    filter_debug.setText("D");
+    filter_debug.setToolTipText("Debug");
+    filter_debug.setPreferredSize(new java.awt.Dimension(25, 25));
+    filter_debug.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        filter_debugActionPerformed(evt);
+      }
+    });
+    filter_type_group.add(filter_debug);
+
+    filter_error.setSelected(true);
+    filter_error.setText("E");
+    filter_error.setToolTipText("Error");
+    filter_error.setPreferredSize(new java.awt.Dimension(25, 25));
+    filter_error.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        filter_errorActionPerformed(evt);
+      }
+    });
+    filter_type_group.add(filter_error);
+
+    filter_info.setSelected(true);
+    filter_info.setText("I");
+    filter_info.setToolTipText("Info");
+    filter_info.setPreferredSize(new java.awt.Dimension(25, 25));
+    filter_info.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        filter_infoActionPerformed(evt);
+      }
+    });
+    filter_type_group.add(filter_info);
+
+    jPanel3.add(filter_type_group);
+
+    label_bundle.setText("Bundle");
+    jPanel3.add(label_bundle);
+
+    select_bundle.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        select_bundleItemStateChanged(evt);
+      }
+    });
+    jPanel3.add(select_bundle);
+
+    label_message.setText("Message");
+    jPanel3.add(label_message);
+    jPanel3.add(select_message);
+
+    tab_log.add(jPanel3, java.awt.BorderLayout.NORTH);
+
+    jTabbedPane1.addTab("Log", tab_log);
 
     jTable2.setModel(new BundleTableModel(bc));
     jScrollPane2.setViewportView(jTable2);
 
-    javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-    jPanel2.setLayout(jPanel2Layout);
-    jPanel2Layout.setHorizontalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+    javax.swing.GroupLayout tab_bundlesLayout = new javax.swing.GroupLayout(tab_bundles);
+    tab_bundles.setLayout(tab_bundlesLayout);
+    tab_bundlesLayout.setHorizontalGroup(
+      tab_bundlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
     );
-    jPanel2Layout.setVerticalGroup(
-      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+    tab_bundlesLayout.setVerticalGroup(
+      tab_bundlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
     );
 
-    jTabbedPane1.addTab("Bundles", jPanel2);
+    jTabbedPane1.addTab("Bundles", tab_bundles);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jTabbedPane1)
+      .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jTabbedPane1)
+      .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
     );
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
+  private void updateBundleList() {
+    String selected = ((select_bundle.getSelectedItem() != null) ? select_bundle.getSelectedItem().toString() : "");
+    select_bundle.removeAllItems();
+    Bundle[] bundles = bc.getBundles();
+    select_bundle.addItem("");
+    for (Bundle bundle : bundles) {
+      String symbolic = bundle.getSymbolicName();
+      select_bundle.addItem(symbolic);
+    }
+    select_bundle.setSelectedItem(selected);
+  }
+
+  private void filter_warningActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filter_warningActionPerformed
+    logfilter.setShowWarning(filter_warning.isSelected());
+    updateLogFilter();
+  }//GEN-LAST:event_filter_warningActionPerformed
+
+  private void filter_debugActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filter_debugActionPerformed
+    logfilter.setShowDebug(filter_debug.isSelected());
+    updateLogFilter();
+  }//GEN-LAST:event_filter_debugActionPerformed
+
+  private void filter_errorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filter_errorActionPerformed
+    logfilter.setShowError(filter_error.isSelected());
+    updateLogFilter();
+  }//GEN-LAST:event_filter_errorActionPerformed
+
+  private void filter_infoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filter_infoActionPerformed
+    logfilter.setShowInfo(filter_info.isSelected());
+    updateLogFilter();
+  }//GEN-LAST:event_filter_infoActionPerformed
+
+  private void select_bundleItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_select_bundleItemStateChanged
+    String selected = ((select_bundle.getSelectedItem() != null) ? select_bundle.getSelectedItem().toString() : "");
+    logfilter.setBundleFilter(selected);
+    updateLogFilter();
+  }//GEN-LAST:event_select_bundleItemStateChanged
+
+  private void updateMessageFilter() {
+    String selected = select_message.getText();
+    logfilter.setMessageFilter(selected);
+    updateLogFilter();
+  }
+
+  private void updateLogFilter() {
+    TableRowSorter<LogTableModel> sorter = new TableRowSorter<LogTableModel>((LogTableModel) jTable1.getModel());
+    sorter.setRowFilter(logfilter);
+    jTable1.setRowSorter(sorter);
+  }
+
   public void logged(LogEntry log) {
     JScrollBar sb = jScrollPane1.getVerticalScrollBar();
     boolean toEnd = sb.getValue() == sb.getMaximum();
-    Entry entry = new Entry(parseType(log.getLevel()), new Date(log.getTime()), log.getBundle().getSymbolicName(), log.getMessage(), log.getException());
+    LogEntryModel entry = new LogEntryModel(parseType(log.getLevel()), new Date(log.getTime()), log.getBundle().getSymbolicName(), log.getMessage(), log.getException());
     LogTableModel model = (LogTableModel) jTable1.getModel();
     model.addEntry(entry);
     model.fireTableDataChanged();
@@ -116,7 +269,7 @@ private BundleContext bc;
   public void fillLogEnties(LogEntry[] entries) {
     LogTableModel model = (LogTableModel) jTable1.getModel();
     for (LogEntry logentry : entries) {
-      Entry entry = new Entry(parseType(logentry.getLevel()), new Date(logentry.getTime()), logentry.getBundle().getSymbolicName(), logentry.getMessage(), logentry.getException());
+      LogEntryModel entry = new LogEntryModel(parseType(logentry.getLevel()), new Date(logentry.getTime()), logentry.getBundle().getSymbolicName(), logentry.getMessage(), logentry.getException());
       model.addEntry(entry);
     }
     model.fireTableDataChanged();
@@ -125,28 +278,37 @@ private BundleContext bc;
 
   }
 
-  private Entry.Type parseType(int type) {
+  private LogEntryModel.Type parseType(int type) {
     switch (type) {
       case LogService.LOG_DEBUG:
-        return Entry.Type.Debug;
+        return LogEntryModel.Type.Debug;
       case LogService.LOG_ERROR:
-        return Entry.Type.Error;
+        return LogEntryModel.Type.Error;
       case LogService.LOG_INFO:
-        return Entry.Type.Info;
+        return LogEntryModel.Type.Info;
       case LogService.LOG_WARNING:
-        return Entry.Type.Warning;
+        return LogEntryModel.Type.Warning;
       default:
-        return Entry.Type.Error;
+        return LogEntryModel.Type.Error;
     }
   }
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JPanel jPanel1;
-  private javax.swing.JPanel jPanel2;
+  private javax.swing.JToggleButton filter_debug;
+  private javax.swing.JToggleButton filter_error;
+  private javax.swing.JToggleButton filter_info;
+  private javax.swing.JPanel filter_type_group;
+  private javax.swing.JToggleButton filter_warning;
+  private javax.swing.JPanel jPanel3;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JTabbedPane jTabbedPane1;
   private javax.swing.JTable jTable1;
   private javax.swing.JTable jTable2;
+  private javax.swing.JLabel label_bundle;
+  private javax.swing.JLabel label_message;
+  private javax.swing.JComboBox select_bundle;
+  private javax.swing.JTextField select_message;
+  private javax.swing.JPanel tab_bundles;
+  private javax.swing.JPanel tab_log;
   // End of variables declaration//GEN-END:variables
 }

@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author phylock
  */
-public class Entry {
+public class LogEntryModel {
   public enum Type
   {
     Debug, Info, Warning, Error
@@ -23,7 +23,7 @@ public class Entry {
   private String error_message;
   private String error_trace;
 
-  public Entry(Type type, Date time, String bundle, String message, Throwable error) {
+  public LogEntryModel(Type type, Date time, String bundle, String message, Throwable error) {
     this(type, time, bundle, message);
     if(error != null){
       this.error_message = error.getLocalizedMessage();
@@ -31,7 +31,7 @@ public class Entry {
     }
   }
 
-  public Entry(Type type, Date time, String bundle, String message) {
+  public LogEntryModel(Type type, Date time, String bundle, String message) {
     this.type = type;
     this.time = time;
     this.message = message;

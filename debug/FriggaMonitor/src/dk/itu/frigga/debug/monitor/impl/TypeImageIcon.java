@@ -37,7 +37,7 @@ public class TypeImageIcon {
     }
   }
 
-  public static ImageIcon getIcon(Entry.Type type)
+  public static ImageIcon getIcon(LogEntryModel.Type type)
   {
     switch(type)
     {
