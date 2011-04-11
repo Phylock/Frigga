@@ -10,7 +10,7 @@
 
     <callback transition="validate" method="start"/>
     <callback transition="invalidate" method="stop"/>
-    <!-- <requires field="datamanager" /> -->
+
      </component>
   <instance component="DemoWindowImpl" name="DemoWindow"/>
 

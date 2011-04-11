@@ -1,0 +1,6 @@
+Bundle-Version: 0.1
+Bundle-Name: Frigga Action Api
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.action
+
+Private-Package: dk.itu.frigga.action.*

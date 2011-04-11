@@ -20,6 +20,14 @@ public class LogFilter extends RowFilter<Object, Object>{
   private String bundleFilter = "";
   private String messageFilter = "";
 
+  public LogFilter(boolean debug, boolean info, boolean warning, boolean error) {
+    showDebug = debug;
+    showError = error;
+    showInfo = info;
+    showWarning = warning;
+  }
+
+
   public LogFilter() {
   }
 

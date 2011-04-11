@@ -11,6 +11,10 @@
 package dk.itu.frigga.debug.monitor.impl;
 
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
 import javax.swing.JTable;
@@ -19,6 +23,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.TableRowSorter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogService;
@@ -63,9 +68,13 @@ public class LogWindow extends JFrame implements LogListener {
       }
     });
     filter_debug.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Debug));
+    filter_debug.setText(" ");
     filter_error.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Error));
+    filter_error.setText(" ");
     filter_warning.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Warning));
+    filter_warning.setText(" ");
     filter_info.setIcon(TypeImageIcon.getIcon(LogEntryModel.Type.Info));
+    filter_info.setText(" ");
   }
 
   /** This method is called from within the constructor to
@@ -83,10 +92,10 @@ public class LogWindow extends JFrame implements LogListener {
     jTable1 = new javax.swing.JTable();
     jPanel3 = new javax.swing.JPanel();
     filter_type_group = new javax.swing.JPanel();
-    filter_warning = new javax.swing.JToggleButton();
     filter_debug = new javax.swing.JToggleButton();
-    filter_error = new javax.swing.JToggleButton();
     filter_info = new javax.swing.JToggleButton();
+    filter_warning = new javax.swing.JToggleButton();
+    filter_error = new javax.swing.JToggleButton();
     label_bundle = new javax.swing.JLabel();
     select_bundle = new javax.swing.JComboBox();
     label_message = new javax.swing.JLabel();
@@ -95,7 +104,12 @@ public class LogWindow extends JFrame implements LogListener {
     jScrollPane2 = new javax.swing.JScrollPane();
     jTable2 = new javax.swing.JTable();
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+    addWindowListener(new java.awt.event.WindowAdapter() {
+      public void windowClosing(java.awt.event.WindowEvent evt) {
+        formWindowClosing(evt);
+      }
+    });
 
     tab_log.setLayout(new java.awt.BorderLayout());
 
@@ -110,17 +124,6 @@ public class LogWindow extends JFrame implements LogListener {
     filter_type_group.setPreferredSize(new java.awt.Dimension(110, 24));
     filter_type_group.setLayout(new java.awt.GridLayout(1, 0));
 
-    filter_warning.setSelected(true);
-    filter_warning.setText("W");
-    filter_warning.setToolTipText("Warning");
-    filter_warning.setPreferredSize(new java.awt.Dimension(25, 25));
-    filter_warning.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        filter_warningActionPerformed(evt);
-      }
-    });
-    filter_type_group.add(filter_warning);
-
     filter_debug.setSelected(true);
     filter_debug.setText("D");
     filter_debug.setToolTipText("Debug");
@@ -132,17 +135,6 @@ public class LogWindow extends JFrame implements LogListener {
     });
     filter_type_group.add(filter_debug);
 
-    filter_error.setSelected(true);
-    filter_error.setText("E");
-    filter_error.setToolTipText("Error");
-    filter_error.setPreferredSize(new java.awt.Dimension(25, 25));
-    filter_error.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        filter_errorActionPerformed(evt);
-      }
-    });
-    filter_type_group.add(filter_error);
-
     filter_info.setSelected(true);
     filter_info.setText("I");
     filter_info.setToolTipText("Info");
@@ -153,6 +145,28 @@ public class LogWindow extends JFrame implements LogListener {
       }
     });
     filter_type_group.add(filter_info);
+
+    filter_warning.setSelected(true);
+    filter_warning.setText("W");
+    filter_warning.setToolTipText("Warning");
+    filter_warning.setPreferredSize(new java.awt.Dimension(25, 25));
+    filter_warning.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        filter_warningActionPerformed(evt);
+      }
+    });
+    filter_type_group.add(filter_warning);
+
+    filter_error.setSelected(true);
+    filter_error.setText("E");
+    filter_error.setToolTipText("Error");
+    filter_error.setPreferredSize(new java.awt.Dimension(25, 25));
+    filter_error.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        filter_errorActionPerformed(evt);
+      }
+    });
+    filter_type_group.add(filter_error);
 
     jPanel3.add(filter_type_group);
 
@@ -174,6 +188,7 @@ public class LogWindow extends JFrame implements LogListener {
 
     jTabbedPane1.addTab("Log", tab_log);
 
+    jTable2.setAutoCreateRowSorter(true);
     jTable2.setModel(new BundleTableModel(bc));
     jScrollPane2.setViewportView(jTable2);
 
@@ -181,11 +196,11 @@ public class LogWindow extends JFrame implements LogListener {
     tab_bundles.setLayout(tab_bundlesLayout);
     tab_bundlesLayout.setHorizontalGroup(
       tab_bundlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
     );
     tab_bundlesLayout.setVerticalGroup(
       tab_bundlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
     );
 
     jTabbedPane1.addTab("Bundles", tab_bundles);
@@ -194,11 +209,11 @@ public class LogWindow extends JFrame implements LogListener {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
+      .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 764, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
+      .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
     );
 
     pack();
@@ -209,10 +224,15 @@ public class LogWindow extends JFrame implements LogListener {
     select_bundle.removeAllItems();
     Bundle[] bundles = bc.getBundles();
     select_bundle.addItem("");
+    Set<String> sorted = new TreeSet<String>();
     for (Bundle bundle : bundles) {
       String symbolic = bundle.getSymbolicName();
-      select_bundle.addItem(symbolic);
+      sorted.add(symbolic);
     }
+    for (String s : sorted) {
+      select_bundle.addItem(s);
+    }
+
     select_bundle.setSelectedItem(selected);
   }
 
@@ -241,6 +261,14 @@ public class LogWindow extends JFrame implements LogListener {
     logfilter.setBundleFilter(selected);
     updateLogFilter();
   }//GEN-LAST:event_select_bundleItemStateChanged
+
+  private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    try {
+      bc.getBundle().stop();
+    } catch (BundleException ex) {
+      Logger.getLogger(LogWindow.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }//GEN-LAST:event_formWindowClosing
 
   private void updateMessageFilter() {
     String selected = select_message.getText();
