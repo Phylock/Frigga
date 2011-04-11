@@ -1,0 +1,9 @@
+Bundle-Version: 0.1
+Bundle-Name: Frigga Monitor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.debug.monitor
+
+Export-Package: dk.itu.frigga.debug.monitor
+Private-Package: dk.itu.frigga.debug.monitor.impl.*
+
+Bundle-Activator: dk.itu.frigga.debug.monitor.Activator

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.debug.log.impl;
+package dk.itu.frigga.debug.monitor.impl;
 
 import java.awt.Component;
 import java.awt.Dimension;

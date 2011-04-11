@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package dk.itu.frigga.debug.log.impl;
+package dk.itu.frigga.debug.monitor.impl;
 
 import java.text.DateFormat;
 import java.util.Date;

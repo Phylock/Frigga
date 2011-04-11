@@ -8,7 +8,7 @@
  *
  * Created on Apr 10, 2011, 4:38:15 PM
  */
-package dk.itu.frigga.debug.log.impl;
+package dk.itu.frigga.debug.monitor.impl;
 
 import java.util.Date;
 import javax.swing.JFrame;

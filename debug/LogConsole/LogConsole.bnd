@@ -1,9 +1,0 @@
-Bundle-Version: 0.1
-Bundle-Name: Frigga Console Gui
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-SymbolicName: dk.itu.frigga.debug.log
-
-Export-Package: dk.itu.frigga.debug.log
-Private-Package: dk.itu.frigga.debug.log.impl.*
-
-Bundle-Activator: dk.itu.frigga.debug.log.Activator
