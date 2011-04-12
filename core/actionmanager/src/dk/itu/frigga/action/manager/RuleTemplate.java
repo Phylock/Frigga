@@ -4,7 +4,7 @@
  */
 package dk.itu.frigga.action.manager;
 
-import dk.itu.frigga.action.manager.parser.Condition;
+import dk.itu.frigga.action.manager.block.Condition;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,29 +18,27 @@ public class RuleTemplate {
   private String id;
   private String description;
   private Map<String, String> callbacks;
-  private Map<String, String> replacements;
+  private Map<String, Replacement> replacements;
   private List<ScriptRule> scriptrules;
-  private String selection;
+  private Condition condition;
 
-  public RuleTemplate(String id, String description, Map<String, String> callbacks, Condition condition) {
+  public RuleTemplate(String id, String description, Map<String, String> callbacks, Map<String, Replacement> replacements, List<ScriptRule> scriptrules, Condition condition) {
     this.id = id;
     this.description = description;
     this.callbacks = callbacks;
+    this.replacements = replacements;
+    this.scriptrules = scriptrules;
+    this.condition = condition;
   }
 
-  public Map<String, String> getReplacements() {
+  public Map<String, Replacement> getReplacements() {
     return replacements;
   }
 
   public Rule createRule(Map<String, String> data) throws MissingReplacementData {
     if (replacements.size() == data.size() && replacements.keySet().containsAll(data.keySet())) {
-      String build_rule = selection;
-      for (Entry<String, String> entry : data.entrySet()) {
-        String key = "!" + entry.getKey();
-        build_rule = build_rule.replace(key, entry.getValue());
-      }
-      //TODO: fix null stuff :d
-      return new Rule(build_rule, callbacks, null);
+      //TODO: traverse condition tree and create rule
+      return null;
     } else {
       throw new MissingReplacementData("Missing data settings");
     }
@@ -48,5 +46,13 @@ public class RuleTemplate {
 
   public String getId() {
     return id;
+  }
+
+  public Condition getCondition() {
+    return condition;
+  }
+
+  public String getDescription() {
+    return description;
   }
 }

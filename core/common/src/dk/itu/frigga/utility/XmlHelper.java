@@ -75,7 +75,7 @@ public final class XmlHelper {
     Element elem = getFirstChildElement(element);
 
     if (elem != null) {
-      if (!Filtering.isIn(names, element.getNodeName())) {
+      if (!Filtering.isIn(names, elem.getNodeName())) {
         elem = getNextSiblingElement(elem, names);
       }
     }

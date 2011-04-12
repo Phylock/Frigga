@@ -10,7 +10,6 @@
  */
 package dk.itu.frigga.device.drivers.eye;
 
-import dk.itu.frigga.utility.FileExtensionFilter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
@@ -36,7 +35,7 @@ public class EyeView extends javax.swing.JFrame {
     initComponents();
     fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
     fc.setAcceptAllFileFilterUsed(false);
-    fc.setFileFilter(new FileExtensionFilter(new String[]{"xml"}, "lookat file(*.xml)"));
+    //fc.setFileFilter(new FileExtensionFilter(new String[]{"xml"}, "lookat file(*.xml)"));
     viewPanel1.addMouseMotionListener(new EyeTrackListener(jLabel1, viewPanel1));
     pack();
     setTitle(String.format(FORMAT_TITLE, "None"));

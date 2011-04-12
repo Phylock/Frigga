@@ -23,6 +23,7 @@ public class Main {
 
   private static final String VERSION = "0.1.0.SNAPSHOT";
   private static final String PROJECTNAME = "Frigga";
+  //TODO: the default one, allow overwrite from argument
   private static final String FELIX_CONFIG_DIR = "conf/";
   private static final String FELIX_CONFIG_APPLICATION_DIR = FELIX_CONFIG_DIR + "application/";
   private static final String FELIX_CONFIG_FILE = FELIX_CONFIG_DIR + "config.properties";
@@ -48,6 +49,7 @@ public class Main {
       if (file.exists()) {
         master.load(new FileInputStream(file));
         config.putAll(master);
+        //Start looking for instance configs
         config.put("felix.fileinstall.dir", FELIX_CONFIG_APPLICATION_DIR);
         config.put("felix.fileinstall.filter", ".*\\.cfg");
         config.put("felix.fileinstall.log.level", "-1");

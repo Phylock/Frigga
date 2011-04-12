@@ -8,6 +8,7 @@ import dk.itu.frigga.action.manager.Template;
 import dk.itu.frigga.utility.XmlHelper;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,14 +45,21 @@ public class TemplateParser {
   }
 
   public Template parse(File file) throws SAXException, IOException {
+    return parse(builder.parse(file));
+  }
+
+  public Template parse(InputStream stream) throws SAXException, IOException {
+    return parse(builder.parse(stream));
+  }
+
+  private Template parse(Document doc) throws SAXException, IOException {
     Template template = new Template();
-    Document doc = builder.parse(file);
     Element root = (Element) doc.getDocumentElement();
     Element current = XmlHelper.getFirstChildElement(root, ELEMENTS);
     while (current != null) {
       String name = current.getNodeName();
       if (parsers.containsKey(name)) {
-        parsers.get(name).parse(null, doc, current);
+        parsers.get(name).parse(template, doc, current);
       }
       current = XmlHelper.getNextSiblingElement(current, ELEMENTS);
     }
