@@ -1,0 +1,39 @@
+
+<friggarules>
+  <info>
+    <author></author>
+    <name></name>
+    <site></site>
+    <description>what is this rule group doing ...</description>
+  </info>
+  <include>
+    <script id="basic" path="basic.js"/>
+  </include>
+  <rules>
+    <rule id="">
+      <description>
+		what is this rule doing ...
+      </description>
+      <actions>
+        <action type="validate" callback="{id}.{function}"/>
+        <action type="invalidate" callback="{id}.{function}"/>
+      </actions>
+      <replacements>
+        <replace name="tv" description="a tv" type="string"/>
+      </replacements>
+      <condition>
+        <device name="!tv">
+          <and>
+            <variable name="onOffState" type="string">
+              <isEqual>on</isEqual>
+            </variable>
+            <variable name="volume" type="numeric">
+              <isBetween min="10" max="20"/>
+            </variable>
+          </and>
+        </device>
+	  
+      </condition>
+    </rule>
+  </rules>
+</friggarules>
