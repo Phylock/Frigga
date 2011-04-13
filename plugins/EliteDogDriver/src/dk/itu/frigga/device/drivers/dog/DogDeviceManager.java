@@ -29,16 +29,16 @@ public class DogDeviceManager extends Singleton {
     {
     }
     
-    public Transaction beginTransaction()
+    public StructureUpdate beginUpdate(String responsible)
     {
-        return new Transaction();
+        return new StructureUpdate(responsible);
     }
     
-    public void commit(DogDriver driver, Transaction transaction)
+    public void commit(StructureUpdate update)
     {
         //TODO: do local checks and updates here
 
-        event.sendData(new DeviceUpdateEvent(driver.getDriverId(), transaction.getDevices(), transaction.getCategories()));
+        event.sendData((DeviceUpdateEvent)update);
     }
 
     public static DogDeviceManager instance()

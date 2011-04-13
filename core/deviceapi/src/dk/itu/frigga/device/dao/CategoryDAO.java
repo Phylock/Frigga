@@ -19,6 +19,8 @@ public interface CategoryDAO extends GenericDAO<Category, Long> {
 
   void addFunction(Category category, Function function);
 
-  void removeFunction(Device device, Category category);
+  void removeFunction(Category category, Function device);
+
+  boolean hasFunction(Category category, Function function);
  
 }

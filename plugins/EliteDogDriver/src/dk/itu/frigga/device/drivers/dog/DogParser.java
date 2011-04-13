@@ -57,9 +57,9 @@ public class DogParser implements Dog2MessageListener {
 
     if (parsers.containsKey(type)) {
       MessageParsable handler = parsers.get(type);
-      Transaction transaction = DogDeviceManager.instance().beginTransaction();
-      handler.parse(driver, transaction, doc, message);
-      DogDeviceManager.instance().commit(driver, transaction);
+      StructureUpdate update = DogDeviceManager.instance().beginUpdate(driver.getDriverId());
+      handler.parse(driver, update, doc, message);
+      DogDeviceManager.instance().commit(update);
     }else
     {
         log.log(LogService.LOG_INFO, "Unhandled dog event: " + type);

@@ -9,12 +9,9 @@ import dk.itu.frigga.device.dao.CategoryDAO;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Function;
-import dk.itu.frigga.device.model.Variable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,10 +22,11 @@ import java.util.logging.Logger;
  */
 public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements CategoryDAO {
 
+  private static final String ID = "id";
+  private static final String[] FIELDS = new String[]{"catname"};
   public static final String TABLE = "category";
   private PreparedStatement SELECT_BY_NAME;
-  private PreparedStatement UPDATE;
-  private PreparedStatement INSERT;
+  private PreparedStatement HAS_FUNCTION;
   private PreparedStatement ADD_FUNCTION;
   private PreparedStatement REMOVE_FUNCTION;
 
@@ -36,8 +34,12 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
   protected void prepareStatements() {
     try {
       SELECT_BY_NAME = connection.prepareStatement("SELECT * FROM category WHERE catname = ?");
-      INSERT = connection.prepareStatement("INSERT INTO category(catname) VALUES(?)");
-      UPDATE = connection.prepareStatement("UPDATE category SET catname=? WHERE ID = ?");
+      HAS_FUNCTION = connection.prepareStatement("SELECT c.* FROM functions as f, category as c, category_function as cf WHERE f.id = cf.function_id and cf.category_id = c.id and c.catname = ? and f.name = ?");
+      ADD_FUNCTION = connection.prepareStatement("INSERT INTO category_function (category_id, function_id) SELECT "
+              + "category.id, functions.id FROM functions, category WHERE category.catname = ? and functions.name = ?");
+      REMOVE_FUNCTION = connection.prepareStatement("DELETE FROM category_function "
+              + "WHERE category_id=? AND function_id=?");
+
     } catch (SQLException ex) {
       Logger.getLogger(CategoryDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -113,11 +115,27 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
   }
 
   public void addFunction(Category category, Function function) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    try {
+      if (!hasFunction(category, function)) {
+        ADD_FUNCTION.setString(/*category name*/1, category.getName());
+        ADD_FUNCTION.setString(/*function name*/2, function.getName());
+        ADD_FUNCTION.executeUpdate();
+      }
+    } catch (SQLException ex) {
+      Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
-  public void removeFunction(Device device, Category category) {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public void removeFunction(Category category, Function function) {
+    try {
+      if (hasFunction(category, function)) {
+        REMOVE_FUNCTION.setLong(1, category.getId());
+        REMOVE_FUNCTION.setLong(2, function.getId());
+        REMOVE_FUNCTION.executeUpdate();
+      }
+    } catch (SQLException ex) {
+      Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   public Category findByName(String name) {
@@ -131,5 +149,27 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
       Logger.getLogger(CategoryDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
+  }
+
+  @Override
+  protected String[] getFields() {
+    return FIELDS;
+  }
+
+  @Override
+  protected String getIdField() {
+    return ID;
+  }
+
+  public boolean hasFunction(Category category, Function function) {
+    try {
+      HAS_FUNCTION.setString(1, category.getName());
+      HAS_FUNCTION.setString(2, function.getName());
+      ResultSet exists = HAS_FUNCTION.executeQuery();
+      return exists.next();
+    } catch (SQLException ex) {
+      Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
   }
 }

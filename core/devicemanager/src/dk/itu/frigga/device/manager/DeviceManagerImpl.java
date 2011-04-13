@@ -82,7 +82,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     }
 
     try {
-      connection.update(event.getDevices(), event.getCategories());
+      connection.update(event);
     } catch (SQLException ex) {
       log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
     } catch (Exception ex) {
@@ -162,6 +162,11 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     connection.initialize();
   }
 
+  public void invalidate()
+  {
+    connection.close();
+    connection = null;
+  }
   /**
    * Call a function on multiple devices
    * @param function

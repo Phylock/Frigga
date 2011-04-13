@@ -24,14 +24,14 @@ import java.util.logging.Logger;
  */
 public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceDAO {
 
+  private static final String[] FIELDS = new String[]{"devname", "symbolic", "last_update", "online"};
+  private static final String ID = "id";
   public static final String TABLE = "device";
   private PreparedStatement SELECT_BY_CATEGORY;
   private PreparedStatement SELECT_BY_SYMBOLIC;
   private PreparedStatement ADD_TO_CATEGORY;
   private PreparedStatement REMOVE_FROM_CATEGORY;
   private PreparedStatement IS_OF_CATEGORY;
-  private PreparedStatement INSERT;
-  private PreparedStatement UPDATE;
 
   @SuppressWarnings("unchecked")
   public List findByCategory(Category category) {
@@ -156,8 +156,6 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
       REMOVE_FROM_CATEGORY = connection.prepareStatement("DELETE FROM device_category "
               + "WHERE device_id=? AND category_id=?");
 
-      INSERT = connection.prepareStatement("INSERT INTO device(devname, symbolic, last_update, online) VALUES(?,?,?,?)");
-      UPDATE = connection.prepareStatement("UPDATE device SET devname=?, symbolic = ?, last_update  = ?, online = ? WHERE ID = ?");
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -207,5 +205,15 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
+  }
+
+  @Override
+  protected String[] getFields() {
+    return FIELDS;
+  }
+
+  @Override
+  protected String getIdField() {
+    return ID;
   }
 }

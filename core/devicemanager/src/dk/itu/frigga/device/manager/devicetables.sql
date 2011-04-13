@@ -28,7 +28,7 @@ PRIMARY KEY (category_id, function_id));
 CREATE TABLE IF NOT EXISTS functions
 (id INTEGER NOT NULL,
 name VARCHAR(25) NOT NULL,
-PRIMARY KEY (id, name));
+PRIMARY KEY (id));
 
 CREATE TABLE IF NOT EXISTS device_category
 (device_id INTEGER NOT NULL,

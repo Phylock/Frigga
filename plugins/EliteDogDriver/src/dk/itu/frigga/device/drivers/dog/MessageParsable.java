@@ -13,5 +13,5 @@ import org.w3c.dom.Element;
  * @author phylock
  */
 public interface MessageParsable {
-    void parse(DogDriver driver, Transaction transaction, Document doc, Element element);
+    void parse(DogDriver driver, StructureUpdate transaction, Document doc, Element element);
 }

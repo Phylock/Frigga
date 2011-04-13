@@ -23,6 +23,7 @@ package dk.itu.frigga.utility;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -30,92 +31,102 @@ import java.util.ArrayList;
  */
 public class StringHelper {
 
-    private final static String HEX_STRING = "0123456789abcdef";
+  private final static String HEX_STRING = "0123456789abcdef";
 
-    public static byte[] hexStringToByteArray(final String hex) {
-        boolean hasFullByte = true;
-        int b = 0;
-        int bufferSize = 0;
-        int bytesAdded = 0;
+  public static byte[] hexStringToByteArray(final String hex) {
+    boolean hasFullByte = true;
+    int b = 0;
+    int bufferSize = 0;
+    int bytesAdded = 0;
 
-        for (char c : hex.toCharArray()) {
-            if ((c >= '0' && c <= '9')
-                    || (c >= 'a' && c <= 'f')
-                    || (c >= 'A' || c <= 'F')) {
-                bufferSize++;
-            }
-        }
-
-        byte[] result = new byte[bufferSize / 2];
-
-        for (char c : hex.toCharArray()) {
-            int pos = HEX_STRING.indexOf(Character.toLowerCase(c));
-
-            if (pos > -1) {
-                b = (b << 4) | (pos & 0xFF);
-                hasFullByte = !hasFullByte;
-
-                if (hasFullByte) {
-                    result[bytesAdded] = (byte) (b & 0xFF);
-                    b = 0;
-                    bytesAdded++;
-                }
-            }
-        }
-
-        return result;
+    for (char c : hex.toCharArray()) {
+      if ((c >= '0' && c <= '9')
+              || (c >= 'a' && c <= 'f')
+              || (c >= 'A' || c <= 'F')) {
+        bufferSize++;
+      }
     }
 
-    public static ByteBuffer hexStringToByteBuffer(final String hex) {
-        byte[] bytes = hexStringToByteArray(hex);
-        ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
-        buffer.put(bytes);
+    byte[] result = new byte[bufferSize / 2];
 
-        return buffer;
+    for (char c : hex.toCharArray()) {
+      int pos = HEX_STRING.indexOf(Character.toLowerCase(c));
+
+      if (pos > -1) {
+        b = (b << 4) | (pos & 0xFF);
+        hasFullByte = !hasFullByte;
+
+        if (hasFullByte) {
+          result[bytesAdded] = (byte) (b & 0xFF);
+          b = 0;
+          bytesAdded++;
+        }
+      }
     }
 
-    public static String[] splitStringBySeperator(final String str, final String seperator) {
-        if (str == null) {
-            return null;
-        }
+    return result;
+  }
 
-        String sep = seperator;
-        if (sep == null) {
-            sep = " ";
-        }
+  public static ByteBuffer hexStringToByteBuffer(final String hex) {
+    byte[] bytes = hexStringToByteArray(hex);
+    ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
+    buffer.put(bytes);
 
-        if (sep.equals("")) {
-            return new String[]{str};
-        }
+    return buffer;
+  }
 
-        int len = str.length();
-        int start = 0;
-        int pos = str.indexOf(sep, start);
-
-        ArrayList<String> substrings = new ArrayList<String>();
-
-        while (pos > start) {
-            substrings.add(str.substring(start, pos));
-            start = pos + sep.length();
-            pos = str.indexOf(sep, start);
-        }
-
-        substrings.add(str.substring(start, str.length()));
-
-        return substrings.toArray(new String[substrings.size()]);
+  public static String[] splitStringBySeperator(final String str, final String seperator) {
+    if (str == null) {
+      return null;
     }
 
-    public static String ImplodeString(String[] strings, String seperator) {
-        if (strings.length == 0) {
-            return "";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append(strings[0]);
-            for (int i = 1; i < strings.length; i++) {
-                sb.append(seperator);
-                sb.append(strings[i]);
-            }
-            return sb.toString();
-        }
+    String sep = seperator;
+    if (sep == null) {
+      sep = " ";
     }
+
+    if (sep.equals("")) {
+      return new String[]{str};
+    }
+
+    int len = str.length();
+    int start = 0;
+    int pos = str.indexOf(sep, start);
+
+    ArrayList<String> substrings = new ArrayList<String>();
+
+    while (pos > start) {
+      substrings.add(str.substring(start, pos));
+      start = pos + sep.length();
+      pos = str.indexOf(sep, start);
+    }
+
+    substrings.add(str.substring(start, str.length()));
+
+    return substrings.toArray(new String[substrings.size()]);
+  }
+
+  public static String implodeString(String[] strings, String seperator) {
+    if (strings.length == 0) {
+      return "";
+    } else {
+      StringBuilder sb = new StringBuilder();
+      sb.append(strings[0]);
+      for (int i = 1; i < strings.length; i++) {
+        sb.append(seperator);
+        sb.append(strings[i]);
+      }
+      return sb.toString();
+    }
+  }
+
+  public static String repeatImplodeString(String string, int length, String seperator) {
+    if (length == 0) {
+      return "";
+    } else {
+      String[] strings = new String[length];
+      Arrays.fill(strings, string);
+      return implodeString(strings, seperator);
+    }
+  }
 }

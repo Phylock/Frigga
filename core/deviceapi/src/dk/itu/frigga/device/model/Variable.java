@@ -45,4 +45,35 @@ public class Variable implements Serializable{
   public void setValue(String value) {
     this.value = value;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Variable other = (Variable) obj;
+    if (this.primaryKey != other.primaryKey && (this.primaryKey == null || !this.primaryKey.equals(other.primaryKey))) {
+      return false;
+    }
+    if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 41 * hash + (this.primaryKey != null ? this.primaryKey.hashCode() : 0);
+    hash = 41 * hash + (this.value != null ? this.value.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public String toString() {
+    return "Variable{" + "primaryKey=" + primaryKey + ", value=" + value + '}';
+  }
 }

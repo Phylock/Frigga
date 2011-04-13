@@ -4,14 +4,20 @@ import dk.itu.frigga.data.DataConnection;
 import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.data.UnknownDataDriverException;
+import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.dao.CategoryDAO;
 import dk.itu.frigga.device.dao.DeviceDAO;
+import dk.itu.frigga.device.dao.FunctionDao;
 import dk.itu.frigga.device.descriptor.CategoryDescriptor;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
+import dk.itu.frigga.device.descriptor.FunctionDescriptor;
+import dk.itu.frigga.device.descriptor.VariableDescriptor;
 import dk.itu.frigga.device.manager.dao.CategoryDaoSql;
 import dk.itu.frigga.device.manager.dao.DeviceDaoSql;
+import dk.itu.frigga.device.manager.dao.FunctionDaoSql;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
+import dk.itu.frigga.device.model.Function;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,6 +47,7 @@ public class DeviceDatabase {
   private Connection conn;
   private DeviceDAO devicedao;
   private CategoryDAO categorydao;
+  private FunctionDao functiondao;
 
   public DeviceDatabase(String groupname, String filename) {
     this.groupname = groupname;
@@ -59,9 +66,11 @@ public class DeviceDatabase {
       devicedao = new DeviceDaoSql();
       devicedao.setConnection(conn);
 
-
       categorydao = new CategoryDaoSql();
       categorydao.setConnection(conn);
+
+      functiondao = new FunctionDaoSql();
+      functiondao.setConnection(conn);
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
     } catch (DataGroupNotFoundException ex) {
@@ -98,38 +107,80 @@ public class DeviceDatabase {
     }
   }
 
-  public void update(List<DeviceDescriptor> devices, List<CategoryDescriptor> categories) throws SQLException {
-
-    updateCategory(categories);
-    updateDevice(devices);
-
-    //Categories <-> Devices
-    if (devices != null) {
-      for (DeviceDescriptor dd : devices) {
-        Device device = devicedao.findBySymbolic(dd.getName());
-        for (String cd : dd.getCategories()) {
-          Category category = new Category(cd);
-          devicedao.addToCategory(device, category);
-        }
-      }
+  public void update(DeviceUpdateEvent event) throws SQLException {
+    if (event.hasFunctions()) {
+      updateFunctions(event.getFunctions());
+    }
+    if (event.hasVariables()) {
+      updateVariables(event.getVariable());
+    }
+    if (event.hasCategories()) {
+      updateCategory(event.getCategories());
+      updateCategoryFunctions(event.getCategories());
+      updateCategoryVariable(event.getVariable());
+    }
+    if (event.hasDevices()) {
+      updateDevice(event.getDevices());
+      updateDeviceCategory(event.getDevices());
     }
   }
 
   private void updateDevice(List<DeviceDescriptor> devices) {
-    if (devices != null) {
-      for (DeviceDescriptor dd : devices) {
-        Device device = new Device(dd.getName(), dd.getSymbolic(), new Date(), true);
-        devicedao.makePersistent(device);
-      }
+    for (DeviceDescriptor dd : devices) {
+      Device device = new Device(dd.getName(), dd.getSymbolic(), new Date(), true);
+      devicedao.makePersistent(device);
     }
   }
 
   private void updateCategory(List<CategoryDescriptor> categories) {
-    if (categories != null) {
-      for (CategoryDescriptor cd : categories) {
-        Category category = new Category(cd.getName());
-        categorydao.makePersistent(category);
+    for (CategoryDescriptor cd : categories) {
+      Category category = new Category(cd.getName());
+      categorydao.makePersistent(category);
+    }
+  }
+
+  private void updateFunctions(List<FunctionDescriptor> functions) {
+    for (FunctionDescriptor fd : functions) {
+      Function function = new Function(fd.getName());
+      functiondao.makePersistent(function);
+    }
+  }
+
+  private void updateVariables(List<VariableDescriptor> variable) {
+  }
+
+  private void updateDeviceCategory(List<DeviceDescriptor> devices) {
+
+    //Categories <-> Devices
+    for (DeviceDescriptor dd : devices) {
+      Device device = devicedao.findBySymbolic(dd.getName());
+      for (String cd : dd.getCategories()) {
+        Category category = new Category(cd);
+        devicedao.addToCategory(device, category);
       }
+    }
+  }
+
+  private void updateCategoryFunctions(List<CategoryDescriptor> categories) {
+    for (CategoryDescriptor cd : categories) {
+      Category category = categorydao.findByName(cd.getName());
+      for (String fd : cd.getFunctions()) {
+        Function function = new Function(fd);
+        categorydao.addFunction(category, function);
+      }
+    }
+  }
+
+  private void updateCategoryVariable(List<VariableDescriptor> variable) {
+    
+  }
+
+  public void close()
+  {
+    try {
+      conn.close();
+    } catch (SQLException ex) {
+      Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 }

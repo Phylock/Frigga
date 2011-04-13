@@ -16,6 +16,7 @@
         <requires field="datamanager" />
 
         <callback transition="validate" method="validate"/>
+        <callback transition="invalidate" method="invalidate"/>
 
         <ev:subscriber
 			name="deviceevent"
