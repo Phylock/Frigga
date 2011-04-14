@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.osgi.service.log.LogService;
@@ -27,7 +26,6 @@ import org.xml.sax.SAXException;
  */
 public class DogParser implements Dog2MessageListener {
 
-  private DocumentBuilder builder;
   private DogDriver driver;
   private LogService log;
   private static final Map<String, MessageParsable> parsers;
@@ -44,11 +42,6 @@ public class DogParser implements Dog2MessageListener {
   }
 
   public DogParser(DogDriver driver) {
-    try {
-      builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-    } catch (ParserConfigurationException ex) {
-      Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
-    }
     this.driver = driver;
   }
 
@@ -60,27 +53,34 @@ public class DogParser implements Dog2MessageListener {
       StructureUpdate update = DogDeviceManager.instance().beginUpdate(driver.getDriverId());
       handler.parse(driver, update, doc, message);
       DogDeviceManager.instance().commit(update);
-    }else
-    {
-        log.log(LogService.LOG_INFO, "Unhandled dog event: " + type);
+    } else {
+      log.log(LogService.LOG_INFO, "Unhandled dog event: " + type);
     }
   }
 
   @Override
-  public void newMessage(String message) {
+  public void newMessage(final String message) {
     log.log(LogService.LOG_INFO, "Recived message");
-    try {
-      Document doc = builder.parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
-      Element root = (Element) doc.getDocumentElement();
-      Element messagetype = XmlHelper.getFirstChildElement(root);
+    new Thread(new Runnable() {
 
-      parseMessage(doc, messagetype);
+      public void run() {
+        try {
+          Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
+          Element root = (Element) doc.getDocumentElement();
+          Element messagetype = XmlHelper.getFirstChildElement(root);
 
-      //TODO: get id and notify the waiting thread
-    } catch (SAXException ex) {
-      Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
-      Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
-    }
+          parseMessage(doc, messagetype);
+
+          //TODO: get id and notify the waiting thread
+        } catch (ParserConfigurationException ex) {
+          Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+          Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+          Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }).start();
+
   }
 }

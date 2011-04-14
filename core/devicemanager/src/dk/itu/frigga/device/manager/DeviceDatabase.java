@@ -8,6 +8,7 @@ import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.dao.CategoryDAO;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.dao.FunctionDao;
+import dk.itu.frigga.device.dao.VariableTypeDao;
 import dk.itu.frigga.device.descriptor.CategoryDescriptor;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.device.descriptor.FunctionDescriptor;
@@ -15,9 +16,11 @@ import dk.itu.frigga.device.descriptor.VariableDescriptor;
 import dk.itu.frigga.device.manager.dao.CategoryDaoSql;
 import dk.itu.frigga.device.manager.dao.DeviceDaoSql;
 import dk.itu.frigga.device.manager.dao.FunctionDaoSql;
+import dk.itu.frigga.device.manager.dao.VariableTypeDaoSql;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Function;
+import dk.itu.frigga.device.model.VariableType;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,6 +51,7 @@ public class DeviceDatabase {
   private DeviceDAO devicedao;
   private CategoryDAO categorydao;
   private FunctionDao functiondao;
+  private VariableTypeDao variabletypedao;
 
   public DeviceDatabase(String groupname, String filename) {
     this.groupname = groupname;
@@ -71,6 +75,9 @@ public class DeviceDatabase {
 
       functiondao = new FunctionDaoSql();
       functiondao.setConnection(conn);
+
+      variabletypedao = new VariableTypeDaoSql();
+      variabletypedao.setConnection(conn);
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDatabase.class.getName()).log(Level.SEVERE, null, ex);
     } catch (DataGroupNotFoundException ex) {
@@ -116,12 +123,12 @@ public class DeviceDatabase {
     }
     if (event.hasCategories()) {
       updateCategory(event.getCategories());
-      updateCategoryFunctions(event.getCategories());
-      updateCategoryVariable(event.getVariable());
+      updateCategoryLinks(event.getCategories());
     }
     if (event.hasDevices()) {
       updateDevice(event.getDevices());
       updateDeviceCategory(event.getDevices());
+      updateDeviceVariables(event.getDevices());
     }
   }
 
@@ -147,6 +154,10 @@ public class DeviceDatabase {
   }
 
   private void updateVariables(List<VariableDescriptor> variable) {
+    for (VariableDescriptor vd : variable) {
+      VariableType variabletype = new VariableType(vd.getName(), vd.getType());
+      variabletypedao.makePersistent(variabletype);
+    }
   }
 
   private void updateDeviceCategory(List<DeviceDescriptor> devices) {
@@ -161,22 +172,32 @@ public class DeviceDatabase {
     }
   }
 
-  private void updateCategoryFunctions(List<CategoryDescriptor> categories) {
+  private void updateCategoryLinks(List<CategoryDescriptor> categories) {
     for (CategoryDescriptor cd : categories) {
       Category category = categorydao.findByName(cd.getName());
       for (String fd : cd.getFunctions()) {
         Function function = new Function(fd);
         categorydao.addFunction(category, function);
       }
+      for (String vd : cd.getVariables()) {
+        VariableType variable = new VariableType(vd, null);
+        categorydao.addVariableType(category, variable);
+      }
     }
   }
 
-  private void updateCategoryVariable(List<VariableDescriptor> variable) {
-    
+  private void updateDeviceVariables(List<DeviceDescriptor> devices) {
+    for (DeviceDescriptor dd : devices) {
+      Device device = devicedao.findBySymbolic(dd.getSymbolic());
+      List<VariableType> variables = variabletypedao.findByDevice(device);
+      for(VariableType vtype: variables)
+      {
+        //TODO: create and add variables based on vtype
+      }
+    }
   }
 
-  public void close()
-  {
+  public void close() {
     try {
       conn.close();
     } catch (SQLException ex) {

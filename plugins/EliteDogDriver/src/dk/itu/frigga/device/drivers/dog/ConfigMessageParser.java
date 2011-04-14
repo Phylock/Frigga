@@ -12,6 +12,7 @@ import dk.itu.frigga.device.descriptor.FunctionDescriptor;
 import dk.itu.frigga.device.descriptor.VariableDescriptor;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,8 +33,8 @@ public class ConfigMessageParser implements MessageParsable {
   private Set<String> knownStates;
 
   public ConfigMessageParser() {
-    knownFunctionality = new HashMap<String, LinkedList<Executable>>();
-    knownStates = new HashSet<String>();
+    knownFunctionality = Collections.synchronizedMap(new HashMap<String, LinkedList<Executable>>());
+    knownStates = Collections.synchronizedSet(new HashSet<String>());
   }
 
   @Override
