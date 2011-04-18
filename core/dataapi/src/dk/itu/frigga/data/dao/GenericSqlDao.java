@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.data.dao;
 
+import dk.itu.frigga.data.PreparedStatementProxy;
 import dk.itu.frigga.utility.StringHelper;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -23,38 +24,41 @@ public abstract class GenericSqlDao<T, ID extends Serializable> implements Gener
 
   private static final String SET_EXTENSION = " = ? ";
   protected Connection connection;
-  private PreparedStatement SELECT_ALL;
-  private PreparedStatement SELECT_BY_ID;
-  protected PreparedStatement INSERT;
-  protected PreparedStatement UPDATE;
+  private PreparedStatementProxy SELECT_ALL;
+  private PreparedStatementProxy SELECT_BY_ID;
+  protected PreparedStatementProxy INSERT;
+  protected PreparedStatementProxy UPDATE;
 
-  public void setConnection(Connection conn) {
-    this.connection = conn;
+  public GenericSqlDao() {
+    initialize();
+  }
+
+  private void initialize()
+  {
     String table = getTable();
     String id = getIdField();
     String[] fields = getFields();
 
     String set_string = StringHelper.implodeString(fields, SET_EXTENSION + ",") + SET_EXTENSION;
 
-    try {
-      SELECT_ALL = connection.prepareStatement(String.format("SELECT * FROM %s", table));
-      SELECT_BY_ID = connection.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?", table, id));
-      INSERT = connection.prepareStatement(
-              String.format("INSERT INTO %s(%s) VALUES(%s)", table,
-              StringHelper.implodeString(fields, ","),
-              StringHelper.repeatImplodeString("?", fields.length, ",")));
-      UPDATE = connection.prepareStatement(String.format("UPDATE %s SET %s WHERE %s = ?", table, set_string, id));
-    } catch (SQLException ex) {
-      Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    SELECT_ALL = new PreparedStatementProxy("SELECT * FROM %s", table);
+    SELECT_BY_ID = new PreparedStatementProxy("SELECT * FROM %s WHERE %s = ?", table, id);
+    INSERT = new PreparedStatementProxy(
+            "INSERT INTO %s(%s) VALUES(%s)", table,
+            StringHelper.implodeString(fields, ","),
+            StringHelper.repeatImplodeString("?", fields.length, ","));
+    UPDATE = new PreparedStatementProxy("UPDATE %s SET %s WHERE %s = ?", table, set_string, id);
+  }
 
-    prepareStatements();
+  public void setConnection(Connection conn) {
+    this.connection = conn;
   }
 
   public T findById(ID id, boolean lock) {
     try {
-      SELECT_BY_ID.setObject(1, id);
-      ResultSet rs = SELECT_BY_ID.executeQuery();
+      PreparedStatement stmt =  SELECT_BY_ID.createPreparedStatement(connection);
+      stmt.setObject(1, id);
+      ResultSet rs = stmt.executeQuery();
       if (rs.next()) {
         return parseCurrent(rs);
       }
@@ -67,15 +71,13 @@ public abstract class GenericSqlDao<T, ID extends Serializable> implements Gener
   public List<T> findAll() {
     List<T> list = new ArrayList<T>();
     try {
-      ResultSet rs = SELECT_ALL.executeQuery();
+      ResultSet rs = SELECT_ALL.createPreparedStatement(connection).executeQuery();
       return parseAll(rs, list);
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
     }
     return list;
   }
-
-  protected abstract void prepareStatements();
 
   protected abstract String getTable();
 

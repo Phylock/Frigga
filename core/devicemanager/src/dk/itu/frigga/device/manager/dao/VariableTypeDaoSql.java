@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.device.manager.dao;
 
+import dk.itu.frigga.data.PreparedStatementProxy;
 import dk.itu.frigga.data.dao.GenericSqlDao;
 import dk.itu.frigga.device.dao.VariableTypeDao;
 import dk.itu.frigga.device.model.Category;
@@ -28,28 +29,26 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
   private static final int FIELD_NAME = 0;
   private static final int FIELD_TYPE = 1;
   private static final String[] FIELDS = new String[]{"varname", "vartype"};
-  private PreparedStatement SELECT_BY_NAME;
-  private PreparedStatement SELECT_BY_DEVICE;
-  private PreparedStatement SELECT_BY_CATEGORY;
+  private PreparedStatementProxy SELECT_BY_NAME;
+  private PreparedStatementProxy SELECT_BY_DEVICE;
+  private PreparedStatementProxy SELECT_BY_CATEGORY;
 
-  @Override
-  protected void prepareStatements() {
-    try {
-      SELECT_BY_NAME = connection.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?", TABLE, FIELDS[FIELD_NAME]));
-      SELECT_BY_CATEGORY = connection.prepareStatement(
+  public VariableTypeDaoSql() {
+          SELECT_BY_NAME = new PreparedStatementProxy("SELECT * FROM %s WHERE %s = ?", TABLE, FIELDS[FIELD_NAME]);
+      SELECT_BY_CATEGORY = new PreparedStatementProxy(
               "SELECT vt.* FROM "
               + "variabletype as vt, category_variable as cv, category as c "
               + "WHERE "
               + "vt.id = cv.variable_id AND cv.category_id = c.id AND c.catname = ?");
-      SELECT_BY_DEVICE = connection.prepareStatement(
+      SELECT_BY_DEVICE = new PreparedStatementProxy(
               "SELECT DISTINCT vt.* FROM "
               + "variabletype as vt, category_variable as cv, category as c, device_category as dc, device d "
               + "WHERE "
               + "vt.id = cv.variable_id AND cv.category_id = c.id AND dc.category_id AND dc.device_id = d.id AND d.symbolic = ?");
 
-    } catch (SQLException ex) {
-      Logger.getLogger(VariableTypeDaoSql.class.getName()).log(Level.SEVERE, null, ex);
-    }
+
+
+
   }
 
   @Override
@@ -82,18 +81,20 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
       }
 
       if (insert) {
-        INSERT.setString(1, /*name*/ entity.getName());
-        INSERT.setString(2, /*type*/ entity.getType());
-        INSERT.executeUpdate();
+        PreparedStatement stmt_insert = INSERT.createPreparedStatement(connection);
+        stmt_insert.setString(1, /*name*/ entity.getName());
+        stmt_insert.setString(2, /*type*/ entity.getType());
+        stmt_insert.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
         }
         vtype = findByName(entity.getName());
       } else if (update) {
-        UPDATE.setLong(/*id*/3, entity.getId());
-        UPDATE.setString(/*name*/1, entity.getName());
-        UPDATE.setString(/*type*/2, entity.getType());
-        UPDATE.executeUpdate();
+        PreparedStatement stmt_update = UPDATE.createPreparedStatement(connection);
+        stmt_update.setLong(/*id*/3, entity.getId());
+        stmt_update.setString(/*name*/1, entity.getName());
+        stmt_update.setString(/*type*/2, entity.getType());
+        stmt_update.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
         }
@@ -137,8 +138,9 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
 
   public VariableType findByName(String name) {
     try {
-      SELECT_BY_NAME.setString(/*name*/1, name);
-      ResultSet rs = SELECT_BY_NAME.executeQuery();
+      PreparedStatement stmt_select = SELECT_BY_NAME.createPreparedStatement(connection);
+      stmt_select.setString(/*name*/1, name);
+      ResultSet rs = stmt_select.executeQuery();
       if (rs.next()) {
         return parseCurrent(rs);
       }
@@ -152,8 +154,9 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
 
     List<VariableType> list = new ArrayList<VariableType>();
     try {
-      SELECT_BY_CATEGORY.setString(/*catname*/1, category.getName());
-      ResultSet rs = SELECT_BY_CATEGORY.executeQuery();
+      PreparedStatement stmt_select = SELECT_BY_CATEGORY.createPreparedStatement(connection);
+      stmt_select.setString(/*catname*/1, category.getName());
+      ResultSet rs = stmt_select.executeQuery();
       return parseAll(rs, list);
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -165,8 +168,9 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
   public List<VariableType> findByDevice(Device device) {
     List<VariableType> list = new ArrayList<VariableType>();
     try {
-      SELECT_BY_DEVICE.setString(/*symbolic*/1, device.getSymbolic());
-      ResultSet rs = SELECT_BY_DEVICE.executeQuery();
+      PreparedStatement stmt_select = SELECT_BY_DEVICE.createPreparedStatement(connection);
+      stmt_select.setString(/*symbolic*/1, device.getSymbolic());
+      ResultSet rs = stmt_select.executeQuery();
       return parseAll(rs, list);
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);

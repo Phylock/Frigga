@@ -41,10 +41,7 @@ public interface DeviceManager {
   Iterable<Device> getDevicesByType(final Category category);
 
   /**
-   * Returns an array of devices having a specified type. This function is
-   * generally a bit heavy to use, since it performs an O(n) search to find
-   * devices of the given type. As compared to retrieving a device by ID which
-   * takes advantage of the hash map and uses a O(1) search.
+   * Returns an array of devices having a specified type. 
    *
    * @param type A string identifying the type whose devices to fetch.
    *
@@ -52,6 +49,12 @@ public interface DeviceManager {
    */
   Iterable<Device> getDevicesByType(final String type);
 
+/**
+ * Returns an array of all devices known by the system, in a large system this
+ * can be a very heavy function.
+ * @return
+ */
+  Iterable<Device> getDevices();
 
   FunctionResult callFunction(String function, String[] devices, Parameter... parameters);
 }

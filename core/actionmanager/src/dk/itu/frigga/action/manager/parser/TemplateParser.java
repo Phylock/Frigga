@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
@@ -25,36 +24,40 @@ import org.xml.sax.SAXException;
  */
 public class TemplateParser {
 
-  private DocumentBuilder builder;
+  private DocumentBuilderFactory factory;
   private static final Map<String, Parseable> parsers;
-  private static final String[] ELEMENTS = new String[]{"info", "include", "rules"};
+  private static final String[] ELEMENTS = new String[]{"info", "replacements", "includes", "rules"};
 
   static {
     Map<String, Parseable> list = new HashMap<String, Parseable>();
     //fill
     list.put(ELEMENTS[0], new InfoParser());
-    list.put(ELEMENTS[1], new IncludeParser());
-    list.put(ELEMENTS[2], new RulesParser());
+    list.put(ELEMENTS[1], new ReplacementsParser());
+    list.put(ELEMENTS[2], new IncludeParser());
+    list.put(ELEMENTS[3], new RulesParser());
     //write protection + speed
     parsers = Collections.unmodifiableMap(list);
 
   }
 
-  public TemplateParser() throws ParserConfigurationException {
-    builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+  public TemplateParser() throws ParserConfigurationException, SAXException {
+    factory = DocumentBuilderFactory.newInstance();
+    //factory.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new URL("http://frigga.phylock.net/schema/template.xsd")));
+
   }
 
-  public Template parse(File file) throws SAXException, IOException {
-    return parse(builder.parse(file));
+  public Template parse(File file) throws SAXException, IOException, ParserConfigurationException {
+    return parse(factory.newDocumentBuilder().parse(file));
   }
 
-  public Template parse(InputStream stream) throws SAXException, IOException {
-    return parse(builder.parse(stream));
+  public Template parse(InputStream stream) throws SAXException, IOException, ParserConfigurationException {
+    return parse(factory.newDocumentBuilder().parse(stream));
   }
 
   private Template parse(Document doc) throws SAXException, IOException {
     Template template = new Template();
-    Element root = (Element) doc.getDocumentElement();
+    Element root = XmlHelper.getFirstChildElement((Element) doc.getDocumentElement(), "template");
+
     Element current = XmlHelper.getFirstChildElement(root, ELEMENTS);
     while (current != null) {
       String name = current.getNodeName();

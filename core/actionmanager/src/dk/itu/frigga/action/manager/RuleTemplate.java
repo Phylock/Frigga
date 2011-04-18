@@ -2,50 +2,35 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.manager.block.Condition;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+
 
 /**
  *
  * @author phylock
  */
 public class RuleTemplate {
-
+    /* Info */
   private String id;
   private String description;
-  private Map<String, String> callbacks;
-  private Map<String, Replacement> replacements;
-  private List<ScriptRule> scriptrules;
+  /* parsed */
   private Condition condition;
+  private Map<String, List<Action>> actions;
 
-  public RuleTemplate(String id, String description, Map<String, String> callbacks, Map<String, Replacement> replacements, List<ScriptRule> scriptrules, Condition condition) {
+  public RuleTemplate(String id, String description, Condition condition, Map<String, List<Action>> actions) {
     this.id = id;
     this.description = description;
-    this.callbacks = callbacks;
-    this.replacements = replacements;
-    this.scriptrules = scriptrules;
     this.condition = condition;
+    this.actions = actions;
   }
 
-  public Map<String, Replacement> getReplacements() {
-    return replacements;
-  }
-
-  public Rule createRule(Map<String, String> data) throws MissingReplacementData {
-    if (replacements.size() == data.size() && replacements.keySet().containsAll(data.keySet())) {
-      //TODO: traverse condition tree and create rule
-      return null;
-    } else {
-      throw new MissingReplacementData("Missing data settings");
-    }
-  }
-
-  public String getId() {
-    return id;
+  public Map<String, List<Action>> getActions() {
+    return actions;
   }
 
   public Condition getCondition() {
@@ -55,4 +40,15 @@ public class RuleTemplate {
   public String getDescription() {
     return description;
   }
+
+  public String getId() {
+    return id;
+  }
+
+  @Override
+  public String toString() {
+    return "RuleTemplate{" + "id=" + id + "description=" + description + '}';
+  }
+
+
 }

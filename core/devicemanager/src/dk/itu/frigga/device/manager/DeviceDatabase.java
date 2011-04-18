@@ -5,22 +5,10 @@ import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.data.UnknownDataDriverException;
 import dk.itu.frigga.device.DeviceUpdateEvent;
-import dk.itu.frigga.device.dao.CategoryDAO;
-import dk.itu.frigga.device.dao.DeviceDAO;
-import dk.itu.frigga.device.dao.FunctionDao;
-import dk.itu.frigga.device.dao.VariableTypeDao;
-import dk.itu.frigga.device.descriptor.CategoryDescriptor;
-import dk.itu.frigga.device.descriptor.DeviceDescriptor;
-import dk.itu.frigga.device.descriptor.FunctionDescriptor;
-import dk.itu.frigga.device.descriptor.VariableDescriptor;
-import dk.itu.frigga.device.manager.dao.CategoryDaoSql;
-import dk.itu.frigga.device.manager.dao.DeviceDaoSql;
-import dk.itu.frigga.device.manager.dao.FunctionDaoSql;
-import dk.itu.frigga.device.manager.dao.VariableTypeDaoSql;
-import dk.itu.frigga.device.model.Category;
-import dk.itu.frigga.device.model.Device;
-import dk.itu.frigga.device.model.Function;
-import dk.itu.frigga.device.model.VariableType;
+import dk.itu.frigga.device.dao.*;
+import dk.itu.frigga.device.descriptor.*;
+import dk.itu.frigga.device.manager.dao.*;
+import dk.itu.frigga.device.model.*;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -164,7 +152,7 @@ public class DeviceDatabase {
 
     //Categories <-> Devices
     for (DeviceDescriptor dd : devices) {
-      Device device = devicedao.findBySymbolic(dd.getName());
+      Device device = devicedao.findBySymbolic(dd.getSymbolic());
       for (String cd : dd.getCategories()) {
         Category category = new Category(cd);
         devicedao.addToCategory(device, category);

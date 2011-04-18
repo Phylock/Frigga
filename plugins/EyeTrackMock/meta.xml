@@ -5,7 +5,7 @@
    xmlns:ev='org.apache.felix.ipojo.handlers.event'
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
-  <component name="DogDriver" classname="dk.itu.frigga.device.drivers.dog.DogDriver">
+  <component name="EyeTrackDriver" classname="dk.itu.frigga.device.drivers.eye.EyeDriver">
     <provides/>
 
     <callback transition="validate" method="validate" />
@@ -13,11 +13,9 @@
     
     <requires field="log" optional="true"/>
 
-    <properties updated="updated" propagation="true">
-		<property name="url" field="url" value="http://localhost:65300/RPC2"/>
-	</properties>
+    <properties updated="updated" propagation="true"/>
 
-    <ev:publisher name="dog_device_event" field="event" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
+    <ev:publisher name="eye_device_event" field="event" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
     
   </component>
 </ipojo>

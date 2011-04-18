@@ -75,19 +75,23 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     return null;//categories.get(id);
   }
 
-  public void onDeviceEvent(DeviceUpdateEvent event) {
+  public void onDeviceEvent(final DeviceUpdateEvent event) {
     Driver responsible = drivers.get(event.getResponsible());
     for (DeviceDescriptor data : event.getDevices()) {
       responsebility.put(data.getSymbolic(), responsible);
     }
+    new Thread(new Runnable() {
 
-    try {
-      connection.update(event);
-    } catch (SQLException ex) {
-      log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
-    } catch (Exception ex) {
-      log.log(LogService.LOG_WARNING, "Device Update Error", ex);
-    }
+      public void run() {
+        try {
+          connection.update(event);
+        } catch (SQLException ex) {
+          log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
+        } catch (Exception ex) {
+          log.log(LogService.LOG_WARNING, "Device Update Error", ex);
+        }
+      }
+    }).start();
   }
 
   /**
@@ -134,6 +138,11 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     return getDevicesByType(category);
   }
 
+  public final Iterable<Device> getDevices() {
+    DeviceDAO d = connection.getDeviceDao();
+    return d.findAll();
+  }
+
   public void deviceDriverAdded(Driver driver) {
     log.log(LogService.LOG_INFO, "Device Driver Added: ");
     synchronized (drivers) {
@@ -162,11 +171,11 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     connection.initialize();
   }
 
-  public void invalidate()
-  {
+  public void invalidate() {
     connection.close();
     connection = null;
   }
+
   /**
    * Call a function on multiple devices
    * @param function

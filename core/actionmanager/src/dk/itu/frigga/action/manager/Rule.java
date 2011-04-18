@@ -5,6 +5,8 @@
 
 package dk.itu.frigga.action.manager;
 
+import dk.itu.frigga.action.manager.block.Condition;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,13 +14,13 @@ import java.util.Map;
  * @author phylock
  */
 public class Rule {
-  private String rule;
-  private Map<String, String> scripts;
-  private Map<String, String> callbacks;
+  /* Info */
+  private String id;
+  private String description;
+  /* parsed */
+  private Context context;
+  private Condition condition;
+  private Map<String, List<Action>> actions;
+  /* internal */
 
-  public Rule(String rule, Map<String, String> scripts, Map<String, String> callbacks) {
-    this.rule = rule;
-    this.scripts = scripts;
-    this.callbacks = callbacks;
-  }
 }

@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.device.manager.dao;
 
+import dk.itu.frigga.data.PreparedStatementProxy;
 import dk.itu.frigga.data.dao.GenericSqlDao;
 import dk.itu.frigga.device.dao.FunctionDao;
 import dk.itu.frigga.device.model.Category;
@@ -25,15 +26,10 @@ public class FunctionDaoSql extends GenericSqlDao<Function, Long> implements Fun
   private static final String TABLE = "functions";
   private static final int FIELD_NAME = 0;
   private static final String[] FIELDS = new String[]{"name"};
-  private PreparedStatement SELECT_BY_NAME;
+  private final PreparedStatementProxy SELECT_BY_NAME;
 
-  @Override
-  protected void prepareStatements() {
-    try {
-      SELECT_BY_NAME = connection.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?", TABLE, FIELDS[FIELD_NAME]));
-    } catch (SQLException ex) {
-      Logger.getLogger(FunctionDaoSql.class.getName()).log(Level.SEVERE, null, ex);
-    }
+  public FunctionDaoSql() {
+    SELECT_BY_NAME = new PreparedStatementProxy("SELECT * FROM %s WHERE %s = ?", TABLE, FIELDS[FIELD_NAME]);
   }
 
   @Override
@@ -78,16 +74,18 @@ public class FunctionDaoSql extends GenericSqlDao<Function, Long> implements Fun
       }
 
       if (insert) {
-        INSERT.setString(1, /*name*/entity.getName());
-        INSERT.executeUpdate();
+        PreparedStatement stmt_insert = INSERT.createPreparedStatement(connection);
+        stmt_insert.setString(1, /*name*/ entity.getName());
+        stmt_insert.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
         }
         function = findByName(entity.getName());
       } else if (update) {
-        UPDATE.setLong(/*id*/2, entity.getId());
-        UPDATE.setString(/*Name*/1, entity.getName());
-        UPDATE.executeUpdate();
+        PreparedStatement stmt_update = UPDATE.createPreparedStatement(connection);
+        stmt_update.setLong(/*id*/2, entity.getId());
+        stmt_update.setString(/*Name*/1, entity.getName());
+        stmt_update.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
         }
@@ -126,8 +124,9 @@ public class FunctionDaoSql extends GenericSqlDao<Function, Long> implements Fun
 
   public Function findByName(String name) {
     try {
-      SELECT_BY_NAME.setString(/*name*/1, name);
-      ResultSet rs = SELECT_BY_NAME.executeQuery();
+      PreparedStatement select = SELECT_BY_NAME.createPreparedStatement(connection);
+      select.setString(/*name*/1, name);
+      ResultSet rs = select.executeQuery();
       if (rs.next()) {
         return parseCurrent(rs);
       }

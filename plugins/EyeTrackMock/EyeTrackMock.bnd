@@ -1,0 +1,6 @@
+Bundle-Version: 0.2.0.SNAPSHOT
+Bundle-Name: Frigga Eye Device Driver
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.device.drivers.eye
+
+Private-Package: dk.itu.frigga.device.drivers.eye.*

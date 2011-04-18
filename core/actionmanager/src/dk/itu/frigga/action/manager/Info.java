@@ -32,4 +32,10 @@ public class Info {
   public String getSite() {
     return site;
   }
+
+  @Override
+  public String toString() {
+    return "Info{" + "author=" + author + ", name=" + name + ", site=" + site + ", description=" + description + '}';
+  }
+
 }

@@ -31,5 +31,10 @@ public class Replacement {
   public String getType() {
     return type;
   }
+
+  @Override
+  public String toString() {
+    return "Replacement{" + "name=" + name + ", description=" + description + ", type=" + type + '}';
+  }
   
 }

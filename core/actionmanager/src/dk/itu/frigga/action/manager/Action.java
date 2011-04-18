@@ -9,6 +9,6 @@ package dk.itu.frigga.action.manager;
  *
  * @author phylock
  */
-public class ScriptRule {
-
+public interface Action {
+  void execute();
 }

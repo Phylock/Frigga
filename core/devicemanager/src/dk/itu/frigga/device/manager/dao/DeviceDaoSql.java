@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.device.manager.dao;
 
+import dk.itu.frigga.data.PreparedStatementProxy;
 import dk.itu.frigga.data.dao.GenericSqlDao;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.model.Category;
@@ -27,11 +28,22 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   private static final String[] FIELDS = new String[]{"devname", "symbolic", "last_update", "online"};
   private static final String ID = "id";
   public static final String TABLE = "device";
-  private PreparedStatement SELECT_BY_CATEGORY;
-  private PreparedStatement SELECT_BY_SYMBOLIC;
-  private PreparedStatement ADD_TO_CATEGORY;
-  private PreparedStatement REMOVE_FROM_CATEGORY;
-  private PreparedStatement IS_OF_CATEGORY;
+  private PreparedStatementProxy SELECT_BY_CATEGORY;
+  private PreparedStatementProxy SELECT_BY_SYMBOLIC;
+  private PreparedStatementProxy ADD_TO_CATEGORY;
+  private PreparedStatementProxy REMOVE_FROM_CATEGORY;
+  private PreparedStatementProxy IS_OF_CATEGORY;
+
+  public DeviceDaoSql() {
+    SELECT_BY_CATEGORY = new PreparedStatementProxy("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ?");
+    SELECT_BY_SYMBOLIC = new PreparedStatementProxy("SELECT * FROM device WHERE symbolic = ?");
+    IS_OF_CATEGORY = new PreparedStatementProxy("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ? and d.devname = ?");
+    ADD_TO_CATEGORY = new PreparedStatementProxy("INSERT INTO device_category (device_id, category_id) SELECT "
+            + "device.id, category.id FROM device, category WHERE device.symbolic = ? and category.catname = ?");
+    REMOVE_FROM_CATEGORY = new PreparedStatementProxy("DELETE FROM device_category "
+            + "WHERE device_id=? AND category_id=?");
+
+  }
 
   @SuppressWarnings("unchecked")
   public List findByCategory(Category category) {
@@ -41,8 +53,9 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
     }
 
     try {
-      SELECT_BY_CATEGORY.setString(/*Category*/1, category.getName());
-      ResultSet rs = SELECT_BY_CATEGORY.executeQuery();
+      PreparedStatement stmt_select = SELECT_BY_CATEGORY.createPreparedStatement(connection);
+      stmt_select.setString(/*Category*/1, category.getName());
+      ResultSet rs = stmt_select.executeQuery();
 
       return parseAll(rs, list);
     } catch (SQLException ex) {
@@ -82,23 +95,25 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
       }
 
       if (insert) {
-        INSERT.setString(/*name*/1, entity.getName());
-        INSERT.setString(/*symbolic*/2, entity.getSymbolic());
-        INSERT.setString(/*last_update*/3, null);
-        INSERT.setBoolean(/*online*/4, entity.isOnline());
-        INSERT.executeUpdate();
+        PreparedStatement stmt_insert = INSERT.createPreparedStatement(connection);
+        stmt_insert.setString(/*name*/1, entity.getName());
+        stmt_insert.setString(/*symbolic*/2, entity.getSymbolic());
+        stmt_insert.setString(/*last_update*/3, null);
+        stmt_insert.setBoolean(/*online*/4, entity.isOnline());
+        stmt_insert.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
         }
 
         device = findBySymbolic(entity.getName());
       } else if (update) {
-        UPDATE.setLong(/*id*/5, entity.getId());
-        UPDATE.setString(/*name*/1, entity.getName());
-        UPDATE.setString(/*symbolic*/2, entity.getSymbolic());
-        UPDATE.setString(/*last_update*/3, null);
-        UPDATE.setBoolean(/*online*/4, entity.isOnline());
-        UPDATE.executeUpdate();
+        PreparedStatement stmt_update = UPDATE.createPreparedStatement(connection);
+        stmt_update.setLong(/*id*/5, entity.getId());
+        stmt_update.setString(/*name*/1, entity.getName());
+        stmt_update.setString(/*symbolic*/2, entity.getSymbolic());
+        stmt_update.setString(/*last_update*/3, null);
+        stmt_update.setBoolean(/*online*/4, entity.isOnline());
+        stmt_update.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
         }
@@ -118,9 +133,10 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   public void addToCategory(Device device, Category category) {
     try {
       if (!isOfCategory(device, category)) {
-        ADD_TO_CATEGORY.setString(/*Symbolic*/1, device.getSymbolic());
-        ADD_TO_CATEGORY.setString(/*Category Name*/2, category.getName());
-        ADD_TO_CATEGORY.executeUpdate();
+        PreparedStatement stmt_add = ADD_TO_CATEGORY.createPreparedStatement(connection);
+        stmt_add.setString(/*Symbolic*/1, device.getSymbolic());
+        stmt_add.setString(/*Category Name*/2, category.getName());
+        stmt_add.executeUpdate();
       }
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
@@ -131,9 +147,10 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   public void removeFromCategory(Device device, Category category) {
     try {
       if (isOfCategory(device, category)) {
-        REMOVE_FROM_CATEGORY.setLong(1, device.getId());
-        REMOVE_FROM_CATEGORY.setLong(2, category.getId());
-        REMOVE_FROM_CATEGORY.executeUpdate();
+        PreparedStatement stmt_remove = REMOVE_FROM_CATEGORY.createPreparedStatement(connection);
+        stmt_remove.setLong(1, device.getId());
+        stmt_remove.setLong(2, category.getId());
+        stmt_remove.executeUpdate();
       }
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
@@ -143,22 +160,6 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   @SuppressWarnings("unchecked")
   public List<Variable> getVariables(Device device) {
     throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  protected void prepareStatements() {
-    try {
-      SELECT_BY_CATEGORY = connection.prepareStatement("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ?");
-      SELECT_BY_SYMBOLIC = connection.prepareStatement("SELECT * FROM device WHERE symbolic = ?");
-      IS_OF_CATEGORY = connection.prepareStatement("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ? and d.devname = ?");
-      ADD_TO_CATEGORY = connection.prepareStatement("INSERT INTO device_category (device_id, category_id) SELECT "
-              + "device.id, category.id FROM device, category WHERE device.symbolic = ? and category.catname = ?");
-      REMOVE_FROM_CATEGORY = connection.prepareStatement("DELETE FROM device_category "
-              + "WHERE device_id=? AND category_id=?");
-
-    } catch (SQLException ex) {
-      Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
-    }
   }
 
   protected Device parseCurrent(ResultSet rs) throws SQLException {
@@ -180,9 +181,10 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
   public boolean isOfCategory(Device device, Category category) {
     try {
-      IS_OF_CATEGORY.setString(2, device.getSymbolic());
-      IS_OF_CATEGORY.setString(1, category.getName());
-      ResultSet exists = IS_OF_CATEGORY.executeQuery();
+      PreparedStatement stmt_select = IS_OF_CATEGORY.createPreparedStatement(connection);
+      stmt_select.setString(2, device.getSymbolic());
+      stmt_select.setString(1, category.getName());
+      ResultSet exists = stmt_select.executeQuery();
       return exists.next();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
@@ -196,8 +198,9 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
   public Device findBySymbolic(String symbolic) {
     try {
-      SELECT_BY_SYMBOLIC.setString(/*Symbolic*/1, symbolic);
-      ResultSet rs = SELECT_BY_SYMBOLIC.executeQuery();
+      PreparedStatement stmt_select = SELECT_BY_SYMBOLIC.createPreparedStatement(connection);
+      stmt_select.setString(/*Symbolic*/1, symbolic);
+      ResultSet rs = stmt_select.executeQuery();
       if (rs.next()) {
         return parseCurrent(rs);
       }

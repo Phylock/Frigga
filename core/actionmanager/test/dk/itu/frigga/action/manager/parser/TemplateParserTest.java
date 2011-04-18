@@ -4,18 +4,20 @@
  */
 package dk.itu.frigga.action.manager.parser;
 
+import dk.itu.frigga.action.manager.PrintConditionTree;
 import dk.itu.frigga.action.manager.Template;
 import dk.itu.frigga.action.manager.block.Condition;
 import dk.itu.frigga.action.manager.block.Visitor;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.parsers.ParserConfigurationException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -25,7 +27,6 @@ public class TemplateParserTest {
 
   public TemplateParserTest() {
   }
-  private InputStream is = null;
 
   @BeforeClass
   public static void setUpClass() throws Exception {
@@ -37,31 +38,55 @@ public class TemplateParserTest {
 
   @Before
   public void setUp() {
-    is = TemplateParserTest.class.getResourceAsStream("action.xml");
   }
 
   @After
   public void tearDown() throws IOException {
-    is.close();
-    is = null;
   }
 
   /**
    * Test of parse method, of class TemplateParser.
    */
   @Test
-  public void testParse() throws Exception {
-    System.out.println("parse");
-    TemplateParser instance = new TemplateParser();
-    Template result = instance.parse(is);
+  public void testParseBasic() throws Exception {
+    final String file = "../../../../notes/template_basic.xml";
+    System.out.println("testParse - file: " + file);
 
+    Template result = parseFile(file);
+    System.out.println(result);
     //print condition structure
-    result.getRules().get("").getCondition().traverse(new TreeVisitor());
+    result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
 
     ConditionVerification cv = new ConditionVerification();
-    result.getRules().get("").getCondition().traverse(cv);
+    result.getRules().get("rule1").getCondition().traverse(cv);
     assertTrue(cv.validate());
 
+  }
+
+    /**
+   * Test of parse method, of class TemplateParser.
+   */
+  @Test
+  public void testParseScript() throws Exception {
+    final String file = "../../../../notes/template_script.xml";
+    System.out.println("testParse - file: " + file);
+
+    Template result = parseFile(file);
+
+    System.out.println(result);
+    //print condition structure
+    result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
+
+    ConditionVerification cv = new ConditionVerification();
+    result.getRules().get("rule1").getCondition().traverse(cv);
+    assertTrue(cv.validate());
+
+  }
+
+  private Template parseFile(String file) throws ParserConfigurationException, SAXException, IOException {
+    File f = new File(file);
+    TemplateParser instance = new TemplateParser();
+    return instance.parse(f);
   }
 
   private class ConditionVerification implements Visitor {
