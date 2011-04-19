@@ -5,7 +5,6 @@
 
 package dk.itu.frigga.data;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -59,6 +58,6 @@ public interface DataManager {
      * @throws DataGroupNotFoundException
      * @throws UnknownDataDriverException
      */
-    Connection requestConnection(final String group) throws SQLException, DataGroupNotFoundException, UnknownDataDriverException;
+    ConnectionPool requestConnection(final String group) throws SQLException, DataGroupNotFoundException, UnknownDataDriverException;
 
 }

@@ -8,27 +8,27 @@ package dk.itu.frigga.data.manager;
 
 
 import dk.itu.frigga.Singleton;
+import dk.itu.frigga.data.ConnectionPool;
 import dk.itu.frigga.data.DataConnection;
 import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.data.UnknownDataDriverException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import org.osgi.service.log.LogService;
 
 
 public class DataManagerImpl extends Singleton implements DataManager
 {
     //NOTE: dependency for SQLite is never detected by osgi because of the way it is loaded :(
-    //NOTE: look at bundle.loadclass
     //TODO: Fix
     private org.sqlite.JDBC jdbc = new org.sqlite.JDBC();
     /* iPOJO */
     private LogService log;
 
-    private final HashMap<String, DataConnection> connections = new HashMap<String, DataConnection>();
+    private final Map<String, ConnectionPool> connections = Collections.synchronizedMap(new HashMap<String, ConnectionPool>());
     private static DataManagerImpl instance;
 
     private DataManagerImpl()
@@ -74,7 +74,7 @@ public class DataManagerImpl extends Singleton implements DataManager
     {
         assert(group != null) : "Null value cannot be used for group name in addConnection";
         log.log(LogService.LOG_INFO, "Add new data connection group: " + connection.getConnectionUrl());
-        connections.put(group, connection);
+        connections.put(group, new ConnectionPoolSQLite(connection));
     }
 
     /**
@@ -102,16 +102,18 @@ public class DataManagerImpl extends Singleton implements DataManager
      * @throws DataGroupNotFoundException
      * @throws UnknownDataDriverException
      */
-    public Connection requestConnection(final String group) throws SQLException, DataGroupNotFoundException, UnknownDataDriverException
+    public ConnectionPool requestConnection(final String group) throws SQLException, DataGroupNotFoundException, UnknownDataDriverException
     {
         if (connections.containsKey(group))
         {
-            DataConnection connection = connections.get(group);
+            ConnectionPool connection = connections.get(group);
 
-            // This call does nothing if the connection is already initialized.
-            connection.initialize();
+            if(!connection.isInitialized())
+            {
+              connection.initialize();
+            }
 
-            return DriverManager.getConnection(connection.getConnectionUrl());
+            return connection;
         }
 
         throw new DataGroupNotFoundException(group);

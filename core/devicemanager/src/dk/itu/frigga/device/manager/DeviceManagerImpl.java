@@ -22,6 +22,7 @@
 package dk.itu.frigga.device.manager;
 
 import dk.itu.frigga.Singleton;
+import dk.itu.frigga.data.ConnectionPool;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
@@ -29,12 +30,12 @@ import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Parameter;
-import dk.itu.frigga.device.dao.CategoryDAO;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.ReflectionHelper;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +60,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   private final Map<String, Driver> drivers = new HashMap<String, Driver>();
   private final Map<String, Driver> responsebility = new HashMap<String, Driver>();
   private DeviceDatabase connection;
+  private ConnectionPool pool;
 
   /**
    * We do not wish to have multiple instances, so the constructor is private.
@@ -76,22 +78,17 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   }
 
   public void onDeviceEvent(final DeviceUpdateEvent event) {
+    log.log(LogService.LOG_INFO, "Device Update Event recieved: " + event.getResponsible());
     Driver responsible = drivers.get(event.getResponsible());
     for (DeviceDescriptor data : event.getDevices()) {
       responsebility.put(data.getSymbolic(), responsible);
     }
-    new Thread(new Runnable() {
 
-      public void run() {
-        try {
-          connection.update(event);
-        } catch (SQLException ex) {
-          log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
-        } catch (Exception ex) {
-          log.log(LogService.LOG_WARNING, "Device Update Error", ex);
-        }
-      }
-    }).start();
+    try {
+      connection.update(event);
+    } catch (SQLException ex) {
+      log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
+    }
   }
 
   /**
@@ -102,8 +99,16 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
    * @return The device found, or null if no device was found.
    */
   public final Device getDeviceById(final DeviceId id) {
-    DeviceDAO d = connection.getDeviceDao();
-    return d.findBySymbolic(id.toString());
+    Connection conn = null;
+    try {
+      conn = pool.getConnection();
+      DeviceDAO d = DaoFactory.getDeviceDao(conn);
+      return d.findBySymbolic(id.toString());
+    } catch (SQLException ex) {
+    } finally {
+      pool.releaseConnection(conn);
+    }
+    return null;
   }
 
   /**
@@ -118,8 +123,16 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
    * @return Returns an array of devices of the given type.
    */
   public final Iterable<Device> getDevicesByType(final Category category) {
-    DeviceDAO d = connection.getDeviceDao();
-    return d.findByCategory(category);
+    Connection conn = null;
+    try {
+      conn = pool.getConnection();
+      DeviceDAO d = DaoFactory.getDeviceDao(conn);
+      return d.findByCategory(category);
+    } catch (SQLException ex) {
+    } finally {
+      pool.releaseConnection(conn);
+    }
+    return null;
   }
 
   /**
@@ -133,18 +146,25 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
    * @return Returns an array of devices of the given type.
    */
   public final Iterable<Device> getDevicesByType(final String type) {
-    CategoryDAO c = connection.getCategoryDao();
-    Category category = c.findByName(type);
+    Category category = new Category(type);
     return getDevicesByType(category);
   }
 
   public final Iterable<Device> getDevices() {
-    DeviceDAO d = connection.getDeviceDao();
-    return d.findAll();
+    Connection conn = null;
+    try {
+      conn = pool.getConnection();
+      DeviceDAO d = DaoFactory.getDeviceDao(conn);
+      return d.findAll();
+    } catch (SQLException ex) {
+    } finally {
+      pool.releaseConnection(conn);
+    }
+    return null;
   }
 
   public void deviceDriverAdded(Driver driver) {
-    log.log(LogService.LOG_INFO, "Device Driver Added: ");
+    log.log(LogService.LOG_INFO, "Device Driver Added: " + driver.getDriverId());
     synchronized (drivers) {
       drivers.put(driver.getDriverId(), driver);
     }
@@ -168,7 +188,8 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     } catch (Exception ex) {
     }
 
-    connection.initialize();
+    pool = connection.initialize();
+
   }
 
   public void invalidate() {

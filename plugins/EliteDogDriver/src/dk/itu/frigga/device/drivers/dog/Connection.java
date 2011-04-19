@@ -55,7 +55,6 @@ public class Connection {
       session = dogGateway.connect(uri);
       dogGateway.addDog2MessageListener(parser);
       connected = true;
-
     } catch (XmlRpcException ex) {
       log.log(LogService.LOG_INFO, "Could not connect: " + ex.getLocalizedMessage());
     } catch (IOException ex) {
