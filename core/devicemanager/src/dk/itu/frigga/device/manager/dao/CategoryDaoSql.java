@@ -178,7 +178,8 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
       stmt_select.setString(1, category.getName());
       stmt_select.setString(2, function.getName());
       ResultSet exists = stmt_select.executeQuery();
-      result = exists.next();
+      exists.next();
+      result = exists.getInt(1) > 0;
       exists.close();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
@@ -219,7 +220,8 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
       stmt_select.setString(1, category.getName());
       stmt_select.setString(2, vtype.getName());
       ResultSet exists = stmt_select.executeQuery();
-      result = exists.next();
+      exists.next();
+      result = exists.getInt(1) > 0;
       exists.close();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);

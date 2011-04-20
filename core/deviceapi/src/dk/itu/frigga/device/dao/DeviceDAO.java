@@ -8,6 +8,7 @@ import dk.itu.frigga.data.dao.GenericDAO;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Variable;
+import dk.itu.frigga.device.model.VariableType;
 import java.util.List;
 
 /**
@@ -27,6 +28,12 @@ public interface DeviceDAO extends GenericDAO<Device, Long> {
   boolean isOfCategory(Device device, Category category);
 
   List<Category> getCategories(Device device);
+
+  void addVariable(Device device, VariableType category);
+
+  void removeVariable(Device device, VariableType category);
+
+  boolean hasVariable(Device device, VariableType category);
 
   List<Variable> getVariables(Device device);
   

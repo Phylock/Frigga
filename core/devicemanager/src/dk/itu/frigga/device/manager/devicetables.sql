@@ -1,8 +1,31 @@
 CREATE TABLE IF NOT EXISTS device_variable
 (device_id INTEGER NOT NULL,
 variable_id INTEGER NOT NULL,
-variable_value BLOB,
+variable_value TEXT,
 PRIMARY KEY (device_id, variable_id));
+
+CREATE TABLE IF NOT EXISTS position_local
+(device_id INTEGER NOT NULL,
+room VARCHAR(64) NOT NULL,
+pos_x DOUBLE NOT NULL,
+pos_y DOUBLE NOT NULL,
+pos_z DOUBLE NOT NULL,
+vel_x DOUBLE NOT NULL DEFAULT 0,
+vel_y DOUBLE NOT NULL DEFAULT 0,
+vel_z DOUBLE NOT NULL DEFAULT 0,
+updated DATETIME,
+PRIMARY KEY (device_id));
+
+CREATE TABLE IF NOT EXISTS position_global
+(device_id INTEGER NOT NULL,
+pos_x DOUBLE NOT NULL,
+pos_y DOUBLE NOT NULL,
+pos_z DOUBLE NOT NULL,
+vel_x DOUBLE NOT NULL DEFAULT 0,
+vel_y DOUBLE NOT NULL DEFAULT 0,
+vel_z DOUBLE NOT NULL DEFAULT 0,
+updated DATETIME,
+PRIMARY KEY (device_id));
 
 CREATE TABLE IF NOT EXISTS category_variable
 (category_id INTEGER NOT NULL,
@@ -37,8 +60,8 @@ PRIMARY KEY (device_id, category_id));
 
 CREATE TABLE IF NOT EXISTS device
 (id INTEGER NOT NULL,
-devname VARCHAR(25) UNIQUE NOT NULL,
-symbolic VARCHAR(25) UNIQUE NOT NULL,
-last_update TEXT,
+devname VARCHAR(128) NOT NULL,
+symbolic VARCHAR(128) UNIQUE NOT NULL,
+last_update DATETIME,
 online CHAR(1),
 PRIMARY KEY (id));

@@ -10,6 +10,7 @@ import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Variable;
+import dk.itu.frigga.device.model.VariableType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,21 +29,27 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   private static final String[] FIELDS = new String[]{"devname", "symbolic", "last_update", "online"};
   private static final String ID = "id";
   public static final String TABLE = "device";
-  private PreparedStatementProxy SELECT_BY_CATEGORY;
-  private PreparedStatementProxy SELECT_BY_SYMBOLIC;
-  private PreparedStatementProxy ADD_TO_CATEGORY;
-  private PreparedStatementProxy REMOVE_FROM_CATEGORY;
-  private PreparedStatementProxy IS_OF_CATEGORY;
+  private final PreparedStatementProxy SELECT_BY_CATEGORY;
+  private final PreparedStatementProxy SELECT_BY_SYMBOLIC;
+  private final PreparedStatementProxy ADD_TO_CATEGORY;
+  private final PreparedStatementProxy REMOVE_FROM_CATEGORY;
+  private final PreparedStatementProxy IS_OF_CATEGORY;
+    private final PreparedStatementProxy ADD_VARIABLE;
+  private final PreparedStatementProxy REMOVE_VARIABLE;
+  private final PreparedStatementProxy HAS_VARIABLE;
 
   public DeviceDaoSql() {
     SELECT_BY_CATEGORY = new PreparedStatementProxy("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ?");
     SELECT_BY_SYMBOLIC = new PreparedStatementProxy("SELECT * FROM device WHERE symbolic = ?");
-    IS_OF_CATEGORY = new PreparedStatementProxy("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ? and d.devname = ?");
+    IS_OF_CATEGORY = new PreparedStatementProxy("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ? and d.symbolic = ?");
     ADD_TO_CATEGORY = new PreparedStatementProxy("INSERT INTO device_category (device_id, category_id) SELECT "
             + "device.id, category.id FROM device, category WHERE device.symbolic = ? and category.catname = ?");
     REMOVE_FROM_CATEGORY = new PreparedStatementProxy("DELETE FROM device_category "
             + "WHERE device_id=? AND category_id=?");
 
+    ADD_VARIABLE = new PreparedStatementProxy(ID);
+    REMOVE_VARIABLE = new PreparedStatementProxy(ID);
+    HAS_VARIABLE = new PreparedStatementProxy(ID);
   }
 
   public List<Device> findByCategory(Category category) {
@@ -83,7 +90,7 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
           update = true;
         }
       } else {
-        device = findBySymbolic(entity.getName());
+        device = findBySymbolic(entity.getSymbolic());
       }
 
       //exists?
@@ -180,8 +187,8 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
     boolean result = false;
     try {
       PreparedStatement stmt_select = IS_OF_CATEGORY.createPreparedStatement(connection);
-      stmt_select.setString(2, device.getSymbolic());
       stmt_select.setString(1, category.getName());
+      stmt_select.setString(2, device.getSymbolic());
       ResultSet exists = stmt_select.executeQuery();
       result = exists.next();
       exists.close();
@@ -219,5 +226,17 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   @Override
   protected String getIdField() {
     return ID;
+  }
+
+  public void addVariable(Device device, VariableType category) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  public void removeVariable(Device device, VariableType category) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  public boolean hasVariable(Device device, VariableType category) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

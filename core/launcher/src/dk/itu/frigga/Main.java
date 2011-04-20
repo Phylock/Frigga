@@ -71,12 +71,15 @@ public class Main {
   private void initializeFramework() throws Exception {
     framework = getFrameworkFactory().newFramework(config);
     framework.init();
-    framework.start();
     AutoProcessor.process(config, framework.getBundleContext());
   }
 
   private void initializeCore() throws Exception {
-    BundleLoader.loadDirectory(framework, new File("bundle"));
+    System.out.print("Initialize Core ... ");
+    CoreLoadInfo info = BundleLoader.loadDirectory(framework, new File("bundle"));
+    System.out.printf("%f ms\n", info.duration);
+    System.out.printf("Installed: %d, Updated: %d, Uninstalled: %d\n", info.installed,info.updated, info.uninstalled);
+
   }
 
   private void initializePlugins() throws Exception {
@@ -89,6 +92,7 @@ public class Main {
   }
 
   public void run() throws Exception {
+    framework.start();
     framework.waitForStop(0);
   }
 
