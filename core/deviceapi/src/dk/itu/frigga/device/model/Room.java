@@ -16,7 +16,7 @@ public class Room {
   //@Id
   //@GeneratedValue
   //@Column(name = "id", unique = true, nullable = false)
-  private long id = 1L;
+  private Long id = null;
   /** Name **/
   //@Column(name = "name", unique = true, nullable = false, length = 30)
   private String name;
@@ -28,11 +28,11 @@ public class Room {
     this.name = name;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

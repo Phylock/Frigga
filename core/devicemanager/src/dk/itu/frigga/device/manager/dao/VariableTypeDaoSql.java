@@ -137,17 +137,19 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
   }
 
   public VariableType findByName(String name) {
+    VariableType vtype = null;
     try {
       PreparedStatement stmt_select = SELECT_BY_NAME.createPreparedStatement(connection);
       stmt_select.setString(/*name*/1, name);
       ResultSet rs = stmt_select.executeQuery();
       if (rs.next()) {
-        return parseCurrent(rs);
+        vtype = parseCurrent(rs);
       }
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(CategoryDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return null;
+    return vtype;
   }
 
   public List<VariableType> findByCategory(Category category) {
@@ -157,7 +159,8 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
       PreparedStatement stmt_select = SELECT_BY_CATEGORY.createPreparedStatement(connection);
       stmt_select.setString(/*catname*/1, category.getName());
       ResultSet rs = stmt_select.executeQuery();
-      return parseAll(rs, list);
+      parseAll(rs, list);
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -171,7 +174,8 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
       PreparedStatement stmt_select = SELECT_BY_DEVICE.createPreparedStatement(connection);
       stmt_select.setString(/*symbolic*/1, device.getSymbolic());
       ResultSet rs = stmt_select.executeQuery();
-      return parseAll(rs, list);
+      parseAll(rs, list);
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
     }

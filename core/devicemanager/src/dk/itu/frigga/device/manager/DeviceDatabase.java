@@ -8,7 +8,6 @@ import dk.itu.frigga.data.UnknownDataDriverException;
 import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.dao.*;
 import dk.itu.frigga.device.descriptor.*;
-import dk.itu.frigga.device.manager.dao.*;
 import dk.itu.frigga.device.model.*;
 import java.io.InputStream;
 import java.sql.SQLException;

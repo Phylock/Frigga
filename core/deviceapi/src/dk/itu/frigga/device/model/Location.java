@@ -14,7 +14,7 @@ public class Location implements Serializable{
   //@Id
   //@GeneratedValue
   //@Column(name = "id", unique = true, nullable = false)
-  private long id = 1L;
+  private Long id = null;
   /** Point **/
   //@Embedded
   private Point3 point;
@@ -26,11 +26,11 @@ public class Location implements Serializable{
     this.point = point;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

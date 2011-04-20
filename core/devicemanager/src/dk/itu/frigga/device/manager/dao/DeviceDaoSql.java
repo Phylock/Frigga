@@ -45,8 +45,7 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
   }
 
-  @SuppressWarnings("unchecked")
-  public List findByCategory(Category category) {
+  public List<Device> findByCategory(Category category) {
     List<Device> list = new ArrayList<Device>();
     if (category == null) {
       return list;
@@ -56,26 +55,24 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
       PreparedStatement stmt_select = SELECT_BY_CATEGORY.createPreparedStatement(connection);
       stmt_select.setString(/*Category*/1, category.getName());
       ResultSet rs = stmt_select.executeQuery();
-
-      return parseAll(rs, list);
+      parseAll(rs, list);
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
     return list;
   }
 
-  @SuppressWarnings("unchecked")
   public List<Device> findByExample(Device exampleInstance) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  @SuppressWarnings("unchecked")
   public Device makePersistent(Device entity) {
     boolean insert = false;
     boolean update = false;
     //Is required values defined
     if (entity.getName() == null) {
-      throw new IllegalArgumentException("Category.Name can not be null");
+      throw new IllegalArgumentException("device.Name can not be null");
     }
     try {
       //Insert, Update or Ignore
@@ -180,16 +177,18 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   }
 
   public boolean isOfCategory(Device device, Category category) {
+    boolean result = false;
     try {
       PreparedStatement stmt_select = IS_OF_CATEGORY.createPreparedStatement(connection);
       stmt_select.setString(2, device.getSymbolic());
       stmt_select.setString(1, category.getName());
       ResultSet exists = stmt_select.executeQuery();
-      return exists.next();
+      result = exists.next();
+      exists.close();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return false;
+    return result;
   }
 
   public List<Category> getCategories(Device device) {
@@ -197,17 +196,19 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   }
 
   public Device findBySymbolic(String symbolic) {
+    Device device = null;
     try {
       PreparedStatement stmt_select = SELECT_BY_SYMBOLIC.createPreparedStatement(connection);
       stmt_select.setString(/*Symbolic*/1, symbolic);
       ResultSet rs = stmt_select.executeQuery();
       if (rs.next()) {
-        return parseCurrent(rs);
+        device = parseCurrent(rs);
       }
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return null;
+    return device;
   }
 
   @Override

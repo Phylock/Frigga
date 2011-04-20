@@ -123,16 +123,18 @@ public class FunctionDaoSql extends GenericSqlDao<Function, Long> implements Fun
   }
 
   public Function findByName(String name) {
+    Function function = null;
     try {
       PreparedStatement select = SELECT_BY_NAME.createPreparedStatement(connection);
       select.setString(/*name*/1, name);
       ResultSet rs = select.executeQuery();
       if (rs.next()) {
-        return parseCurrent(rs);
+        function = parseCurrent(rs);
       }
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(CategoryDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return null;
+    return function;
   }
 }

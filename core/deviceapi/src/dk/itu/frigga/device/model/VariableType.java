@@ -18,7 +18,7 @@ public class VariableType implements Serializable{
   //@Id
   //@GeneratedValue
   //@Column(name = "id", unique = true, nullable = false)
-  private Long id = 1L;
+  private Long id = null;
   /** Name **/
   //@Column(name = "name", unique = true, nullable = false, length = 30)
   private String name;

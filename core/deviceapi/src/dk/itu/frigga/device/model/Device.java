@@ -22,7 +22,7 @@ public class Device implements Serializable {
   private static final long serialVersionUID = 1L;
   //@Id
   //@GeneratedValue
-  private Long id = 1L;
+  private Long id = null;
   //@Column(name = "name", nullable = false)
   private String name;
   //@Column(name = "symbolic", nullable = false, unique = true)

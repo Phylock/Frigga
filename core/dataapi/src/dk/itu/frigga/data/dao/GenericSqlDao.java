@@ -55,24 +55,28 @@ public abstract class GenericSqlDao<T, ID extends Serializable> implements Gener
   }
 
   public T findById(ID id, boolean lock) {
+    T obj = null;
     try {
       PreparedStatement stmt =  SELECT_BY_ID.createPreparedStatement(connection);
       stmt.setObject(1, id);
       ResultSet rs = stmt.executeQuery();
       if (rs.next()) {
-        return parseCurrent(rs);
+        obj = parseCurrent(rs);
       }
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return null;
+    return obj;
   }
 
   public List<T> findAll() {
     List<T> list = new ArrayList<T>();
     try {
       ResultSet rs = SELECT_ALL.createPreparedStatement(connection).executeQuery();
-      return parseAll(rs, list);
+      parseAll(rs, list);
+      rs.close();
+      return list;
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
     }

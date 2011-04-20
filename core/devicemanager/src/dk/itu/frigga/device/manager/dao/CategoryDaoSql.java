@@ -36,16 +36,16 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
 
   public CategoryDaoSql() {
     SELECT_BY_NAME = new PreparedStatementProxy("SELECT * FROM category WHERE catname = ?");
-      HAS_FUNCTION = new PreparedStatementProxy("SELECT count(c.id) FROM functions as f, category as c, category_function as cf WHERE f.id = cf.function_id and cf.category_id = c.id and c.catname = ? and f.name = ?");
-      ADD_FUNCTION = new PreparedStatementProxy("INSERT INTO category_function (category_id, function_id) SELECT "
-              + "category.id, functions.id FROM functions, category WHERE category.catname = ? and functions.name = ?");
-      REMOVE_FUNCTION = new PreparedStatementProxy("DELETE FROM category_function "
-              + "WHERE category_id=? AND function_id=?");
-      HAS_VARIABLETYPE = new PreparedStatementProxy("SELECT count(c.id) FROM variabletype as v, category as c, category_variable as cv WHERE v.id = cv.variable_id and cv.category_id = c.id and c.catname = ? and v.varname = ?");
-      ADD_VARIABLETYPE = new PreparedStatementProxy("INSERT INTO category_variable (category_id, variable_id) SELECT "
-              + "category.id, variabletype.id FROM variabletype, category WHERE category.catname = ? and variabletype.varname = ?");
-      REMOVE_VARIABLETYPE = new PreparedStatementProxy("DELETE FROM category_variable "
-              + "WHERE category_id=? AND variable_id=?");
+    HAS_FUNCTION = new PreparedStatementProxy("SELECT count(c.id) FROM functions as f, category as c, category_function as cf WHERE f.id = cf.function_id and cf.category_id = c.id and c.catname = ? and f.name = ?");
+    ADD_FUNCTION = new PreparedStatementProxy("INSERT INTO category_function (category_id, function_id) SELECT "
+            + "category.id, functions.id FROM functions, category WHERE category.catname = ? and functions.name = ?");
+    REMOVE_FUNCTION = new PreparedStatementProxy("DELETE FROM category_function "
+            + "WHERE category_id=? AND function_id=?");
+    HAS_VARIABLETYPE = new PreparedStatementProxy("SELECT count(c.id) FROM variabletype as v, category as c, category_variable as cv WHERE v.id = cv.variable_id and cv.category_id = c.id and c.catname = ? and v.varname = ?");
+    ADD_VARIABLETYPE = new PreparedStatementProxy("INSERT INTO category_variable (category_id, variable_id) SELECT "
+            + "category.id, variabletype.id FROM variabletype, category WHERE category.catname = ? and variabletype.varname = ?");
+    REMOVE_VARIABLETYPE = new PreparedStatementProxy("DELETE FROM category_variable "
+            + "WHERE category_id=? AND variable_id=?");
   }
 
   protected Category parseCurrent(ResultSet rs) throws SQLException {
@@ -146,17 +146,19 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
   }
 
   public Category findByName(String name) {
+    Category category = null;
     try {
       PreparedStatement stmt_select = SELECT_BY_NAME.createPreparedStatement(connection);
       stmt_select.setString(/*Symbolic*/1, name);
       ResultSet rs = stmt_select.executeQuery();
       if (rs.next()) {
-        return parseCurrent(rs);
+        category = parseCurrent(rs);
       }
+      rs.close();
     } catch (SQLException ex) {
       Logger.getLogger(CategoryDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return null;
+    return category;
   }
 
   @Override
@@ -170,16 +172,18 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
   }
 
   public boolean hasFunction(Category category, Function function) {
+    boolean result = false;
     try {
       PreparedStatement stmt_select = HAS_FUNCTION.createPreparedStatement(connection);
       stmt_select.setString(1, category.getName());
       stmt_select.setString(2, function.getName());
       ResultSet exists = stmt_select.executeQuery();
-      return exists.next();
+      result = exists.next();
+      exists.close();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return false;
+    return result;
   }
 
   public void addVariableType(Category category, VariableType vtype) {
@@ -209,15 +213,17 @@ public class CategoryDaoSql extends GenericSqlDao<Category, Long> implements Cat
   }
 
   public boolean hasVariableType(Category category, VariableType vtype) {
+    boolean result = false;
     try {
       PreparedStatement stmt_select = HAS_VARIABLETYPE.createPreparedStatement(connection);
       stmt_select.setString(1, category.getName());
       stmt_select.setString(2, vtype.getName());
       ResultSet exists = stmt_select.executeQuery();
-      return exists.next();
+      result = exists.next();
+      exists.close();
     } catch (SQLException ex) {
       Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return false;
+    return result;
   }
 }
