@@ -49,7 +49,7 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
     ADD_VARIABLE = new PreparedStatementProxy(ID);
     REMOVE_VARIABLE = new PreparedStatementProxy(ID);
-    HAS_VARIABLE = new PreparedStatementProxy(ID);
+    HAS_VARIABLE = new PreparedStatementProxy("asdf");
   }
 
   public List<Device> findByCategory(Category category) {

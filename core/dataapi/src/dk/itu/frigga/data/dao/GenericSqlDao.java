@@ -24,8 +24,8 @@ public abstract class GenericSqlDao<T, ID extends Serializable> implements Gener
 
   private static final String SET_EXTENSION = " = ? ";
   protected Connection connection;
-  private PreparedStatementProxy SELECT_ALL;
-  private PreparedStatementProxy SELECT_BY_ID;
+  protected PreparedStatementProxy SELECT_ALL;
+  protected PreparedStatementProxy SELECT_BY_ID;
   protected PreparedStatementProxy INSERT;
   protected PreparedStatementProxy UPDATE;
 

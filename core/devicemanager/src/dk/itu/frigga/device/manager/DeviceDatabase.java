@@ -172,7 +172,7 @@ public class DeviceDatabase {
       Device device = devicedao.findBySymbolic(dd.getSymbolic());
       List<VariableType> variables = vtypedao.findByDevice(device);
       for (VariableType vtype : variables) {
-        //TODO: create and add variables based on vtype
+        devicedao.addVariable(device, vtype);
       }
     }
   }
