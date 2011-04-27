@@ -25,7 +25,7 @@ public class FileExtensionFilter extends javax.swing.filechooser.FileFilter impl
   }
   
   public FileExtensionFilter(String[] extensions, String description) {
-    HashSet set = new HashSet<String>();
+    HashSet<String> set = new HashSet<String>();
     set.addAll(Arrays.asList(extensions));
     this.extensions = Collections.unmodifiableSet(set);
     this.description = description;
