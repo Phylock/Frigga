@@ -44,11 +44,7 @@ public class VariableTypeDaoSql extends GenericSqlDao<VariableType, Long> implem
               "SELECT DISTINCT vt.* FROM "
               + "variabletype as vt, category_variable as cv, category as c, device_category as dc, device d "
               + "WHERE "
-              + "vt.id = cv.variable_id AND cv.category_id = c.id AND dc.category_id AND dc.device_id = d.id AND d.symbolic = ?");
-
-
-
-
+              + "vt.id = cv.variable_id AND cv.category_id = c.id AND c.id = dc.category_id AND dc.device_id = d.id AND d.symbolic = ?");
   }
 
   @Override

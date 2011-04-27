@@ -28,9 +28,13 @@ import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.DeviceUpdateEvent;
+import dk.itu.frigga.device.FriggaDeviceException;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Parameter;
+import dk.itu.frigga.device.VariableChangedEvent;
+import dk.itu.frigga.device.VariableUpdate;
 import dk.itu.frigga.device.dao.DeviceDAO;
+import dk.itu.frigga.device.dao.VariableDao;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
@@ -42,6 +46,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.osgi.service.log.LogService;
 
 /**
@@ -89,6 +95,28 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     } catch (SQLException ex) {
       log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
     }
+  }
+
+  public void onVariableChangeEvent(final VariableChangedEvent event) {
+    log.log(LogService.LOG_INFO, "update retreived: ");
+    new Thread(new Runnable() {
+      public void run() {
+        Connection conn = null;
+        try {
+          conn = pool.getConnection();
+          VariableDao vdao = DaoFactory.getVariableDao(conn);
+
+          for (VariableUpdate v : event.getVariables()) {
+            vdao.updateVariable(v.getDevice(), v.getVariable(), v.getValue());
+          }
+        } catch (FriggaDeviceException ex) {
+          Logger.getLogger(DeviceManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+        } finally {
+          pool.releaseConnection(conn);
+        }
+      }
+    }).start();
   }
 
   /**

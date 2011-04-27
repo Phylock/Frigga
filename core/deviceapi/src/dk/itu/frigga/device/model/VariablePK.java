@@ -15,24 +15,24 @@ import java.io.Serializable;
 public class VariablePK implements Serializable
   {
     //@ManyToOne
-    private Long device;
+    private Device device;
 
     //@ManyToOne
-    private Long variabletype;
+    private VariableType variabletype;
 
   public VariablePK() {
   }
 
-  public VariablePK(Long device, Long variabletype) {
+  public VariablePK(Device device, VariableType variabletype) {
     this.device = device;
     this.variabletype = variabletype;
   }
 
-  public Long getDevice() {
+  public Device getDevice() {
     return device;
   }
 
-  public Long getVariabletype() {
+  public VariableType getVariabletype() {
     return variabletype;
   }
 

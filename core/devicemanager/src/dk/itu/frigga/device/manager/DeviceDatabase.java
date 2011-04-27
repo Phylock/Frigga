@@ -9,6 +9,7 @@ import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.dao.*;
 import dk.itu.frigga.device.descriptor.*;
 import dk.itu.frigga.device.model.*;
+import dk.itu.frigga.device.model.Variable;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -92,6 +93,7 @@ public class DeviceDatabase {
       CategoryDAO categorydao = DaoFactory.getCategoryDao(conn);
       FunctionDao functiondao = DaoFactory.getFunctionDao(conn);
       VariableTypeDao vtypedao = DaoFactory.getVariableTypeDao(conn);
+      VariableDao vdao = DaoFactory.getVariableDao(conn);
 
       if (event.hasFunctions()) {
         updateFunctions(functiondao, event.getFunctions());
@@ -106,7 +108,7 @@ public class DeviceDatabase {
       if (event.hasDevices()) {
         updateDevice(devicedao, event.getDevices());
         updateDeviceCategory(devicedao, event.getDevices());
-        updateDeviceVariables(devicedao, vtypedao, event.getDevices());
+        updateDeviceVariables(devicedao, vtypedao, vdao, event.getDevices());
       }
     } finally {
       pool.releaseConnection(conn);
@@ -167,12 +169,13 @@ public class DeviceDatabase {
     }
   }
 
-  private void updateDeviceVariables(DeviceDAO devicedao, VariableTypeDao vtypedao, List<DeviceDescriptor> devices) {
+  private void updateDeviceVariables(DeviceDAO devicedao, VariableTypeDao vtypedao, VariableDao variabledao, List<DeviceDescriptor> devices) {
     for (DeviceDescriptor dd : devices) {
       Device device = devicedao.findBySymbolic(dd.getSymbolic());
       List<VariableType> variables = vtypedao.findByDevice(device);
       for (VariableType vtype : variables) {
-        devicedao.addVariable(device, vtype);
+        Variable v = new Variable(new VariablePK(device, vtype), "");
+        variabledao.makePersistent(v);
       }
     }
   }

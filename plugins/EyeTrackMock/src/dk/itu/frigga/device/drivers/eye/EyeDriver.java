@@ -9,6 +9,8 @@ import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.Parameter;
+import dk.itu.frigga.device.VariableChangedEvent;
+import dk.itu.frigga.device.VariableUpdate;
 import dk.itu.frigga.device.descriptor.CategoryDescriptor;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.device.descriptor.FunctionDescriptor;
@@ -32,21 +34,22 @@ import org.osgi.framework.BundleContext;
  * @author phylock
  */
 public class EyeDriver implements Driver {
+
   private static final String DRIVER_ID = "EyeTrack-%s";
   private static final String CATEGORY = "eyetrack";
   //External services, initialized by DependencyManager
   private LogService log;
-  private Publisher event;
-
+  private Publisher devent;
+  private Publisher vevent;
   //private
   private String id;
   private DeviceDescriptor device_descriptor = null;
   private final List<CategoryDescriptor> cd = new LinkedList<CategoryDescriptor>();
   private final List<FunctionDescriptor> fd = new LinkedList<FunctionDescriptor>();
   private final List<VariableDescriptor> vd = new LinkedList<VariableDescriptor>();
-
   private EyeView view;
   private BundleContext context;
+  private final EyeChangeListener listener = new EyeChangeListener();
 
   public EyeDriver(BundleContext context) {
     this.context = context;
@@ -69,13 +72,13 @@ public class EyeDriver implements Driver {
     dd.add(device_descriptor);
 
     DeviceUpdateEvent due = new DeviceUpdateEvent(getDriverId(), dd, cd, fd, vd);
-    event.sendData(due);
+    devent.sendData(due);
   }
 
   @Override
   public void update(String[] devicecategories) {
     DeviceUpdateEvent due = new DeviceUpdateEvent(getDriverId(), null, cd, fd, vd);
-    event.sendData(due);
+    devent.sendData(due);
   }
 
   @Override
@@ -85,18 +88,18 @@ public class EyeDriver implements Driver {
     }
   }
 
-  private void updateDevice()
-  {
-      List<DeviceDescriptor> dd = new LinkedList<DeviceDescriptor>();
-      dd.add(device_descriptor);
+  private void updateDevice() {
+    List<DeviceDescriptor> dd = new LinkedList<DeviceDescriptor>();
+    dd.add(device_descriptor);
 
-      DeviceUpdateEvent due = new DeviceUpdateEvent(getDriverId(), dd, null, null, null);
-      event.sendData(due);
+    DeviceUpdateEvent due = new DeviceUpdateEvent(getDriverId(), dd, null, null, null);
+    devent.sendData(due);
   }
 
   /** iPOJO Callbacks **/
   private void validate() {
     view = new EyeView();
+    view.addListener(listener);
     view.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     view.addWindowListener(new EyeViewListener(context));
     view.setVisible(true);
@@ -113,9 +116,10 @@ public class EyeDriver implements Driver {
     String name = conf.get("frigga.eye.name").toString();
     String symbolic = conf.get("frigga.eye.symbolic").toString();
 
+    listener.setId(symbolic);
+
     DeviceDescriptor dd = new DeviceDescriptor(name, symbolic, new String[]{CATEGORY});
-    if(!dd.equals(device_descriptor))
-    {
+    if (!dd.equals(device_descriptor)) {
       device_descriptor = dd;
       //updateDevice();
     }
@@ -131,8 +135,8 @@ public class EyeDriver implements Driver {
     return String.format(DRIVER_ID, id);
   }
 
-  private class EyeViewListener extends WindowAdapter
-  {
+  private class EyeViewListener extends WindowAdapter {
+
     private BundleContext context;
 
     public EyeViewListener(BundleContext context) {
@@ -147,6 +151,30 @@ public class EyeDriver implements Driver {
         Logger.getLogger(EyeDriver.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
+  }
 
+  private class EyeChangeListener implements EyeChange {
+
+    private String id = null;
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    public void selectionChanged(String selection) {
+      if (id != null) {
+        VariableChangedEvent vce = new VariableChangedEvent();
+        vce.getVariables().add(new VariableUpdate(id, "lookat", selection));
+        vevent.sendData(vce);
+      }
+    }
+
+    public void localChanged(Point p) {
+      if (id != null) {
+        VariableChangedEvent vce = new VariableChangedEvent();
+        vce.getVariables().add(new VariableUpdate(id, "local", p.toString()));
+        vevent.sendData(vce);
+      }
+    }
   }
 }

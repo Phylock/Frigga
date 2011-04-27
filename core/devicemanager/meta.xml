@@ -5,27 +5,34 @@
    xmlns:ev='org.apache.felix.ipojo.handlers.event'
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
-    <component name="DeviceManagerImpl" classname="dk.itu.frigga.device.manager.DeviceManagerImpl">
-        <provides specifications="dk.itu.frigga.device.DeviceManager"/>
+  <component name="DeviceManagerImpl" classname="dk.itu.frigga.device.manager.DeviceManagerImpl">
+    <provides specifications="dk.itu.frigga.device.DeviceManager"/>
     
-        <requires field="log" optional="true"/>
-        <requires id="drivers" aggregate="true" specification="dk.itu.frigga.device.Driver" optional="true">
-            <callback type="bind" method="deviceDriverAdded" />
-            <callback type="unbind" method="deviceDriverRemoved" />
-        </requires>
-        <requires field="datamanager" />
+    <requires field="log" optional="true"/>
+    <requires id="drivers" aggregate="true" specification="dk.itu.frigga.device.Driver" optional="true">
+      <callback type="bind" method="deviceDriverAdded" />
+      <callback type="unbind" method="deviceDriverRemoved" />
+    </requires>
+    <requires field="datamanager" />
 
-        <callback transition="validate" method="validate"/>
-        <callback transition="invalidate" method="invalidate"/>
+    <callback transition="validate" method="validate"/>
+    <callback transition="invalidate" method="invalidate"/>
 
-        <ev:subscriber
+    <ev:subscriber
 			name="deviceevent"
 			callback="onDeviceEvent"
 			topics="dk/itu/frigga/device/drivers"
 			data-key="data"
 			data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
 
-    </component>
-    <instance component="DeviceManagerImpl" name="DeviceManager"/>
+    <ev:subscriber
+			name="variableevent"
+			callback="onVariableChangeEvent"
+			topics="dk/itu/frigga/device/change"
+			data-key="data"
+			data-type="dk.itu.frigga.device.VariableChangedEvent"/>
+
+  </component>
+  <instance component="DeviceManagerImpl" name="DeviceManager"/>
 
 </ipojo>

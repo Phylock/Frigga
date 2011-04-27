@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 //@Entity
 //@Table(name = "variabletype")
-public class VariableType implements Serializable{
+public class VariableType implements Serializable {
 
   /** ID **/
   //@Id
@@ -26,11 +26,24 @@ public class VariableType implements Serializable{
   //@Column(name = "type", nullable = false, length = 30)
   private String type;
 
-
   public VariableType() {
+    this.id = null;
+    this.name = "";
+    this.type = "";
+  }
+
+  public VariableType(Long id) {
+    this.id = id;
   }
 
   public VariableType(String name, String type) {
+    this.id = null;
+    this.name = name;
+    this.type = type;
+  }
+
+  public VariableType(Long id, String name, String type) {
+    this.id = id;
     this.name = name;
     this.type = type;
   }
@@ -81,11 +94,8 @@ public class VariableType implements Serializable{
     return hash;
   }
 
-
   @Override
   public String toString() {
     return "VariableType{" + "id=" + id + ", name=" + name + ", type=" + type + '}';
   }
-
-
 }

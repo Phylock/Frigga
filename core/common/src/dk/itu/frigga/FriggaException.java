@@ -11,4 +11,19 @@ package dk.itu.frigga;
  */
 public abstract class FriggaException extends Exception {
 
+  public FriggaException(Throwable cause) {
+    super(cause);
+  }
+
+  public FriggaException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public FriggaException(String message) {
+    super(message);
+  }
+
+  public FriggaException() {
+    super();
+  }
 }

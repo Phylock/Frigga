@@ -43,6 +43,8 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
   private Device current;
   private Device over;
 
+  private EyeChange listener;
+
   /** Creates new form ViewPanel */
   public ViewPanel() {
     initComponents();
@@ -52,6 +54,12 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
     this.addMouseListener(this);
     this.addMouseMotionListener(this);
   }
+
+  public void setListener(EyeChange listener) {
+    this.listener = listener;
+  }
+
+
 
   public BufferedImage getImage() {
     return image;
@@ -96,7 +104,9 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
     return over;
   }
 
-
+  public Device getCurrent() {
+    return current;
+  }
 
   @Override
   protected void paintComponent(Graphics g) {
@@ -239,9 +249,12 @@ public class ViewPanel extends javax.swing.JPanel implements MouseMotionListener
     boolean repaint = false;
     if (d == null && current != null) {
       repaint = true;
+      listener.selectionChanged("");
     } else if (current == null && d != null) {
+      listener.selectionChanged(d.getLookat());
       repaint = true;
     } else if (d != null && !d.equals(current)) {
+      listener.selectionChanged(d.getLookat());
       repaint = true;
     }
 

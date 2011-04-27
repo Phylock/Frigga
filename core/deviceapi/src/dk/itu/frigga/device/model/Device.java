@@ -22,7 +22,7 @@ public class Device implements Serializable {
   private static final long serialVersionUID = 1L;
   //@Id
   //@GeneratedValue
-  private Long id = null;
+  private Long id;
   //@Column(name = "name", nullable = false)
   private String name;
   //@Column(name = "symbolic", nullable = false, unique = true)
@@ -41,15 +41,38 @@ public class Device implements Serializable {
   private Set<Variable> variables = new HashSet<Variable>(0);
 
   public Device() {
+    this.id = null;
+    this.name = "";
+    this.symbolic = "";
+    this.last_update = null;
+    this.online = false;
   }
 
+  public Device(Long id) {
+    this.id = id;
+    this.name = "";
+    this.symbolic = "";
+    this.last_update = null;
+    this.online = false;
+  }
+
+
+
   public Device(String name, String symbolic, Date last_update, boolean online) {
+    this.id = null;
     this.name = name;
     this.symbolic = symbolic;
     this.last_update = last_update;
     this.online = online;
   }
 
+  public Device(Long id, String name, String symbolic, Date last_update, boolean online) {
+    this.id = id;
+    this.name = name;
+    this.symbolic = symbolic;
+    this.last_update = last_update;
+    this.online = online;
+  }
   
   public Long getId() {
     return id;

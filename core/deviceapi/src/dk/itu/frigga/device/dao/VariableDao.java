@@ -5,6 +5,7 @@
 package dk.itu.frigga.device.dao;
 
 import dk.itu.frigga.data.dao.GenericDAO;
+import dk.itu.frigga.device.FriggaDeviceException;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Variable;
 import dk.itu.frigga.device.model.VariablePK;
@@ -17,5 +18,7 @@ import java.util.List;
 public interface VariableDao extends GenericDAO<Variable, VariablePK> {
 
   List<Variable> findByDevice(Device device);
+
+  void updateVariable(String symbolic, String variable, String value) throws FriggaDeviceException;
   
 }
