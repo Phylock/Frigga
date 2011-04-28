@@ -1,6 +1,6 @@
 Bundle-Version: 0.1
 Bundle-Name: Frigga Server Connection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-SymbolicName: dk.itu.frigga.core.serverconnection
+Bundle-SymbolicName: dk.itu.frigga.protocol
 
-Private-Package: dk.itu.frigga.core.serverconnection.*
+Private-Package: dk.itu.frigga.protocol.*

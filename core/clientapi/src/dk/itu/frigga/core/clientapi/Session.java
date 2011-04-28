@@ -5,10 +5,27 @@
 
 package dk.itu.frigga.core.clientapi;
 
+import java.util.UUID;
+
 /**
  *
  * @author phylock
  */
 public class Session {
+    private final UUID sessionId;
 
+    public Session()
+    {
+        sessionId = UUID.randomUUID();
+    }
+
+    public Session(final UUID session)
+    {
+        sessionId = session;
+    }
+
+    public UUID getSessionId()
+    {
+        return sessionId;
+    }
 }

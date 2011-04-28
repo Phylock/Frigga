@@ -1,3 +1,4 @@
+Manifest-Version: 1.0
 Bundle-Version: 0.1.0.SNAPSHOT
 Bundle-Name: Frigga Data API
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
