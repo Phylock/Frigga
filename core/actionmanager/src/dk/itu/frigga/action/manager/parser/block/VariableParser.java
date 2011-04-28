@@ -4,8 +4,8 @@
  */
 package dk.itu.frigga.action.manager.parser.block;
 
-import dk.itu.frigga.action.manager.block.Condition;
-import dk.itu.frigga.action.manager.block.Variable;
+import dk.itu.frigga.action.block.Condition;
+import dk.itu.frigga.action.block.Variable;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.Collections;
 import java.util.HashMap;

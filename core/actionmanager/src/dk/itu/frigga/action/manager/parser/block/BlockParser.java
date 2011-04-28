@@ -4,7 +4,7 @@
  */
 package dk.itu.frigga.action.manager.parser.block;
 
-import dk.itu.frigga.action.manager.block.Condition;
+import dk.itu.frigga.action.block.Condition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

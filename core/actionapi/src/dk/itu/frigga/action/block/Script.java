@@ -1,4 +1,4 @@
-package dk.itu.frigga.action.manager.block;
+package dk.itu.frigga.action.block;
 
 /**
  *
@@ -10,7 +10,6 @@ public class Script extends BaseCondition{
   {
     Once, Interval, Schedule
   }
-
   private final Type type;
   private final String call;
   private final long interval;
@@ -88,5 +87,4 @@ public class Script extends BaseCondition{
   public Type getType() {
     return type;
   }
-
 }

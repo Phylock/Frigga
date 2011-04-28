@@ -4,15 +4,15 @@
  */
 package dk.itu.frigga.action.manager.parser;
 
-import dk.itu.frigga.action.manager.Action;
+import dk.itu.frigga.action.Action;
 import dk.itu.frigga.action.manager.FunctionAction;
-import dk.itu.frigga.action.manager.RuleTemplate;
+import dk.itu.frigga.action.RuleTemplate;
 import dk.itu.frigga.action.manager.ScriptAction;
-import dk.itu.frigga.action.manager.Template;
-import dk.itu.frigga.action.manager.block.And;
-import dk.itu.frigga.action.manager.block.BaseCondition;
-import dk.itu.frigga.action.manager.block.Condition;
-import dk.itu.frigga.action.manager.block.Or;
+import dk.itu.frigga.action.Template;
+import dk.itu.frigga.action.block.And;
+import dk.itu.frigga.action.block.BaseCondition;
+import dk.itu.frigga.action.block.Condition;
+import dk.itu.frigga.action.block.Or;
 import dk.itu.frigga.action.manager.parser.block.BlockParser;
 import dk.itu.frigga.action.manager.parser.block.ConditionParser;
 import dk.itu.frigga.action.manager.parser.block.DeviceParser;

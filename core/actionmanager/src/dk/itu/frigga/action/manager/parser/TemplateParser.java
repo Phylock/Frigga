@@ -4,7 +4,8 @@
  */
 package dk.itu.frigga.action.manager.parser;
 
-import dk.itu.frigga.action.manager.Template;
+import dk.itu.frigga.action.Template;
+import dk.itu.frigga.proxy.LazyLoadProxy;
 import dk.itu.frigga.utility.XmlHelper;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import org.xml.sax.SAXException;
  */
 public class TemplateParser {
 
-  private DocumentBuilderFactory factory;
+  private DocumentBuilderFactory factory = null;
   private static final Map<String, Parseable> parsers;
   private static final String[] ELEMENTS = new String[]{"info", "replacements", "includes", "rules"};
 
@@ -40,18 +41,19 @@ public class TemplateParser {
 
   }
 
-  public TemplateParser() throws ParserConfigurationException, SAXException {
-    factory = DocumentBuilderFactory.newInstance();
-    //factory.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new URL("http://frigga.phylock.net/schema/template.xsd")));
-
+  private DocumentBuilderFactory getFactory() {
+    if (factory == null) {
+      factory = DocumentBuilderFactory.newInstance();
+    }
+    return factory;
   }
 
   public Template parse(File file) throws SAXException, IOException, ParserConfigurationException {
-    return parse(factory.newDocumentBuilder().parse(file));
+    return parse(getFactory().newDocumentBuilder().parse(file));
   }
 
   public Template parse(InputStream stream) throws SAXException, IOException, ParserConfigurationException {
-    return parse(factory.newDocumentBuilder().parse(stream));
+    return parse(getFactory().newDocumentBuilder().parse(stream));
   }
 
   private Template parse(Document doc) throws SAXException, IOException {

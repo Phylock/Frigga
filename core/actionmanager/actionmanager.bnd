@@ -3,4 +3,6 @@ Bundle-Name: Frigga Action Manager
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-SymbolicName: dk.itu.frigga.action.manager
 
-Private-Package: dk.itu.frigga.action.manager.*
+Private-Package: dk.itu.frigga.action.manager.*; \
+dk.itu.frigga.action.manager.parser.*; \
+dk.itu.frigga.action.manager.parser.block*

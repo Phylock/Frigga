@@ -5,6 +5,7 @@
 
 package dk.itu.frigga.action.manager;
 
+import dk.itu.frigga.action.Action;
 import dk.itu.frigga.utility.StringHelper;
 
 /**

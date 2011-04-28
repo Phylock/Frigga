@@ -3,9 +3,9 @@
  * and open the template in the editor.
  */
 
-package dk.itu.frigga.action.manager;
+package dk.itu.frigga.action;
 
-import dk.itu.frigga.action.manager.block.Condition;
+import dk.itu.frigga.action.block.Condition;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +49,4 @@ public class RuleTemplate {
   public String toString() {
     return "RuleTemplate{" + "id=" + id + "description=" + description + '}';
   }
-
-
 }

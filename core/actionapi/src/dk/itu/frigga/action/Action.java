@@ -3,13 +3,12 @@
  * and open the template in the editor.
  */
 
-package dk.itu.frigga.action.manager.block;
+package dk.itu.frigga.action;
 
 /**
  *
  * @author phylock
  */
-public class And extends BaseCondition
-{
-
+public interface Action {
+  void execute();
 }

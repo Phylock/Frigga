@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.action.manager.block;
+package dk.itu.frigga.action.block;
 
+import dk.itu.frigga.utility.IDGenerator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +15,11 @@ import java.util.List;
 public class BaseCondition implements Condition {
   protected List<Condition> children = null;
   protected List<String> replacements = null;
+  private final long unique;
+  private static final IDGenerator generator = new IDGenerator();
+  public BaseCondition() {
+    unique = generator.nextID();
+  }
 
   public void traverse(Visitor visitor) {
     if (!(visitor.preVisit(this))) {
@@ -58,5 +64,13 @@ public class BaseCondition implements Condition {
       replacements = new LinkedList<String>();
     }
     replacements.add(replacement);
+  }
+
+  public boolean hasChildren() {
+    return children != null && !children.isEmpty();
+  }
+
+  public long getUniqueId() {
+    return unique;
   }
 }

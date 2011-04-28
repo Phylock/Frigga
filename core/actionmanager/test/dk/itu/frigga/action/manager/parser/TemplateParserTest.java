@@ -5,9 +5,9 @@
 package dk.itu.frigga.action.manager.parser;
 
 import dk.itu.frigga.action.manager.PrintConditionTree;
-import dk.itu.frigga.action.manager.Template;
-import dk.itu.frigga.action.manager.block.Condition;
-import dk.itu.frigga.action.manager.block.Visitor;
+import dk.itu.frigga.action.Template;
+import dk.itu.frigga.action.block.Condition;
+import dk.itu.frigga.action.block.Visitor;
 import java.io.File;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;

@@ -5,6 +5,8 @@
 
 package dk.itu.frigga.action.manager;
 
+import dk.itu.frigga.action.Action;
+
 /**
  *
  * @author phylock

@@ -4,11 +4,11 @@
  */
 package dk.itu.frigga.action.manager;
 
-import dk.itu.frigga.action.manager.block.Condition;
-import dk.itu.frigga.action.manager.block.Visitor;
+import dk.itu.frigga.action.block.Condition;
+import dk.itu.frigga.action.block.Visitor;
 
 /**
- *
+ * This class is mostly for debugging purpose, it prints a given condition tree to system out
  * @author phylock
  */
 public class PrintConditionTree implements Visitor {

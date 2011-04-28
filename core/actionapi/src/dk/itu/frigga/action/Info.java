@@ -1,7 +1,7 @@
-package dk.itu.frigga.action.manager;
+package dk.itu.frigga.action;
 
 /**
- *
+ * Info Container Class contains info about a given Template.
  * @author phylock
  */
 public class Info {

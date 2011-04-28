@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package dk.itu.frigga.action.manager;
+package dk.itu.frigga.action;
 
 /**
  *

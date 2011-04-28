@@ -1,4 +1,4 @@
-package dk.itu.frigga.action.manager;
+package dk.itu.frigga.action;
 
 import java.io.File;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- *
+ * Container class for a loaded template, this can be used to compile context
  * @author phylock
  */
 public class Template {
@@ -76,6 +76,4 @@ public class Template {
 
     return sb.toString();
   }
-
-
 }
