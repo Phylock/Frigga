@@ -5,6 +5,7 @@
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.ActionManager;
+import dk.itu.frigga.action.RuleTemplate;
 import dk.itu.frigga.action.manager.parser.TemplateParser;
 import dk.itu.frigga.action.Template;
 import dk.itu.frigga.action.Context;
@@ -13,12 +14,17 @@ import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.data.UnknownDataDriverException;
 import dk.itu.frigga.device.DeviceManager;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,9 +47,7 @@ public class ActionManagerImpl implements ActionManager {
   private final Map<String, Template> templates;
   private final Map<String, Context> contexts;
   private final TemplateParser parser;
-
   private ConnectionPool cpool;
-
   private BundleContext bc;
 
   public ActionManagerImpl(BundleContext bc) {
@@ -51,6 +55,10 @@ public class ActionManagerImpl implements ActionManager {
     templates = Collections.synchronizedMap(new HashMap<String, Template>());
     contexts = Collections.synchronizedMap(new HashMap<String, Context>());
     parser = new TemplateParser();
+  }
+
+  public Collection<Template> getTemplates() {
+    return Collections.unmodifiableCollection(templates.values());
   }
 
   public Context getContext(String id) {
@@ -61,27 +69,62 @@ public class ActionManagerImpl implements ActionManager {
     return templates.get(id);
   }
 
-  public void LoadTemplate(File file) throws IOException, SAXException {
+  public boolean hasTemplate(String id) {
+    return templates.containsKey(id);
+  }
+
+  public void removeTemplate(String id) {
+    templates.remove(id);
+  }
+
+  public String LoadTemplate(File file) throws IOException, SAXException {
+    String id = "";
     try {
       Template template = parser.parse(file);
-      templates.put(template.getInfo().getName(), template);
+      id = template.getInfo().getName();
+      templates.put(id, template);
     } catch (ParserConfigurationException ex) {
-      log.log(LogService.LOG_ERROR, "Fatel error, ActionManager is stopping",ex);
+      log.log(LogService.LOG_ERROR, "Fatel error, ActionManager is stopping", ex);
       try {
         bc.getBundle().stop();
       } catch (BundleException bex) {
       }
     }
+    return id;
   }
 
-  public void CompileTemplate(Template template, Map<String,String> replace) {
-    Context c = new Context(template, replace);
+  public void CompileTemplate(File action) throws FileNotFoundException, IOException {
+    Properties loader = new Properties();
+    loader.load(new BufferedInputStream(new FileInputStream(action)));
+    if (loader.containsKey(ACTION_TEMPLATE_KEY) && loader.containsKey(ACTION_ID_KEY)) {
+      Map<String, String> prop = new HashMap<String, String>((Map) loader);
+      String id = prop.get(ACTION_ID_KEY);
+      String[] action_templates = prop.get(ACTION_TEMPLATE_KEY).toString().split(";");
+      for (String current : action_templates) {
+        if (templates.containsKey(current)) {
+          CompileTemplate(id, templates.get(current), prop);
+        } else {
+          log.log(LogService.LOG_WARNING, "Unknown template name: " + current + " actions compilation skipped");
+        }
+      }
+
+    } else {
+      //TODO: Throws invalid action file
+    }
+
   }
 
-  private void validate()
-  {
-    if(datamanager.hasConnection("device"))
-    {
+  public void CompileTemplate(String id, Template template, Map<String, String> replace) {
+    //TODO: store context for later use
+    Context c = new Context(id, template, replace);
+    Map<String, RuleTemplate> rules = template.getRules();
+    for (RuleTemplate rule : rules.values()) {
+      c.addRule(new RuleSql(c, rule));
+    }
+  }
+
+  private void validate() {
+    if (datamanager.hasConnection("device")) {
       try {
         cpool = datamanager.requestConnection("device");
       } catch (SQLException ex) {
@@ -91,11 +134,12 @@ public class ActionManagerImpl implements ActionManager {
       } catch (UnknownDataDriverException ex) {
         Logger.getLogger(ActionManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
       }
+    } else {
+      //TODO: wait for device database to be ready
     }
   }
 
-  private void invalidate()
-  {
+  private void invalidate() {
     cpool = null;
   }
 }

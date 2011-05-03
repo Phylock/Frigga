@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://frigga.phylock.net/schema/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://frigga.phylock.net/schema/ template.xsd">
+  <template>
+    <info>
+      <author>author</author>
+      <name>script</name>
+      <site>site</site>
+      <description>This is a script template example</description>
+    </info>
+    <includes>
+      <include id="core" path="core.js" />
+    </includes>
+    <replacements>
+      <replace name="tv" description="a tv" type="string" />
+    </replacements>
+    <rules>
+      <rule id="rule1">
+        <description>what is this rule doing ...</description>
+        <actions>
+          <action event="initialize" callback="{id}.{function}" />
+          <action event="finalize" callback="{id}.{function}" />
+          <action event="validate" callback="{id}.{function}" />
+          <action event="invalidate" callback="{id}.{function}" />
+        </actions>
+        <condition>
+          <or>
+            <device name="!tv">
+              <variable name="onOffState" type="string">
+                <isEqual>on</isEqual>
+              </variable>
+            </device>
+            <script interval="1000" call="{id}.{function}" />
+          </or>
+        </condition>
+      </rule>
+    </rules>
+  </template>
+</frigga>

@@ -13,11 +13,13 @@ import java.util.Map;
  */
 public class Context {
 
+  private final String id;
   private final Template template;
   private final Map<String, String> replacements;
   private final Map<String, Rule> rules;
 
-  public Context(Template template, Map<String, String> replacements) {
+  public Context(String id, Template template, Map<String, String> replacements) {
+    this.id = id;
     this.template = template;
     this.replacements = replacements;
     this.rules = new HashMap<String, Rule>();

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.example.com template.xsd">
+  <template>
+    <info>
+      <author>author</author>
+      <name>basic</name>
+      <site>site</site>
+      <description>This is a basic example</description>
+    </info>
+    <replacements>
+      <replace name="tv" description="a tv" type="string" />
+    </replacements>
+    <rules>
+      <rule id="rule1">
+        <description>what is this rule doing ...</description>
+        <actions>
+          <action event="validate">
+            <function selection="" function="" />
+          </action>
+          <action event="invalidate">
+            <function selection="" function="">
+              <param>on</param>
+            </function>
+          </action>
+        </actions>
+        <condition>
+          <device name="!tv">
+            <and>
+              <variable name="onOffState" type="string">
+                <isEqual>on</isEqual>
+              </variable>
+              <variable name="volume" type="numeric">
+                <isBetween min="10" max="20" />
+              </variable>
+            </and>
+          </device>
+        </condition>
+      </rule>
+    </rules>
+  </template>
+</frigga>

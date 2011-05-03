@@ -24,10 +24,19 @@ public class Main {
   private static final String VERSION = "0.1.0.SNAPSHOT";
   private static final String PROJECTNAME = "Frigga";
   //TODO: the default one, allow overwrite from argument
-  private static final String FELIX_CONFIG_DIR = "conf/";
-  private static final String FELIX_CONFIG_APPLICATION_DIR = FELIX_CONFIG_DIR + "application/";
-  private static final String FELIX_CONFIG_FILE = FELIX_CONFIG_DIR + "config.properties";
-  
+  private static final String CONFIG_DIRECTORY_KEY ="frigga.config.dir";
+  private static final String DEFAULT_CONFIG_DIR = "conf/";
+  private static final String CONFIG_APPLICATION_DIR = "application/";
+  private static final String CONFIG_FILE = "config.properties";
+  private final String config_dir;
+
+  public Main(String config_dir) {
+    if(!config_dir.endsWith("/"))
+    {
+      config_dir += "/";
+    }
+    this.config_dir = config_dir;
+  }
   private Framework framework = null;
   private Properties config;
 
@@ -45,14 +54,17 @@ public class Main {
   private void loadMasterSettings(Properties config) {
     try {
       Properties master = new Properties();
-      File file = new File(FELIX_CONFIG_FILE);
+      config.put(CONFIG_DIRECTORY_KEY, config_dir);
+      File file = new File(config_dir + CONFIG_FILE);
       if (file.exists()) {
         master.load(new FileInputStream(file));
         config.putAll(master);
-        //Start looking for instance configs
-        config.put("felix.fileinstall.dir", FELIX_CONFIG_APPLICATION_DIR);
+        //Start looking for instance config
+        //TODO: move to configuration bundle
+        config.put("felix.fileinstall.dir", config_dir + CONFIG_APPLICATION_DIR);
         config.put("felix.fileinstall.filter", ".*\\.cfg");
         config.put("felix.fileinstall.log.level", "-1");
+
       }
     } catch (IOException ex) {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,7 +90,7 @@ public class Main {
     System.out.print("Initialize Core ... ");
     CoreLoadInfo info = BundleLoader.loadDirectory(framework, new File("bundle"));
     System.out.printf("%f ms\n", info.duration);
-    System.out.printf("Installed: %d, Updated: %d, Uninstalled: %d\n", info.installed,info.updated, info.uninstalled);
+    System.out.printf("Installed: %d, Updated: %d, Uninstalled: %d\n", info.installed, info.updated, info.uninstalled);
 
   }
 
@@ -100,8 +112,15 @@ public class Main {
    * @param args the command line arguments
    */
   public static void main(String[] args) throws IOException {
+    String dir;
+    if (args.length == 0) {
+      dir = DEFAULT_CONFIG_DIR;
+    } else {
+      dir = args[0];
+    }
     try {
-      Main main = new Main();
+      Main main = new Main(dir);
+
       main.printBanner();
       main.load();
       main.initialize();

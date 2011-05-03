@@ -10,17 +10,28 @@
  */
 package dk.itu.frigga.debug.demo.gui;
 
+import dk.itu.frigga.action.ActionManager;
+import dk.itu.frigga.action.Info;
+import dk.itu.frigga.action.Replacement;
+import dk.itu.frigga.action.RuleTemplate;
+import dk.itu.frigga.action.Template;
 import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.model.Device;
-import java.awt.event.ItemEvent;
-import java.util.ArrayList;
+import dk.itu.frigga.utility.FileExtensionFilter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.service.log.LogService;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -29,13 +40,26 @@ import org.osgi.service.log.LogService;
 public class MainWindow extends JFrame {
 
   private volatile DeviceManager devicemanager;
+  private volatile ActionManager actionmanager;
   private volatile LogService log;
   private BundleContext context;
+  private final JFileChooser template_fc = new JFileChooser();
+  private final JFileChooser action_fc = new JFileChooser();
 
   /** Creates new form MainWindow */
   public MainWindow(BundleContext context) {
     initComponents();
     this.context = context;
+
+    final String conf_dir = context.getProperty("frigga.config.dir");
+
+    template_fc.setCurrentDirectory(new File(conf_dir + "templates/"));
+    template_fc.setAcceptAllFileFilterUsed(false);
+    template_fc.setFileFilter(new FileExtensionFilter(new String[]{"template"}, "frigga template file(*.template)"));
+
+    action_fc.setCurrentDirectory(new File(conf_dir + "actions/"));
+    action_fc.setAcceptAllFileFilterUsed(false);
+    action_fc.setFileFilter(new FileExtensionFilter(new String[]{"action"}, "frigga action file(*.action)"));
   }
 
   /** This method is called from within the constructor to
@@ -47,13 +71,51 @@ public class MainWindow extends JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    main_panel = new javax.swing.JTabbedPane();
+    tab_devices = new javax.swing.JPanel();
+    device_search_panel = new javax.swing.JPanel();
     jScrollPane1 = new javax.swing.JScrollPane();
     lst_devices = new javax.swing.JList();
     btn_refresh = new javax.swing.JButton();
-    jToggleButton1 = new javax.swing.JToggleButton();
-    jLabel1 = new javax.swing.JLabel();
-    jLabel2 = new javax.swing.JLabel();
-    device_name = new javax.swing.JLabel();
+    device_info_panel = new javax.swing.JPanel();
+    lbl_name = new javax.swing.JLabel();
+    lbl_symbolic = new javax.swing.JLabel();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    jList1 = new javax.swing.JList();
+    lbl_variable = new javax.swing.JLabel();
+    lbl_functions = new javax.swing.JLabel();
+    jScrollPane3 = new javax.swing.JScrollPane();
+    jList2 = new javax.swing.JList();
+    txt_symbolic = new javax.swing.JLabel();
+    txt_name = new javax.swing.JLabel();
+    tab_templates = new javax.swing.JPanel();
+    template_search_panel = new javax.swing.JPanel();
+    jScrollPane4 = new javax.swing.JScrollPane();
+    lst_templates = new javax.swing.JList();
+    btn_refresh1 = new javax.swing.JButton();
+    btn_template_open = new javax.swing.JButton();
+    device_info_panel1 = new javax.swing.JPanel();
+    jLabel5 = new javax.swing.JLabel();
+    jLabel6 = new javax.swing.JLabel();
+    device_name1 = new javax.swing.JLabel();
+    jScrollPane5 = new javax.swing.JScrollPane();
+    lst_replacement = new javax.swing.JList();
+    jLabel7 = new javax.swing.JLabel();
+    jLabel8 = new javax.swing.JLabel();
+    jScrollPane6 = new javax.swing.JScrollPane();
+    lst_rules = new javax.swing.JList();
+    jLabel9 = new javax.swing.JLabel();
+    jLabel10 = new javax.swing.JLabel();
+    txt_template_auther = new javax.swing.JLabel();
+    txt_template_site = new javax.swing.JLabel();
+    txt_template_description = new javax.swing.JLabel();
+    txt_template_name = new javax.swing.JLabel();
+    tab_actions = new javax.swing.JPanel();
+    template_search_panel1 = new javax.swing.JPanel();
+    jScrollPane7 = new javax.swing.JScrollPane();
+    lst_templates1 = new javax.swing.JList();
+    btn_refresh2 = new javax.swing.JButton();
+    btn_template_open1 = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     addWindowListener(new java.awt.event.WindowAdapter() {
@@ -62,6 +124,14 @@ public class MainWindow extends JFrame {
       }
     });
 
+    tab_devices.setLayout(new java.awt.GridLayout(1, 0));
+
+    device_search_panel.setPreferredSize(new java.awt.Dimension(200, 451));
+    device_search_panel.setLayout(new java.awt.BorderLayout());
+
+    lst_devices.setMaximumSize(new java.awt.Dimension(100, 100));
+    lst_devices.setMinimumSize(new java.awt.Dimension(100, 100));
+    lst_devices.setPreferredSize(new java.awt.Dimension(100, 100));
     lst_devices.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
       public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
         lst_devicesValueChanged(evt);
@@ -69,64 +139,229 @@ public class MainWindow extends JFrame {
     });
     jScrollPane1.setViewportView(lst_devices);
 
+    device_search_panel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
     btn_refresh.setText("Search");
     btn_refresh.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         btn_refreshActionPerformed(evt);
       }
     });
+    device_search_panel.add(btn_refresh, java.awt.BorderLayout.PAGE_START);
 
-    jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dk/itu/frigga/debug/demo/gui/lightbulb_off.png"))); // NOI18N
-    jToggleButton1.setRolloverEnabled(false);
-    jToggleButton1.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/dk/itu/frigga/debug/demo/gui/lightbulb_on.png"))); // NOI18N
-    jToggleButton1.addItemListener(new java.awt.event.ItemListener() {
-      public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        jToggleButton1ItemStateChanged(evt);
+    tab_devices.add(device_search_panel);
+
+    lbl_name.setText("Name:");
+
+    lbl_symbolic.setText("Symbolic:");
+
+    jScrollPane2.setViewportView(jList1);
+
+    lbl_variable.setText("Variables:");
+
+    lbl_functions.setText("Functions:");
+
+    jScrollPane3.setViewportView(jList2);
+
+    javax.swing.GroupLayout device_info_panelLayout = new javax.swing.GroupLayout(device_info_panel);
+    device_info_panel.setLayout(device_info_panelLayout);
+    device_info_panelLayout.setHorizontalGroup(
+      device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(device_info_panelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(lbl_variable)
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+          .addComponent(lbl_functions)
+          .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+          .addGroup(device_info_panelLayout.createSequentialGroup()
+            .addGroup(device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(lbl_symbolic)
+              .addComponent(lbl_name))
+            .addGap(18, 18, 18)
+            .addGroup(device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(txt_symbolic, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+              .addComponent(txt_name, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))))
+        .addContainerGap())
+    );
+    device_info_panelLayout.setVerticalGroup(
+      device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(device_info_panelLayout.createSequentialGroup()
+        .addGap(35, 35, 35)
+        .addGroup(device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(lbl_name)
+          .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(lbl_symbolic)
+          .addComponent(txt_symbolic, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(lbl_variable)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(lbl_functions)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(80, Short.MAX_VALUE))
+    );
+
+    tab_devices.add(device_info_panel);
+
+    main_panel.addTab("Devices", tab_devices);
+
+    tab_templates.setLayout(new java.awt.GridLayout(1, 0));
+
+    template_search_panel.setPreferredSize(new java.awt.Dimension(200, 451));
+    template_search_panel.setLayout(new java.awt.BorderLayout());
+
+    lst_templates.setMaximumSize(new java.awt.Dimension(100, 100));
+    lst_templates.setMinimumSize(new java.awt.Dimension(100, 100));
+    lst_templates.setPreferredSize(new java.awt.Dimension(100, 100));
+    lst_templates.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+      public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+        lst_templatesValueChanged(evt);
       }
     });
+    jScrollPane4.setViewportView(lst_templates);
 
-    jLabel1.setText("Name:");
+    template_search_panel.add(jScrollPane4, java.awt.BorderLayout.CENTER);
 
-    jLabel2.setText("State:");
+    btn_refresh1.setText("Update");
+    btn_refresh1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btn_refresh1ActionPerformed(evt);
+      }
+    });
+    template_search_panel.add(btn_refresh1, java.awt.BorderLayout.PAGE_START);
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
+    btn_template_open.setText("Open");
+    btn_template_open.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btn_template_openActionPerformed(evt);
+      }
+    });
+    template_search_panel.add(btn_template_open, java.awt.BorderLayout.SOUTH);
+
+    tab_templates.add(template_search_panel);
+
+    jLabel5.setText("Name:");
+
+    jLabel6.setText("Description:");
+
+    jScrollPane5.setViewportView(lst_replacement);
+
+    jLabel7.setText("Replacements:");
+
+    jLabel8.setText("Rules");
+
+    jScrollPane6.setViewportView(lst_rules);
+
+    jLabel9.setText("Site:");
+
+    jLabel10.setText("Auther:");
+
+    javax.swing.GroupLayout device_info_panel1Layout = new javax.swing.GroupLayout(device_info_panel1);
+    device_info_panel1.setLayout(device_info_panel1Layout);
+    device_info_panel1Layout.setHorizontalGroup(
+      device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(device_info_panel1Layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(btn_refresh, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel1)
-            .addGap(18, 18, 18)
-            .addComponent(device_name, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE))
-          .addComponent(jLabel2)
-          .addComponent(jToggleButton1))
+        .addGroup(device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(txt_template_description, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+          .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+          .addGroup(device_info_panel1Layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addGap(75, 75, 75)
+            .addComponent(txt_template_name, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+          .addComponent(jLabel6)
+          .addGroup(device_info_panel1Layout.createSequentialGroup()
+            .addComponent(jLabel9)
+            .addGap(88, 88, 88)
+            .addComponent(txt_template_site, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+          .addGroup(device_info_panel1Layout.createSequentialGroup()
+            .addComponent(jLabel10)
+            .addGap(68, 68, 68)
+            .addComponent(txt_template_auther, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+          .addComponent(jLabel8)
+          .addComponent(jLabel7)
+          .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
         .addContainerGap())
     );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
+    device_info_panel1Layout.setVerticalGroup(
+      device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(device_info_panel1Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(btn_refresh)
+        .addGroup(device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(txt_template_name, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel5))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(jLabel1)
-              .addComponent(device_name, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel2)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jToggleButton1)
-            .addGap(105, 105, 105)))
-        .addContainerGap())
+        .addComponent(jLabel6)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(txt_template_description, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(device_info_panel1Layout.createSequentialGroup()
+            .addGap(1, 1, 1)
+            .addComponent(txt_template_site, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(jLabel9))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(txt_template_auther, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel10))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel7)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(jLabel8)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
+
+    tab_templates.add(device_info_panel1);
+
+    main_panel.addTab("Templates", tab_templates);
+
+    tab_actions.setLayout(new java.awt.GridLayout());
+
+    template_search_panel1.setPreferredSize(new java.awt.Dimension(200, 451));
+    template_search_panel1.setLayout(new java.awt.BorderLayout());
+
+    lst_templates1.setMaximumSize(new java.awt.Dimension(100, 100));
+    lst_templates1.setMinimumSize(new java.awt.Dimension(100, 100));
+    lst_templates1.setPreferredSize(new java.awt.Dimension(100, 100));
+    lst_templates1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+      public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+        lst_templates1ValueChanged(evt);
+      }
+    });
+    jScrollPane7.setViewportView(lst_templates1);
+
+    template_search_panel1.add(jScrollPane7, java.awt.BorderLayout.CENTER);
+
+    btn_refresh2.setText("Update");
+    btn_refresh2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btn_refresh2ActionPerformed(evt);
+      }
+    });
+    template_search_panel1.add(btn_refresh2, java.awt.BorderLayout.PAGE_START);
+
+    btn_template_open1.setText("Open");
+    btn_template_open1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btn_template_open1ActionPerformed(evt);
+      }
+    });
+    template_search_panel1.add(btn_template_open1, java.awt.BorderLayout.SOUTH);
+
+    tab_actions.add(template_search_panel1);
+
+    main_panel.addTab("Actions", tab_actions);
+
+    getContentPane().add(main_panel, java.awt.BorderLayout.CENTER);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -134,44 +369,20 @@ public class MainWindow extends JFrame {
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
       lst_devices.removeAll();
 
-      Vector<Device> devices = new Vector<Device>();
+      Vector<DeviceItem> devices = new Vector<DeviceItem>();
       Iterable<Device> iter = devicemanager.getDevices();
       for (Device device : iter) {
-        devices.add(device);
+        devices.add(new DeviceItem(device));
       }
       lst_devices.setListData(devices);
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void lst_devicesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_devicesValueChanged
       Object obj = lst_devices.getSelectedValue();
-      if (obj instanceof Device) {
-        updateCurrentDeviceInfo((Device) obj);
+      if (obj instanceof DeviceItem) {
+        updateCurrentDeviceInfo(((DeviceItem) obj).getDevice());
       }
     }//GEN-LAST:event_lst_devicesValueChanged
-
-    private void jToggleButton1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jToggleButton1ItemStateChanged
-      int state = evt.getStateChange();
-
-      Object selections[] = lst_devices.getSelectedValues();
-      ArrayList<String> devices = new ArrayList<String>();
-
-      for (Object obj : selections) {
-        if (obj instanceof Device) {
-          devices.add(((Device) obj).getSymbolic());
-        }
-      }
-      if (!devices.isEmpty()) {
-        String[] calldevices = devices.toArray(new String[devices.size()]);
-
-        if (!devices.isEmpty()) {
-          if (state == ItemEvent.SELECTED) {
-            devicemanager.callFunction("on", calldevices);
-          } else {
-            devicemanager.callFunction("off", calldevices);
-          }
-        }
-      }
-    }//GEN-LAST:event_jToggleButton1ItemStateChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
       try {
@@ -181,17 +392,136 @@ public class MainWindow extends JFrame {
       }
     }//GEN-LAST:event_formWindowClosing
 
+    private void lst_templatesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_templatesValueChanged
+      Object obj = lst_templates.getSelectedValue();
+      if (obj instanceof TemplateItem) {
+        updateCurrentTemplateInfo(((TemplateItem) obj).getTemplate());
+      }
+    }//GEN-LAST:event_lst_templatesValueChanged
+
+    private void btn_refresh1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refresh1ActionPerformed
+      lst_templates.removeAll();
+      Collection<Template> templates = actionmanager.getTemplates();
+      Vector<TemplateItem> list = new Vector<TemplateItem>();
+      for (Template t : templates) {
+        list.add(new TemplateItem(t));
+      }
+      lst_templates.setListData(list);
+    }//GEN-LAST:event_btn_refresh1ActionPerformed
+
+    private void btn_template_openActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_template_openActionPerformed
+      int returnVal = template_fc.showOpenDialog(this);
+
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        File f = template_fc.getSelectedFile();
+        try {
+          actionmanager.LoadTemplate(f);
+          btn_refresh1ActionPerformed(null);
+        } catch (IOException ex) {
+          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }//GEN-LAST:event_btn_template_openActionPerformed
+
+    private void lst_templates1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_templates1ValueChanged
+      // TODO add your handling code here:
+    }//GEN-LAST:event_lst_templates1ValueChanged
+
+    private void btn_refresh2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refresh2ActionPerformed
+      // TODO add your handling code here:
+    }//GEN-LAST:event_btn_refresh2ActionPerformed
+
+    private void btn_template_open1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_template_open1ActionPerformed
+      int returnVal = action_fc.showOpenDialog(this);
+
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        File f = action_fc.getSelectedFile();
+        try {
+          actionmanager.CompileTemplate(f);
+        } catch (IOException ex) {
+          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }//GEN-LAST:event_btn_template_open1ActionPerformed
+
   private void updateCurrentDeviceInfo(Device device) {
-    device_name.setText(device.getSymbolic());
+    txt_name.setText(device.getName());
+    txt_symbolic.setText(device.getSymbolic());
+
+  }
+
+  private void updateCurrentTemplateInfo(Template t) {
+    Info i = t.getInfo();
+    txt_template_name.setText(i.getName());
+    txt_template_description.setText(i.getDescription());
+    txt_template_auther.setText(i.getAuthor());
+    txt_template_site.setText(i.getSite());
+
+    Vector<Replacement> rep = new Vector<Replacement>();
+    lst_replacement.removeAll();
+    Map<String, Replacement> replacements = t.getReplacements();
+    for (Entry<String, Replacement> entry : replacements.entrySet()) {
+      rep.add(entry.getValue());
+    }
+    lst_replacement.setListData(rep);
+
+    Vector<RuleTemplate> r = new Vector<RuleTemplate>();
+    lst_rules.removeAll();
+    Map<String, RuleTemplate> rules = t.getRules();
+    for (Entry<String, RuleTemplate> entry : rules.entrySet()) {
+      r.add(entry.getValue());
+    }
+    lst_rules.setListData(r);
+
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton btn_refresh;
-  private javax.swing.JLabel device_name;
-  private javax.swing.JLabel jLabel1;
-  private javax.swing.JLabel jLabel2;
+  private javax.swing.JButton btn_refresh1;
+  private javax.swing.JButton btn_refresh2;
+  private javax.swing.JButton btn_template_open;
+  private javax.swing.JButton btn_template_open1;
+  private javax.swing.JPanel device_info_panel;
+  private javax.swing.JPanel device_info_panel1;
+  private javax.swing.JLabel device_name1;
+  private javax.swing.JPanel device_search_panel;
+  private javax.swing.JLabel jLabel10;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
+  private javax.swing.JLabel jLabel7;
+  private javax.swing.JLabel jLabel8;
+  private javax.swing.JLabel jLabel9;
+  private javax.swing.JList jList1;
+  private javax.swing.JList jList2;
   private javax.swing.JScrollPane jScrollPane1;
-  private javax.swing.JToggleButton jToggleButton1;
+  private javax.swing.JScrollPane jScrollPane2;
+  private javax.swing.JScrollPane jScrollPane3;
+  private javax.swing.JScrollPane jScrollPane4;
+  private javax.swing.JScrollPane jScrollPane5;
+  private javax.swing.JScrollPane jScrollPane6;
+  private javax.swing.JScrollPane jScrollPane7;
+  private javax.swing.JLabel lbl_functions;
+  private javax.swing.JLabel lbl_name;
+  private javax.swing.JLabel lbl_symbolic;
+  private javax.swing.JLabel lbl_variable;
   private javax.swing.JList lst_devices;
+  private javax.swing.JList lst_replacement;
+  private javax.swing.JList lst_rules;
+  private javax.swing.JList lst_templates;
+  private javax.swing.JList lst_templates1;
+  private javax.swing.JTabbedPane main_panel;
+  private javax.swing.JPanel tab_actions;
+  private javax.swing.JPanel tab_devices;
+  private javax.swing.JPanel tab_templates;
+  private javax.swing.JPanel template_search_panel;
+  private javax.swing.JPanel template_search_panel1;
+  private javax.swing.JLabel txt_name;
+  private javax.swing.JLabel txt_symbolic;
+  private javax.swing.JLabel txt_template_auther;
+  private javax.swing.JLabel txt_template_description;
+  private javax.swing.JLabel txt_template_name;
+  private javax.swing.JLabel txt_template_site;
   // End of variables declaration//GEN-END:variables
 
   private void start() {
@@ -200,5 +530,41 @@ public class MainWindow extends JFrame {
 
   private void stop() {
     this.dispose();
+  }
+
+  private class DeviceItem {
+
+    private final Device d;
+
+    public DeviceItem(Device d) {
+      this.d = d;
+    }
+
+    public Device getDevice() {
+      return d;
+    }
+
+    @Override
+    public String toString() {
+      return d.getName();
+    }
+  }
+
+  private class TemplateItem {
+
+    private final Template t;
+
+    public TemplateItem(Template t) {
+      this.t = t;
+    }
+
+    public Template getTemplate() {
+      return t;
+    }
+
+    @Override
+    public String toString() {
+      return t.getInfo().getName();
+    }
   }
 }
