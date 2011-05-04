@@ -93,7 +93,7 @@ public class ConditionCheckerSql {
           break;
       }
 
-      sb.append(String.format("(SELECT count(*) FROM device_variable as dv, variabletype as vt, device as d where vt.varname = '%s' and vt.id = dv.variable_id AND d.symbolic = '%s' and dv.device_id = d.id AND dv.variable_value %s )", v.getName(), current_device, comparison));
+      sb.append(String.format("(SELECT count(*) FROM device_variable as dv, variabletype as vt, device as d WHERE vt.varname = '%s' and vt.id = dv.variable_id AND d.symbolic = '%s' and dv.device_id = d.id AND dv.variable_value %s LIMIT 1) ", v.getName(), current_device, comparison));
     }
 
     private String parseValueType(String value, Variable.Type type)
@@ -114,8 +114,6 @@ public class ConditionCheckerSql {
         sb.append(")");
       }
     }
-
-
 
     public String getSelection() {
       return sb.toString();

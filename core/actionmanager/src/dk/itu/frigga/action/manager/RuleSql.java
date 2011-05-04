@@ -57,27 +57,28 @@ public class RuleSql implements Rule {
 
   public State check() {
     State state = State.Invalid;
-    //if (pool != null) {
-    //TODO: replace script values, for now ignore and set to true
-    String vreplaced = condition_template.replaceAll("\\$[0-9]*\\$", "1");
-    PreparedStatementProxy statement = new PreparedStatementProxy("SELECT 1 WHERE " + vreplaced);
-    Connection conn = null;
-    try {
-      conn = pool.getConnection();
-      PreparedStatement stmt = statement.createPreparedStatement(conn);
-      ResultSet rs = stmt.executeQuery();
-      if (rs.next()) {
-        if (rs.getLong(1) == 1) {
-          state = State.Valid;
+    if (pool != null) {
+      //TODO: replace script values, for now ignore and set to true
+      String vreplaced = condition_template.replaceAll("\\$[0-9]*\\$", "1");
+      PreparedStatementProxy statement = new PreparedStatementProxy("SELECT 1 WHERE " + vreplaced);
+      //System.out.println(statement);
+      Connection conn = null;
+      try {
+        conn = pool.getConnection();
+        PreparedStatement stmt = statement.createPreparedStatement(conn);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+          if (rs.getLong(1) == 1) {
+            state = State.Valid;
+          }
         }
+        rs.close();
+      } catch (SQLException ex) {
+        Logger.getLogger(RuleSql.class.getName()).log(Level.SEVERE, null, ex);
+      } finally {
+        pool.releaseConnection(conn);
       }
-      rs.close();
-    } catch (SQLException ex) {
-      Logger.getLogger(RuleSql.class.getName()).log(Level.SEVERE, null, ex);
-    } finally {
-      pool.releaseConnection(conn);
     }
-    //}
     return state;
   }
 

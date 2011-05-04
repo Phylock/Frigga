@@ -37,4 +37,11 @@ public class PreparedStatementProxy {
     }
     return null;
   }
+
+  @Override
+  public String toString() {
+    return "PreparedStatementProxy{" + "statement=" + statement + '}';
+  }
+
+
 }

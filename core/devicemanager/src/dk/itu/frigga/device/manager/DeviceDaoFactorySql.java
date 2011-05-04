@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.device.manager;
 
+import dk.itu.frigga.device.DeviceDaoFactory;
 import dk.itu.frigga.device.dao.CategoryDAO;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.dao.FunctionDao;
@@ -20,33 +21,44 @@ import java.sql.Connection;
  *
  * @author phylock
  */
-public class DaoFactory {
+public class DeviceDaoFactorySql implements DeviceDaoFactory {
+  private static final DeviceDaoFactory instance = new DeviceDaoFactorySql();
 
-  public static CategoryDAO getCategoryDao(Connection conn) {
+  private DeviceDaoFactorySql()
+  {
+    
+  }
+
+  public static DeviceDaoFactory instance()
+  {
+    return instance;
+  }
+
+  public CategoryDAO getCategoryDao(Connection conn) {
     CategoryDAO cat = new CategoryDaoSql();
     cat.setConnection(conn);
     return cat;
   }
 
-  public static DeviceDAO getDeviceDao(Connection conn) {
+  public DeviceDAO getDeviceDao(Connection conn) {
     DeviceDAO dev = new DeviceDaoSql();
     dev.setConnection(conn);
     return dev;
   }
 
-  public static FunctionDao getFunctionDao(Connection conn) {
+  public FunctionDao getFunctionDao(Connection conn) {
     FunctionDao fun = new FunctionDaoSql();
     fun.setConnection(conn);
     return fun;
   }
 
-  public static VariableTypeDao getVariableTypeDao(Connection conn) {
+  public VariableTypeDao getVariableTypeDao(Connection conn) {
     VariableTypeDao var = new VariableTypeDaoSql();
     var.setConnection(conn);
     return var;
   }
 
-    public static VariableDao getVariableDao(Connection conn) {
+  public VariableDao getVariableDao(Connection conn) {
     VariableDao var = new VariableDaoSql();
     var.setConnection(conn);
     return var;

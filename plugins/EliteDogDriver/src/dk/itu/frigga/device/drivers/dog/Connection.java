@@ -2,6 +2,8 @@ package dk.itu.frigga.device.drivers.dog;
 
 import it.polito.elite.domotics.dog2.dog2leash.Dog2JLeash;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.xmlrpc.XmlRpcException;
 import org.osgi.service.log.LogService;
@@ -16,15 +18,15 @@ public class Connection {
   private Dog2JLeash dogGateway;
   private String uri;
   private boolean connected;
-  private long retry_delay;
   private String session;
   private LogService log;
   private DogParser parser;
+  private final ConnectionRetry retry;
 
   public Connection(DogDriver driver) {
     dogGateway = new Dog2JLeash();
     connected = false;
-    retry_delay = 5 * 60000; // default 5 min
+    retry = new ConnectionRetry(this, 5 * 60000, -1); // default 5 min);
     parser = new DogParser(driver);
   }
 
@@ -36,8 +38,8 @@ public class Connection {
     return parser;
   }
 
-  public long getRetryDelay() {
-    return retry_delay;
+  void reconnect() {
+    connect(uri);
   }
 
   public boolean connect(String uri) {
@@ -65,6 +67,10 @@ public class Connection {
 
     if (connected) {
       //TODO: Process queue
+    }
+    else
+    {
+      retry.start();
     }
 
     return connected;
@@ -114,6 +120,45 @@ public class Connection {
       }
     } else if (timeout > 0) {
       //TODO: Add to queue
+    }
+  }
+
+  private class ConnectionRetry extends Thread {
+
+    private final Connection conn;
+    private final long delay;
+    private final int retry;
+    private boolean running;
+    private int current_retry;
+
+    public ConnectionRetry(Connection conn, long delay, int retry) {
+      this.conn = conn;
+      this.delay = delay;
+      this.retry = retry;
+    }
+
+    public void kill() {
+      synchronized (this) {
+        running = false;
+        this.interrupt();
+      }
+
+    }
+
+    @Override
+    public void run() {
+      current_retry = 0;
+      running = true;
+      while (running && !conn.isConnected() && (current_retry < retry || retry == -1)) {
+        current_retry++;
+        conn.reconnect();
+        try {
+          sleep(delay);
+        } catch (InterruptedException ex) {
+          Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      running = false;
     }
   }
 }

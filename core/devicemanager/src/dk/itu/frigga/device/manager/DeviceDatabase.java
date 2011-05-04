@@ -89,11 +89,11 @@ public class DeviceDatabase {
     Connection conn = null;
     try {
       conn = pool.getConnection();
-      DeviceDAO devicedao = DaoFactory.getDeviceDao(conn);
-      CategoryDAO categorydao = DaoFactory.getCategoryDao(conn);
-      FunctionDao functiondao = DaoFactory.getFunctionDao(conn);
-      VariableTypeDao vtypedao = DaoFactory.getVariableTypeDao(conn);
-      VariableDao vdao = DaoFactory.getVariableDao(conn);
+      DeviceDAO devicedao = DeviceDaoFactorySql.instance().getDeviceDao(conn);
+      CategoryDAO categorydao = DeviceDaoFactorySql.instance().getCategoryDao(conn);
+      FunctionDao functiondao = DeviceDaoFactorySql.instance().getFunctionDao(conn);
+      VariableTypeDao vtypedao = DeviceDaoFactorySql.instance().getVariableTypeDao(conn);
+      VariableDao vdao = DeviceDaoFactorySql.instance().getVariableDao(conn);
 
       if (event.hasFunctions()) {
         updateFunctions(functiondao, event.getFunctions());

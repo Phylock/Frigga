@@ -15,12 +15,22 @@ import dk.itu.frigga.action.Info;
 import dk.itu.frigga.action.Replacement;
 import dk.itu.frigga.action.RuleTemplate;
 import dk.itu.frigga.action.Template;
+import dk.itu.frigga.data.ConnectionPool;
+import dk.itu.frigga.data.DataGroupNotFoundException;
+import dk.itu.frigga.data.DataManager;
+import dk.itu.frigga.data.UnknownDataDriverException;
+import dk.itu.frigga.device.DeviceDaoFactory;
 import dk.itu.frigga.device.DeviceManager;
+import dk.itu.frigga.device.dao.VariableDao;
 import dk.itu.frigga.device.model.Device;
+import dk.itu.frigga.device.model.Variable;
 import dk.itu.frigga.utility.FileExtensionFilter;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -40,11 +50,13 @@ import org.xml.sax.SAXException;
 public class MainWindow extends JFrame {
 
   private volatile DeviceManager devicemanager;
+  private volatile DataManager datamanager;
   private volatile ActionManager actionmanager;
   private volatile LogService log;
   private BundleContext context;
   private final JFileChooser template_fc = new JFileChooser();
   private final JFileChooser action_fc = new JFileChooser();
+  private ConnectionPool cpool = null;
 
   /** Creates new form MainWindow */
   public MainWindow(BundleContext context) {
@@ -81,11 +93,11 @@ public class MainWindow extends JFrame {
     lbl_name = new javax.swing.JLabel();
     lbl_symbolic = new javax.swing.JLabel();
     jScrollPane2 = new javax.swing.JScrollPane();
-    jList1 = new javax.swing.JList();
+    lst_device_variable = new javax.swing.JList();
     lbl_variable = new javax.swing.JLabel();
     lbl_functions = new javax.swing.JLabel();
     jScrollPane3 = new javax.swing.JScrollPane();
-    jList2 = new javax.swing.JList();
+    lst_device_functions = new javax.swing.JList();
     txt_symbolic = new javax.swing.JLabel();
     txt_name = new javax.swing.JLabel();
     tab_templates = new javax.swing.JPanel();
@@ -155,13 +167,13 @@ public class MainWindow extends JFrame {
 
     lbl_symbolic.setText("Symbolic:");
 
-    jScrollPane2.setViewportView(jList1);
+    jScrollPane2.setViewportView(lst_device_variable);
 
     lbl_variable.setText("Variables:");
 
     lbl_functions.setText("Functions:");
 
-    jScrollPane3.setViewportView(jList2);
+    jScrollPane3.setViewportView(lst_device_functions);
 
     javax.swing.GroupLayout device_info_panelLayout = new javax.swing.GroupLayout(device_info_panel);
     device_info_panel.setLayout(device_info_panelLayout);
@@ -180,8 +192,8 @@ public class MainWindow extends JFrame {
               .addComponent(lbl_name))
             .addGap(18, 18, 18)
             .addGroup(device_info_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(txt_symbolic, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
-              .addComponent(txt_name, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))))
+              .addComponent(txt_symbolic, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+              .addComponent(txt_name, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))))
         .addContainerGap())
     );
     device_info_panelLayout.setVerticalGroup(
@@ -203,7 +215,7 @@ public class MainWindow extends JFrame {
         .addComponent(lbl_functions)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(80, Short.MAX_VALUE))
+        .addContainerGap(92, Short.MAX_VALUE))
     );
 
     tab_devices.add(device_info_panel);
@@ -278,7 +290,7 @@ public class MainWindow extends JFrame {
           .addGroup(device_info_panel1Layout.createSequentialGroup()
             .addComponent(jLabel9)
             .addGap(88, 88, 88)
-            .addComponent(txt_template_site, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+            .addComponent(txt_template_site, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE))
           .addGroup(device_info_panel1Layout.createSequentialGroup()
             .addComponent(jLabel10)
             .addGap(68, 68, 68)
@@ -317,14 +329,14 @@ public class MainWindow extends JFrame {
         .addComponent(jLabel8)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(28, Short.MAX_VALUE))
     );
 
     tab_templates.add(device_info_panel1);
 
     main_panel.addTab("Templates", tab_templates);
 
-    tab_actions.setLayout(new java.awt.GridLayout());
+    tab_actions.setLayout(new java.awt.GridLayout(1, 0));
 
     template_search_panel1.setPreferredSize(new java.awt.Dimension(200, 451));
     template_search_panel1.setLayout(new java.awt.BorderLayout());
@@ -371,10 +383,12 @@ public class MainWindow extends JFrame {
 
       Vector<DeviceItem> devices = new Vector<DeviceItem>();
       Iterable<Device> iter = devicemanager.getDevices();
-      for (Device device : iter) {
-        devices.add(new DeviceItem(device));
+      if (iter != null) {
+        for (Device device : iter) {
+          devices.add(new DeviceItem(device));
+        }
+        lst_devices.setListData(devices);
       }
-      lst_devices.setListData(devices);
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void lst_devicesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_devicesValueChanged
@@ -449,7 +463,25 @@ public class MainWindow extends JFrame {
   private void updateCurrentDeviceInfo(Device device) {
     txt_name.setText(device.getName());
     txt_symbolic.setText(device.getSymbolic());
+    Connection conn = null;
+    try {
+      conn = cpool.getConnection();
+      DeviceDaoFactory ddf = devicemanager.getDeviceDaoFactory();
+      VariableDao vd = ddf.getVariableDao(conn);
 
+      List<Variable> variables = vd.findByDevice(device);
+
+      Vector<String> list = new Vector<String>();
+      for (Variable v : variables) {
+        list.add(v.getPrimaryKey().getVariabletype().getName() + ": " + v.getValue());
+      }
+      lst_device_variable.setListData(list);
+
+    } catch (SQLException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      cpool.releaseConnection(conn);
+    }
   }
 
   private void updateCurrentTemplateInfo(Template t) {
@@ -492,8 +524,6 @@ public class MainWindow extends JFrame {
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
-  private javax.swing.JList jList1;
-  private javax.swing.JList jList2;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JScrollPane jScrollPane3;
@@ -505,6 +535,8 @@ public class MainWindow extends JFrame {
   private javax.swing.JLabel lbl_name;
   private javax.swing.JLabel lbl_symbolic;
   private javax.swing.JLabel lbl_variable;
+  private javax.swing.JList lst_device_functions;
+  private javax.swing.JList lst_device_variable;
   private javax.swing.JList lst_devices;
   private javax.swing.JList lst_replacement;
   private javax.swing.JList lst_rules;
@@ -526,6 +558,15 @@ public class MainWindow extends JFrame {
 
   private void start() {
     this.setVisible(true);
+    try {
+      cpool = datamanager.requestConnection("device");
+    } catch (SQLException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (DataGroupNotFoundException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (UnknownDataDriverException ex) {
+      Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   private void stop() {

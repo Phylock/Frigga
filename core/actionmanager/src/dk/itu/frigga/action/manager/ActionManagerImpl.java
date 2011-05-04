@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.ActionManager;
@@ -9,6 +5,7 @@ import dk.itu.frigga.action.RuleTemplate;
 import dk.itu.frigga.action.manager.parser.TemplateParser;
 import dk.itu.frigga.action.Template;
 import dk.itu.frigga.action.Context;
+import dk.itu.frigga.action.Rule;
 import dk.itu.frigga.data.ConnectionPool;
 import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
@@ -49,12 +46,14 @@ public class ActionManagerImpl implements ActionManager {
   private final TemplateParser parser;
   private ConnectionPool cpool;
   private BundleContext bc;
+  private final ActionWorker actionworker;
 
   public ActionManagerImpl(BundleContext bc) {
     this.bc = bc;
     templates = Collections.synchronizedMap(new HashMap<String, Template>());
     contexts = Collections.synchronizedMap(new HashMap<String, Context>());
     parser = new TemplateParser();
+    actionworker = new ActionWorker();
   }
 
   public Collection<Template> getTemplates() {
@@ -104,23 +103,25 @@ public class ActionManagerImpl implements ActionManager {
         if (templates.containsKey(current)) {
           CompileTemplate(id, templates.get(current), prop);
         } else {
-          log.log(LogService.LOG_WARNING, "Unknown template name: " + current + " actions compilation skipped");
+          log.log(LogService.LOG_WARNING, "Unknown template name '" + current + "', action compilation skipped");
         }
       }
 
     } else {
       //TODO: Throws invalid action file
     }
-
   }
 
   public void CompileTemplate(String id, Template template, Map<String, String> replace) {
-    //TODO: store context for later use
     Context c = new Context(id, template, replace);
     Map<String, RuleTemplate> rules = template.getRules();
     for (RuleTemplate rule : rules.values()) {
-      c.addRule(new RuleSql(c, rule));
+      RuleSql r = new RuleSql(c, rule);
+      r.setDeviceDatabaseConnectionPool(cpool);
+      c.addRule(r);
+      actionworker.addRule(r);
     }
+    contexts.put(id, c);
   }
 
   private void validate() {
@@ -135,7 +136,7 @@ public class ActionManagerImpl implements ActionManager {
         Logger.getLogger(ActionManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
       }
     } else {
-      //TODO: wait for device database to be ready
+      //TODO: investegate if this could happen, if it can wait for device database to be ready
     }
   }
 

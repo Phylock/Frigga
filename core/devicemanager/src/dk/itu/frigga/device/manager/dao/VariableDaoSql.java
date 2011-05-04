@@ -14,7 +14,9 @@ import dk.itu.frigga.device.model.VariablePK;
 import dk.itu.frigga.device.model.VariableType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +33,7 @@ public class VariableDaoSql extends GenericSqlDao<Variable, VariablePK> implemen
   private final PreparedStatementProxy STRING_UPDATE;
   private final PreparedStatementProxy STRING_INSERT;
   private final PreparedStatementProxy SELECT_BY_STRING;
+  private final PreparedStatementProxy SELECT_BY_DEVICE;
 
   public VariableDaoSql() {
     STRING_UPDATE = new PreparedStatementProxy("UPDATE device_variable SET variable_value=? WHERE "
@@ -40,6 +43,8 @@ public class VariableDaoSql extends GenericSqlDao<Variable, VariablePK> implemen
             + "device.id, variabletype.id, ? FROM variabletype, device WHERE device.symbolic = ? AND variabletype.varname = ?", TABLE);
     SELECT_BY_STRING = new PreparedStatementProxy("SELECT %s.* FROM %s, device, variabletype WHERE "
             + "device.id = device_id AND variabletype.id = variable_id AND device.symbolic = ? AND variabletype.varname = ?", TABLE, TABLE);
+    SELECT_BY_DEVICE = new PreparedStatementProxy("SELECT varname,vartype, %s.* FROM %s, device, variabletype WHERE "
+            + "device.id = device_variable.device_id AND variabletype.id = device_variable.variable_id AND device.symbolic = ?", TABLE, TABLE);
   }
 
   @Override
@@ -52,8 +57,16 @@ public class VariableDaoSql extends GenericSqlDao<Variable, VariablePK> implemen
     Long device_id = rs.getLong("device_id");
     Long variable_id = rs.getLong("variable_id");
     String value = rs.getString("variable_value");
+    String variable_name = null;
+    String variable_type = null;
+    try {
+      variable_name = rs.getString("varname");
+      variable_type = rs.getString("vartype");
+    } catch (SQLException ex) {
+    }
 
-    Variable v = new Variable(new VariablePK(new Device(device_id), new VariableType(variable_id)), value);
+    VariableType variableType = new VariableType(variable_id, variable_name, variable_type);
+    Variable v = new Variable(new VariablePK(new Device(device_id), variableType), value);
     return v;
   }
 
@@ -70,28 +83,34 @@ public class VariableDaoSql extends GenericSqlDao<Variable, VariablePK> implemen
   @Override
   public Variable findById(VariablePK id, boolean lock) {
     Variable obj = null;
+    ResultSet rs = null;
     try {
       if (id.getDevice().getId() != null && id.getVariabletype().getId() != null) {
         PreparedStatement stmt = SELECT_BY_ID.createPreparedStatement(connection);
         stmt.setLong(1, id.getDevice().getId());
         stmt.setLong(2, id.getVariabletype().getId());
-        ResultSet rs = stmt.executeQuery();
+        rs = stmt.executeQuery();
         if (rs.next()) {
           obj = parseCurrent(rs);
         }
-        rs.close();
       } else {
         PreparedStatement stmt = SELECT_BY_STRING.createPreparedStatement(connection);
         stmt.setString(1, id.getDevice().getSymbolic());
         stmt.setString(2, id.getVariabletype().getName());
-        ResultSet rs = stmt.executeQuery();
+        rs = stmt.executeQuery();
         if (rs.next()) {
           obj = parseCurrent(rs);
         }
-        rs.close();
       }
     } catch (SQLException ex) {
       Logger.getLogger(GenericSqlDao.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (rs != null) {
+        try {
+          rs.close();
+        } catch (SQLException ex) {
+        }
+      }
     }
     return obj;
   }
@@ -202,7 +221,24 @@ public class VariableDaoSql extends GenericSqlDao<Variable, VariablePK> implemen
   }
 
   public List<Variable> findByDevice(Device device) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    List<Variable> list = new LinkedList<Variable>();
+    ResultSet rs = null;
+    try {
+      PreparedStatement stmt = SELECT_BY_DEVICE.createPreparedStatement(connection);
+      stmt.setString(1, device.getSymbolic());
+      rs = stmt.executeQuery();
+      parseAll(rs, list);
+    } catch (SQLException ex) {
+      System.out.println(ex);
+    } finally {
+      try {
+        if (rs != null) {
+          rs.close();
+        }
+      } catch (SQLException ex) {
+      }
+    }
+    return list;
   }
 
   public void updateVariable(String symbolic, String variable, String value) throws FriggaDeviceException {

@@ -7,6 +7,7 @@
   <component name="DemoWindowImpl" classname="dk.itu.frigga.debug.demo.gui.MainWindow" public="false">
     <requires field="log" optional="true"/>
     <requires field="devicemanager"/>
+    <requires field="datamanager"/>
     <requires field="actionmanager"/>
     
     <callback transition="validate" method="start"/>

@@ -24,6 +24,7 @@ package dk.itu.frigga.device.manager;
 import dk.itu.frigga.Singleton;
 import dk.itu.frigga.data.ConnectionPool;
 import dk.itu.frigga.data.DataManager;
+import dk.itu.frigga.device.DeviceDaoFactory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
@@ -71,7 +72,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   /**
    * We do not wish to have multiple instances, so the constructor is private.
    */
-  public DeviceManagerImpl() {
+  private DeviceManagerImpl() {
   }
 
   public final boolean deviceIsOnline(final Device device) {
@@ -104,7 +105,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
         Connection conn = null;
         try {
           conn = pool.getConnection();
-          VariableDao vdao = DaoFactory.getVariableDao(conn);
+          VariableDao vdao = DeviceDaoFactorySql.instance().getVariableDao(conn);
 
           for (VariableUpdate v : event.getVariables()) {
             vdao.updateVariable(v.getDevice(), v.getVariable(), v.getValue());
@@ -130,7 +131,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     Connection conn = null;
     try {
       conn = pool.getConnection();
-      DeviceDAO d = DaoFactory.getDeviceDao(conn);
+      DeviceDAO d = DeviceDaoFactorySql.instance().getDeviceDao(conn);
       return d.findBySymbolic(id.toString());
     } catch (SQLException ex) {
     } finally {
@@ -154,7 +155,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     Connection conn = null;
     try {
       conn = pool.getConnection();
-      DeviceDAO d = DaoFactory.getDeviceDao(conn);
+      DeviceDAO d = DeviceDaoFactorySql.instance().getDeviceDao(conn);
       return d.findByCategory(category);
     } catch (SQLException ex) {
     } finally {
@@ -182,7 +183,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     Connection conn = null;
     try {
       conn = pool.getConnection();
-      DeviceDAO d = DaoFactory.getDeviceDao(conn);
+      DeviceDAO d = DeviceDaoFactorySql.instance().getDeviceDao(conn);
       return d.findAll();
     } catch (SQLException ex) {
     } finally {
@@ -277,5 +278,9 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
       }
     }
     return new FunctionResult(failed_block.isEmpty() ? "OK" : "Failed");
+  }
+
+  public DeviceDaoFactory getDeviceDaoFactory() {
+   return  DeviceDaoFactorySql.instance();
   }
 }

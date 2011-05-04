@@ -33,6 +33,14 @@ public class Context {
     return replacements;
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public Map<String, Rule> getRules() {
+    return rules;
+  }
+
   public void addRule(Rule rule)
   {
     rules.put(rule.getID(), rule);

@@ -16,5 +16,6 @@ public interface Rule {
   }
 
   public String getID();
-
+  public State check();
+  
 }

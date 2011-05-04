@@ -34,9 +34,11 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   private final PreparedStatementProxy ADD_TO_CATEGORY;
   private final PreparedStatementProxy REMOVE_FROM_CATEGORY;
   private final PreparedStatementProxy IS_OF_CATEGORY;
-    private final PreparedStatementProxy ADD_VARIABLE;
+  private final PreparedStatementProxy ADD_VARIABLE;
   private final PreparedStatementProxy REMOVE_VARIABLE;
   private final PreparedStatementProxy HAS_VARIABLE;
+  private final PreparedStatementProxy SELECT_VARIABLE;
+  private final PreparedStatementProxy SELECT_ALL_VARIABLE;
 
   public DeviceDaoSql() {
     SELECT_BY_CATEGORY = new PreparedStatementProxy("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ?");
@@ -50,6 +52,8 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
     ADD_VARIABLE = new PreparedStatementProxy(ID);
     REMOVE_VARIABLE = new PreparedStatementProxy(ID);
     HAS_VARIABLE = new PreparedStatementProxy("asdf");
+    SELECT_VARIABLE = new PreparedStatementProxy(ID);
+    SELECT_ALL_VARIABLE = new PreparedStatementProxy("SELECT dv.* FROM device as d, device_variable as dv WHERE d.id = dv.device_id AND d.symbolic = ?");
   }
 
   public List<Device> findByCategory(Category category) {

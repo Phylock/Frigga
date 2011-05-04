@@ -58,10 +58,9 @@ public class RuleSqlTest {
     r.put("tv", "tv1");
     
     Template t = parseFile(file);
-    Context c = new Context(t, r);
+    Context c = new Context("test1", t, r);
     RuleSql instance = new RuleSql(c, t.getRules().get("rule1"));
     Rule.State s = instance.check();
-    
   }
   private Template parseFile(String file) throws ParserConfigurationException, SAXException, IOException {
     File f = new File(file);
