@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : livingroom.xml
+    Created on : April 2, 2011, 3:15 PM
+    Author     : phylock
+    Description:
+        Purpose of the document follows.
+-->
+
+<eyetrack>
+  <image url="demonstrationroom.jpg">
+    <device lookat="livingroom_camera_1">
+      <point x= "88" y = "260"/>
+    </device>
+    
+    <device lookat="livingroom_window_1">
+      <point x= "625" y = "180"/>
+    </device>
+     
+     
+    <device lookat="livingroom_tv">
+      <point x= "333" y = "183"/>
+      <point x= "333" y = "255"/>
+      <point x= "205" y = "255"/>
+      <point x= "205" y = "183"/>
+    </device>
+  </image>
+</eyetrack>
