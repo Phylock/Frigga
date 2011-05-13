@@ -56,7 +56,7 @@ public interface DeviceManager {
  */
   Iterable<Device> getDevices();
 
-  FunctionResult callFunction(String function, String[] devices, Parameter... parameters);
+  FunctionResult callFunction(String function, Device[] devices, Parameter... parameters);
 
   DeviceDaoFactory getDeviceDaoFactory();
 

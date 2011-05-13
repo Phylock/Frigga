@@ -28,6 +28,7 @@ import dk.itu.frigga.device.DeviceDaoFactory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
+import dk.itu.frigga.device.DeviceUpdate;
 import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.FriggaDeviceException;
 import dk.itu.frigga.device.FunctionResult;
@@ -36,17 +37,18 @@ import dk.itu.frigga.device.VariableChangedEvent;
 import dk.itu.frigga.device.VariableUpdate;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.dao.VariableDao;
-import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.ReflectionHelper;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.osgi.service.log.LogService;
@@ -65,7 +67,6 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   private DataManager datamanager;
   /* private */
   private final Map<String, Driver> drivers = new HashMap<String, Driver>();
-  private final Map<String, Driver> responsebility = new HashMap<String, Driver>();
   private DeviceDatabase connection;
   private ConnectionPool pool;
 
@@ -86,11 +87,6 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
 
   public void onDeviceEvent(final DeviceUpdateEvent event) {
     log.log(LogService.LOG_INFO, "Device Update Event recieved: " + event.getResponsible());
-    Driver responsible = drivers.get(event.getResponsible());
-    for (DeviceDescriptor data : event.getDevices()) {
-      responsebility.put(data.getSymbolic(), responsible);
-    }
-
     try {
       connection.update(event);
     } catch (SQLException ex) {
@@ -99,17 +95,27 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   }
 
   public void onVariableChangeEvent(final VariableChangedEvent event) {
-    log.log(LogService.LOG_INFO, "update retreived: ");
     new Thread(new Runnable() {
+
       public void run() {
         Connection conn = null;
         try {
           conn = pool.getConnection();
-          VariableDao vdao = DeviceDaoFactorySql.instance().getVariableDao(conn);
-
-          for (VariableUpdate v : event.getVariables()) {
-            vdao.updateVariable(v.getDevice(), v.getVariable(), v.getValue());
+          if (event.hasVariables()) {
+            VariableDao vdao = DeviceDaoFactorySql.instance().getVariableDao(conn);
+            for (VariableUpdate v : event.getVariables()) {
+              vdao.updateVariable(v.getDevice(), v.getVariable(), v.getValue());
+            }
           }
+
+          if(event.hasState())
+          {
+            DeviceDAO ddao = DeviceDaoFactorySql.instance().getDeviceDao(conn);
+            for (DeviceUpdate d : event.getState()) {
+              ddao.setState(d.getDevice(), d.isOnline());
+            }
+          }
+
         } catch (FriggaDeviceException ex) {
           Logger.getLogger(DeviceManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
@@ -204,7 +210,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     synchronized (drivers) {
       drivers.remove(driver.getDriverId());
     }
-    log.log(LogService.LOG_INFO, "Device Driver Removed: ");
+    log.log(LogService.LOG_INFO, "Device Driver Removed: " + driver.getDriverId());
     //TODO: set the devices that the driver is responsible of offline
   }
 
@@ -233,45 +239,44 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
    * @param parameters
    * @return
    */
-  public FunctionResult callFunction(String function, String[] devices, Parameter... parameters) {
-    List<String> failed_block = new ArrayList<String>();
+  public FunctionResult callFunction(String function, Device[] devices, Parameter... parameters) {
+    List<Device> failed_block = new ArrayList<Device>();
     //if there is only one device, there can be only one responsible driver
     if (devices.length > 1) {
-      List<String> calldevices = Arrays.asList(devices);
+      Queue<Device> calldevices = new ArrayDeque<Device>(Arrays.asList(devices));
       List<String> current_block = new ArrayList<String>();
       boolean done = false;
       while (!done) {
         //pop the first and find all devices which uses the same driver
-        if (responsebility.containsKey(calldevices.get(0))) {
-          Driver current = responsebility.get(calldevices.get(0));
-          for (String device : devices) {
-            if (responsebility.get(device).equals(current)) {
-              current_block.add(device);
+        if (drivers.containsKey(calldevices.peek().getDriver())) {
+          Device current =  calldevices.poll();
+          Driver current_driver = drivers.get(current.getDriver());
+          for (Device device : devices) {
+            if (device.getDriver().equals(current.getDriver())) {
+              current_block.add(device.getSymbolic());
             }
           }
 
           try {
-            current.callFunction(current_block.toArray(new String[current_block.size()]), function, parameters);
+            current_driver.callFunction(current_block.toArray(new String[current_block.size()]), function, parameters);
           } catch (Exception ex) {
-            failed_block.add(devices[0]);
+            failed_block.add(current);
           }
           calldevices.removeAll(current_block);
           current_block.clear();
 
         } else {
-          failed_block.add(calldevices.get(0));
-          calldevices.remove(0);
+          failed_block.add(calldevices.poll());
         }
         if (calldevices.isEmpty()) {
           done = true;
         }
-
       }
     } else {
-      if (responsebility.containsKey(devices[0])) {
-        Driver d = responsebility.get(devices[0]);
+      if (drivers.containsKey(devices[0].getDriver())) {
+        Driver d = drivers.get(devices[0].getDriver());
         try {
-          d.callFunction(devices, function, parameters);
+          d.callFunction(new String[]{devices[0].getSymbolic()}, function, parameters);
         } catch (Exception ex) {
           failed_block.add(devices[0]);
         }
@@ -281,6 +286,6 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   }
 
   public DeviceDaoFactory getDeviceDaoFactory() {
-   return  DeviceDaoFactorySql.instance();
+    return DeviceDaoFactorySql.instance();
   }
 }

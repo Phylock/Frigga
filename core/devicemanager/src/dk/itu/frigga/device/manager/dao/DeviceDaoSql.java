@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  */
 public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceDAO {
 
-  private static final String[] FIELDS = new String[]{"devname", "symbolic", "last_update", "online"};
+  private static final String[] FIELDS = new String[]{"devname", "symbolic", "last_update", "online", "driver"};
   private static final String ID = "id";
   public static final String TABLE = "device";
   private final PreparedStatementProxy SELECT_BY_CATEGORY;
@@ -39,6 +39,7 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
   private final PreparedStatementProxy HAS_VARIABLE;
   private final PreparedStatementProxy SELECT_VARIABLE;
   private final PreparedStatementProxy SELECT_ALL_VARIABLE;
+  private final PreparedStatementProxy UPDATE_BY_DRIVER;
 
   public DeviceDaoSql() {
     SELECT_BY_CATEGORY = new PreparedStatementProxy("SELECT d.* FROM device as d, category as c, device_category as dc WHERE d.id = dc.device_id and dc.category_id = c.id and c.catname = ?");
@@ -49,11 +50,12 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
     REMOVE_FROM_CATEGORY = new PreparedStatementProxy("DELETE FROM device_category "
             + "WHERE device_id=? AND category_id=?");
 
-    ADD_VARIABLE = new PreparedStatementProxy(ID);
-    REMOVE_VARIABLE = new PreparedStatementProxy(ID);
-    HAS_VARIABLE = new PreparedStatementProxy("asdf");
-    SELECT_VARIABLE = new PreparedStatementProxy(ID);
+    ADD_VARIABLE = new PreparedStatementProxy("");
+    REMOVE_VARIABLE = new PreparedStatementProxy("");
+    HAS_VARIABLE = new PreparedStatementProxy("");
+    SELECT_VARIABLE = new PreparedStatementProxy("");
     SELECT_ALL_VARIABLE = new PreparedStatementProxy("SELECT dv.* FROM device as d, device_variable as dv WHERE d.id = dv.device_id AND d.symbolic = ?");
+    UPDATE_BY_DRIVER = new PreparedStatementProxy("");
   }
 
   public List<Device> findByCategory(Category category) {
@@ -108,6 +110,7 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
         stmt_insert.setString(/*symbolic*/2, entity.getSymbolic());
         stmt_insert.setString(/*last_update*/3, null);
         stmt_insert.setBoolean(/*online*/4, entity.isOnline());
+        stmt_insert.setString(/*driver*/5, entity.getDriver());
         stmt_insert.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
@@ -116,11 +119,12 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
         device = findBySymbolic(entity.getName());
       } else if (update) {
         PreparedStatement stmt_update = UPDATE.createPreparedStatement(connection);
-        stmt_update.setLong(/*id*/5, entity.getId());
+        stmt_update.setLong(/*id*/6, entity.getId());
         stmt_update.setString(/*name*/1, entity.getName());
         stmt_update.setString(/*symbolic*/2, entity.getSymbolic());
         stmt_update.setString(/*last_update*/3, null);
         stmt_update.setBoolean(/*online*/4, entity.isOnline());
+        stmt_update.setString(/*driver*/5, entity.getDriver());
         stmt_update.executeUpdate();
         if (!connection.getAutoCommit()) {
           connection.commit();
@@ -176,9 +180,10 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
     String symbolic = rs.getString("symbolic");
     Date last = rs.getDate("last_update");
     boolean online = rs.getBoolean("online");
+    String driver = rs.getString("driver");
 
-    Device d = new Device(name, symbolic, last, online);
-    d.setId(id);
+    Device d = new Device(id, name, symbolic, last, online,driver);
+
     return d;
   }
 
@@ -204,6 +209,22 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
   public List<Category> getCategories(Device device) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  public void setState(String symbolic, boolean state)
+  {
+    try {
+      PreparedStatement stmt_select = SELECT_BY_SYMBOLIC.createPreparedStatement(connection);
+      stmt_select.setString(/*Symbolic*/1, symbolic);
+      ResultSet rs = stmt_select.executeQuery();
+      if (rs.next()) {
+        rs.updateBoolean("online", state);
+        rs.updateRow();
+      }
+      rs.close();
+    } catch (SQLException ex) {
+      Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   public Device findBySymbolic(String symbolic) {
@@ -242,5 +263,9 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
   public boolean hasVariable(Device device, VariableType category) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  public void setStateByDriver(String driver, boolean state) {
+     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

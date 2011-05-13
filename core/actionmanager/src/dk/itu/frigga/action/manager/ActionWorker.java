@@ -81,6 +81,7 @@ public class ActionWorker {
         Rule.State current_state = rule.check();
         if(current_state != states.get(rule))
         {
+          states.put(rule, current_state);
           System.out.println("state change: " + rule.getID() + " is now " + current_state);
           //TODO: notify listeners
         }

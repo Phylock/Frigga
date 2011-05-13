@@ -106,7 +106,7 @@ public class DeviceDatabase {
         updateCategoryLinks(categorydao, event.getCategories());
       }
       if (event.hasDevices()) {
-        updateDevice(devicedao, event.getDevices());
+        updateDevice(devicedao, event.getDevices(),event.getResponsible());
         updateDeviceCategory(devicedao, event.getDevices());
         updateDeviceVariables(devicedao, vtypedao, vdao, event.getDevices());
       }
@@ -115,9 +115,9 @@ public class DeviceDatabase {
     }
   }
 
-  private void updateDevice(DeviceDAO devicedao, List<DeviceDescriptor> devices) {
+  private void updateDevice(DeviceDAO devicedao, List<DeviceDescriptor> devices, String driver) {
     for (DeviceDescriptor dd : devices) {
-      Device device = new Device(dd.getName(), dd.getSymbolic(), new Date(), true);
+      Device device = new Device(dd.getName(), dd.getSymbolic(), new Date(), false, driver);
       devicedao.makePersistent(device);
     }
   }

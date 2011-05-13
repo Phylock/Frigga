@@ -36,5 +36,9 @@ public interface DeviceDAO extends GenericDAO<Device, Long> {
   boolean hasVariable(Device device, VariableType category);
 
   List<Variable> getVariables(Device device);
+
+  void setState(String symbolic, boolean state);
+
+  void setStateByDriver(String driver, boolean state);
   
 }

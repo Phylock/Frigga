@@ -32,6 +32,8 @@ public class Device implements Serializable {
   private Date last_update;
   //@Column(name = "online", nullable = false)
   private boolean online;
+
+  private String driver;
   //@ManyToMany(cascade=CascadeType.ALL)
   //@JoinTable(name="device_category", joinColumns= { @JoinColumn(name = "device_id")}, inverseJoinColumns={@JoinColumn(name="category_id")} )
   private List<Category> categories = new ArrayList<Category>(0);
@@ -46,6 +48,7 @@ public class Device implements Serializable {
     this.symbolic = "";
     this.last_update = null;
     this.online = false;
+    this.driver = "";
   }
 
   public Device(Long id) {
@@ -54,24 +57,25 @@ public class Device implements Serializable {
     this.symbolic = "";
     this.last_update = null;
     this.online = false;
+    this.driver = "";
   }
 
-
-
-  public Device(String name, String symbolic, Date last_update, boolean online) {
+  public Device(String name, String symbolic, Date last_update, boolean online, String driver) {
     this.id = null;
     this.name = name;
     this.symbolic = symbolic;
     this.last_update = last_update;
     this.online = online;
+    this.driver = driver;
   }
 
-  public Device(Long id, String name, String symbolic, Date last_update, boolean online) {
+  public Device(Long id, String name, String symbolic, Date last_update, boolean online, String driver) {
     this.id = id;
     this.name = name;
     this.symbolic = symbolic;
     this.last_update = last_update;
     this.online = online;
+    this.driver = driver;
   }
   
   public Long getId() {
@@ -130,6 +134,14 @@ public class Device implements Serializable {
 
   public void setVariables(Set<Variable> variables) {
     this.variables = variables;
+  }
+
+  public String getDriver() {
+    return driver;
+  }
+
+  public void setDriver(String driver) {
+    this.driver = driver;
   }
 
   @Override
