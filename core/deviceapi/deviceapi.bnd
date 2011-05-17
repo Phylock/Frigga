@@ -1,3 +1,4 @@
+Manifest-Version: 1.0
 Bundle-Version: 0.1
 Bundle-Name: Frigga Device API
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
