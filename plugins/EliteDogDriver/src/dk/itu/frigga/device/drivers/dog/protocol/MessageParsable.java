@@ -3,8 +3,10 @@
  * and open the template in the editor.
  */
 
-package dk.itu.frigga.device.drivers.dog;
+package dk.itu.frigga.device.drivers.dog.protocol;
 
+import dk.itu.frigga.device.drivers.dog.DogDriver;
+import dk.itu.frigga.device.drivers.dog.StructureUpdate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

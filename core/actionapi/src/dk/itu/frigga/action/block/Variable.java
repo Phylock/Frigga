@@ -12,7 +12,7 @@ public class Variable extends BaseCondition {
 
   public enum Comparison {
 
-    IsEqual, IsNotEqual, IsGreater, IsLess, IsBetween;
+    IsEqual, IsNotEqual, IsGreater, IsLess, IsBetween, IsOfCategory;
   }
 
   public enum Type {

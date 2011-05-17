@@ -53,6 +53,7 @@ public class ActionWorker {
 
     public Worker(int delay) {
       this.delay = delay;
+      this.setName("ActionWorker");
     }
 
     public void kill() {

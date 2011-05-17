@@ -5,6 +5,7 @@
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.block.And;
+import dk.itu.frigga.action.block.Category;
 import dk.itu.frigga.action.block.Condition;
 import dk.itu.frigga.action.block.Device;
 import dk.itu.frigga.action.block.Or;
@@ -13,6 +14,7 @@ import dk.itu.frigga.action.block.Variable;
 import dk.itu.frigga.action.block.Visitor;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  *
@@ -20,6 +22,10 @@ import java.util.List;
  */
 public class ConditionCheckerSql {
 
+  private enum Type {
+
+    Category, Device
+  }
   private String selection;
 
   public ConditionCheckerSql(Condition condition) {
@@ -36,8 +42,10 @@ public class ConditionCheckerSql {
 
     private StringBuilder sb = new StringBuilder();
     private List<String> scripts = new LinkedList<String>();
+    private Stack<Condition> stack = new Stack<Condition>();
     private String current_operator = "AND";
-    private String current_device = "";
+    private Type current_type;
+    private String current_name = "";
     private int intent = 0;
     private boolean opened = false;
 
@@ -53,7 +61,8 @@ public class ConditionCheckerSql {
       } else if (condition instanceof Or) {
         current_operator = "OR";
       } else if (condition instanceof Device) {
-        current_device = ((Device) condition).getId();
+        current_type = Type.Device;
+        current_name = ((Device) condition).getId();
       } else if (condition instanceof Variable) {
         addOperator();
         parseVariable((Variable) condition);
@@ -61,6 +70,10 @@ public class ConditionCheckerSql {
       } else if (condition instanceof Script) {
         addOperator();
         sb.append(String.format("$%d$", condition.getUniqueId()));
+        opened = false;
+      } else if (condition instanceof Category) {
+        current_type = Type.Category;
+        current_name = ((Device) condition).getId();
         opened = false;
       }
       return true;
@@ -74,36 +87,38 @@ public class ConditionCheckerSql {
 
     private void parseVariable(Variable v) {
       String comparison = "";
-      switch(v.getComparison())
-      {
-        case IsEqual:
-         comparison = " = " + parseValueType(v.getValue(), v.getType());
-         break;
-        case IsGreater:
-          comparison = " < " + parseValueType(v.getValue(), v.getType());
+      switch (current_type) {
+        case Device:
+          switch (v.getComparison()) {
+            case IsEqual:
+              comparison = " = " + parseValueType(v.getValue(), v.getType());
+              break;
+            case IsGreater:
+              comparison = " < " + parseValueType(v.getValue(), v.getType());
+              break;
+            case IsLess:
+              comparison = " > " + parseValueType(v.getValue(), v.getType());
+              break;
+            case IsNotEqual:
+              comparison = " != " + parseValueType(v.getValue(), v.getType());
+              break;
+            case IsBetween:
+              comparison = String.format("BETWEEN %s AND %s", parseValueType(v.getValue(), v.getType()), parseValueType(v.getOptional_value(), v.getType()));
+              break;
+          }
+
+          sb.append(String.format("(SELECT 1 FROM device_variable as dv, variabletype as vt, device as d WHERE vt.varname = '%s' and vt.id = dv.variable_id AND d.symbolic = '%s' and dv.device_id = d.id AND dv.variable_value %s LIMIT 1) ", v.getName(), current_name, comparison));
           break;
-        case IsLess:
-          comparison = " > " + parseValueType(v.getValue(), v.getType());
-          break;
-        case IsNotEqual:
-          comparison = " != " + parseValueType(v.getValue(), v.getType());
-          break;
-        case IsBetween:
-          comparison = String.format("BETWEEN %s AND %s", parseValueType(v.getValue(), v.getType()),parseValueType(v.getOptional_value(), v.getType()));
-          break;
+        case Category:
+          
       }
 
-      sb.append(String.format("(SELECT count(*) FROM device_variable as dv, variabletype as vt, device as d WHERE vt.varname = '%s' and vt.id = dv.variable_id AND d.symbolic = '%s' and dv.device_id = d.id AND dv.variable_value %s LIMIT 1) ", v.getName(), current_device, comparison));
     }
 
-    private String parseValueType(String value, Variable.Type type)
-    {
-      if(type.equals(Variable.Type.String))
-      {
+    private String parseValueType(String value, Variable.Type type) {
+      if (type.equals(Variable.Type.String)) {
         return String.format("'%s'", value);
-      }
-      else
-      {
+      } else {
         return value;
       }
     }
@@ -121,6 +136,9 @@ public class ConditionCheckerSql {
 
     public String[] getScripts() {
       return scripts.toArray(new String[scripts.size()]);
+    }
+
+    private void parseCategory(Category category) {
     }
   }
 }

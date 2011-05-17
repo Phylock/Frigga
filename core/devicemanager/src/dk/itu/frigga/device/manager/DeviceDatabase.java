@@ -5,11 +5,15 @@ import dk.itu.frigga.data.DataConnection;
 import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.data.UnknownDataDriverException;
+import dk.itu.frigga.device.DeviceUpdate;
 import dk.itu.frigga.device.DeviceUpdateEvent;
+import dk.itu.frigga.device.FriggaDeviceException;
+import dk.itu.frigga.device.LocationUpdate;
+import dk.itu.frigga.device.VariableChangedEvent;
+import dk.itu.frigga.device.VariableUpdate;
 import dk.itu.frigga.device.dao.*;
 import dk.itu.frigga.device.descriptor.*;
 import dk.itu.frigga.device.model.*;
-import dk.itu.frigga.device.model.Variable;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -85,6 +89,37 @@ public class DeviceDatabase {
     }
   }
 
+  public void update(VariableChangedEvent event) throws SQLException {
+    Connection conn = null;
+    try {
+      conn = pool.getConnection();
+      if (event.hasVariables()) {
+        VariableDao vdao = DeviceDaoFactorySql.instance().getVariableDao(conn);
+        for (VariableUpdate v : event.getVariables()) {
+          vdao.updateVariable(v.getDevice(), v.getVariable(), v.getValue());
+        }
+      }
+
+      if (event.hasState()) {
+        DeviceDAO ddao = DeviceDaoFactorySql.instance().getDeviceDao(conn);
+        for (DeviceUpdate d : event.getState()) {
+          ddao.setState(d.getDevice(), d.isOnline());
+        }
+      }
+
+      if (event.hasLocation()) {
+        LocationLocalDao ll = DeviceDaoFactorySql.instance().getLocationLocalDao(conn);
+        LocationGlobalDao lg = DeviceDaoFactorySql.instance().getLocationGlobalDao(conn);
+        updateDeviceLocation(lg, ll, event.getLocation());
+      }
+
+    } catch (FriggaDeviceException ex) {
+      Logger.getLogger(DeviceManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      pool.releaseConnection(conn);
+    }
+  }
+
   public void update(DeviceUpdateEvent event) throws SQLException {
     Connection conn = null;
     try {
@@ -106,7 +141,7 @@ public class DeviceDatabase {
         updateCategoryLinks(categorydao, event.getCategories());
       }
       if (event.hasDevices()) {
-        updateDevice(devicedao, event.getDevices(),event.getResponsible());
+        updateDevice(devicedao, event.getDevices(), event.getResponsible());
         updateDeviceCategory(devicedao, event.getDevices());
         updateDeviceVariables(devicedao, vtypedao, vdao, event.getDevices());
       }
@@ -176,6 +211,17 @@ public class DeviceDatabase {
       for (VariableType vtype : variables) {
         Variable v = new Variable(new VariablePK(device, vtype), "");
         variabledao.makePersistent(v);
+      }
+    }
+  }
+
+  private void updateDeviceLocation(LocationGlobalDao global, LocationLocalDao local, List<LocationUpdate> updates) {
+    for (LocationUpdate update : updates) {
+      switch (update.getType()) {
+        case Global:
+          break;
+        case Local:
+          break;
       }
     }
   }

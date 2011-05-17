@@ -28,15 +28,11 @@ import dk.itu.frigga.device.DeviceDaoFactory;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.DeviceManager;
-import dk.itu.frigga.device.DeviceUpdate;
 import dk.itu.frigga.device.DeviceUpdateEvent;
-import dk.itu.frigga.device.FriggaDeviceException;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.VariableChangedEvent;
-import dk.itu.frigga.device.VariableUpdate;
 import dk.itu.frigga.device.dao.DeviceDAO;
-import dk.itu.frigga.device.dao.VariableDao;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.ReflectionHelper;
@@ -49,8 +45,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.osgi.service.log.LogService;
 
 /**
@@ -69,6 +66,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   private final Map<String, Driver> drivers = new HashMap<String, Driver>();
   private DeviceDatabase connection;
   private ConnectionPool pool;
+  private ThreadPoolExecutor variable_update_pool;
 
   /**
    * We do not wish to have multiple instances, so the constructor is private.
@@ -90,40 +88,21 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     try {
       connection.update(event);
     } catch (SQLException ex) {
-      log.log(LogService.LOG_WARNING, "Device Update SQL Error", ex);
+      log.log(LogService.LOG_WARNING, "Device Update Event - SQL Error", ex);
     }
   }
 
   public void onVariableChangeEvent(final VariableChangedEvent event) {
-    new Thread(new Runnable() {
 
+    variable_update_pool.execute(new Runnable() {
       public void run() {
-        Connection conn = null;
         try {
-          conn = pool.getConnection();
-          if (event.hasVariables()) {
-            VariableDao vdao = DeviceDaoFactorySql.instance().getVariableDao(conn);
-            for (VariableUpdate v : event.getVariables()) {
-              vdao.updateVariable(v.getDevice(), v.getVariable(), v.getValue());
-            }
-          }
-
-          if(event.hasState())
-          {
-            DeviceDAO ddao = DeviceDaoFactorySql.instance().getDeviceDao(conn);
-            for (DeviceUpdate d : event.getState()) {
-              ddao.setState(d.getDevice(), d.isOnline());
-            }
-          }
-
-        } catch (FriggaDeviceException ex) {
-          Logger.getLogger(DeviceManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+          connection.update(event);
         } catch (SQLException ex) {
-        } finally {
-          pool.releaseConnection(conn);
+          log.log(LogService.LOG_WARNING, "Variable Changed Event - SQL Error", ex);
         }
       }
-    }).start();
+    });
   }
 
   /**
@@ -224,12 +203,18 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     }
 
     pool = connection.initialize();
-
+    variable_update_pool = new ThreadPoolExecutor(pool.totalConnections(), pool.totalConnections(), 15, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
   }
 
   public void invalidate() {
     connection.close();
     connection = null;
+
+    variable_update_pool.shutdown();
+    variable_update_pool = null;
+
+    pool = null;
+
   }
 
   /**
@@ -249,7 +234,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
       while (!done) {
         //pop the first and find all devices which uses the same driver
         if (drivers.containsKey(calldevices.peek().getDriver())) {
-          Device current =  calldevices.poll();
+          Device current = calldevices.poll();
           Driver current_driver = drivers.get(current.getDriver());
           for (Device device : devices) {
             if (device.getDriver().equals(current.getDriver())) {

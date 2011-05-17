@@ -4,6 +4,9 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
+import dk.itu.frigga.device.drivers.dog.protocol.Command;
+import dk.itu.frigga.device.drivers.dog.protocol.DogMessage;
+import dk.itu.frigga.device.drivers.dog.protocol.DogProtocol;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;

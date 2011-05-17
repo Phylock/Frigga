@@ -14,6 +14,7 @@ import dk.itu.frigga.action.block.BaseCondition;
 import dk.itu.frigga.action.block.Condition;
 import dk.itu.frigga.action.block.Or;
 import dk.itu.frigga.action.manager.parser.block.BlockParser;
+import dk.itu.frigga.action.manager.parser.block.CategoryParser;
 import dk.itu.frigga.action.manager.parser.block.ConditionParser;
 import dk.itu.frigga.action.manager.parser.block.DeviceParser;
 import dk.itu.frigga.action.manager.parser.block.ScriptParser;
@@ -46,6 +47,8 @@ public class RulesParser implements Parseable {
     parsers.put("or", new ConditionParser(Or.class));
     parsers.put("condition", new ConditionParser(BaseCondition.class));
     parsers.put("script", new ScriptParser());
+    parsers.put("category", new CategoryParser());
+
     //write protection + speed
     BLOCK_PARSERS = Collections.unmodifiableMap(parsers);
   }

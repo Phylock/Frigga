@@ -8,11 +8,14 @@ import dk.itu.frigga.device.DeviceDaoFactory;
 import dk.itu.frigga.device.dao.CategoryDAO;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.dao.FunctionDao;
+import dk.itu.frigga.device.dao.LocationGlobalDao;
+import dk.itu.frigga.device.dao.LocationLocalDao;
 import dk.itu.frigga.device.dao.VariableDao;
 import dk.itu.frigga.device.dao.VariableTypeDao;
 import dk.itu.frigga.device.manager.dao.CategoryDaoSql;
 import dk.itu.frigga.device.manager.dao.DeviceDaoSql;
 import dk.itu.frigga.device.manager.dao.FunctionDaoSql;
+import dk.itu.frigga.device.manager.dao.LocationDaoSql;
 import dk.itu.frigga.device.manager.dao.VariableDaoSql;
 import dk.itu.frigga.device.manager.dao.VariableTypeDaoSql;
 import java.sql.Connection;
@@ -62,5 +65,17 @@ public class DeviceDaoFactorySql implements DeviceDaoFactory {
     VariableDao var = new VariableDaoSql();
     var.setConnection(conn);
     return var;
+  }
+
+  public LocationGlobalDao getLocationGlobalDao(Connection conn) {
+    LocationGlobalDao loc = new LocationDaoSql();
+    loc.setConnection(conn);
+    return loc;
+  }
+
+  public LocationLocalDao getLocationLocalDao(Connection conn) {
+    LocationLocalDao loc = null;//new LocationLocalDaoSql();
+    loc.setConnection(conn);
+    return loc;
   }
 }

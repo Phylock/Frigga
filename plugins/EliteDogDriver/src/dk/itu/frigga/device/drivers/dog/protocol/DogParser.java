@@ -2,8 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog;
+package dk.itu.frigga.device.drivers.dog.protocol;
 
+import dk.itu.frigga.device.drivers.dog.DogDeviceManager;
+import dk.itu.frigga.device.drivers.dog.DogDriver;
+import dk.itu.frigga.device.drivers.dog.StructureUpdate;
 import dk.itu.frigga.utility.XmlHelper;
 import it.polito.elite.domotics.dog2.dog2leash.interfaces.Dog2MessageListener;
 import java.io.ByteArrayInputStream;

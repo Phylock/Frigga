@@ -8,6 +8,8 @@ package dk.itu.frigga.device;
 import dk.itu.frigga.device.dao.CategoryDAO;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.dao.FunctionDao;
+import dk.itu.frigga.device.dao.LocationGlobalDao;
+import dk.itu.frigga.device.dao.LocationLocalDao;
 import dk.itu.frigga.device.dao.VariableDao;
 import dk.itu.frigga.device.dao.VariableTypeDao;
 import java.sql.Connection;
@@ -28,4 +30,7 @@ public interface DeviceDaoFactory {
 
   VariableTypeDao getVariableTypeDao(Connection conn);
 
+  LocationGlobalDao getLocationGlobalDao(Connection conn);
+  
+  LocationLocalDao getLocationLocalDao(Connection conn);
 }

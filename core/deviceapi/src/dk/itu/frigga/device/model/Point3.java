@@ -12,15 +12,15 @@ import java.io.Serializable;
  * @author phylock
  */
 //@Embeddable
-public class Point3 implements Serializable{
+public class Point3<T> implements Serializable{
   //@Column(name = "x")
-  private long x;
+  private T x;
   //@Column(name = "y")
-  private long y;
+  private T y;
   //@Column(name = "z")
-  private long z;
+  private T z;
 
-  public Point3(long x, long y, long z) {
+  public Point3(T x, T y, T z) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -29,27 +29,27 @@ public class Point3 implements Serializable{
   public Point3() {
   }
 
-  public long getX() {
+  public T getX() {
     return x;
   }
 
-  public void setX(long x) {
+  public void setX(T x) {
     this.x = x;
   }
 
-  public long getY() {
+  public T getY() {
     return y;
   }
 
-  public void setY(long y) {
+  public void setY(T y) {
     this.y = y;
   }
 
-  public long getZ() {
+  public T getZ() {
     return z;
   }
 
-  public void setZ(long z) {
+  public void setZ(T z) {
     this.z = z;
   }
 

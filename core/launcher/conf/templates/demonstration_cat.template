@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.example.com template.xsd">
+  <template>
+    <info>
+      <author>Frigga Team</author>
+      <name>demonstration</name>
+      <site>localhost</site>
+      <description>This is a basic example, to be used in our demonstration room</description>
+    </info>
+    <rules>
+      <rule id="rule1">
+        <description>Handle tv, by looking at it</description>
+        <actions>
+          <action event="validate">
+            <function selection="!tv" function="on"/>
+          </action>
+          <action event="invalidate">
+            <function selection="!tv" function="off"/>
+          </action>
+        </actions>
+        <condition>
+          <category name="eyetrack">
+		    <variable name="lookat" type="string">
+			  <isOfCategory>tv</isOfCategory>
+	  	    </variable>
+          </category>
+        </condition>
+      </rule>
+    </rules>
+  </template>
+</frigga>

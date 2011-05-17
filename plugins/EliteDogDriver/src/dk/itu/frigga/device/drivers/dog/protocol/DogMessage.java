@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog;
+package dk.itu.frigga.device.drivers.dog.protocol;
 
 import java.io.StringWriter;
 import javax.xml.transform.Result;

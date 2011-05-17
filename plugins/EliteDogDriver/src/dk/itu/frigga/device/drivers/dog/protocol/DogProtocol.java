@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog;
+package dk.itu.frigga.device.drivers.dog.protocol;
 
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.utility.XmlHelper;

@@ -14,21 +14,36 @@ public class LocationUpdate {
 
   public enum Type {
 
-    Local, Global, Room
+    Local, Global
   }
 
-  private Type type;
-  private Point3 point;
-  private String room;
+  private final Type type;
+  private final Point3 point;
+  private final String room;
+  private final String device;
 
-  public LocationUpdate(Type type, Point3 point) {
-    this.type = type;
+  /**
+   * update the global position of a device
+   * @param device
+   * @param point
+   */
+  public LocationUpdate(String device, Point3 point) {
+    this.type = Type.Global;
+    this.device = device;
     this.point = point;
+    this.room = "";
   }
-
-  public LocationUpdate(String room) {
-    type = Type.Room;
+/**
+ * update the local position of the device
+ * @param device
+ * @param point
+ * @param room
+ */
+  public LocationUpdate(String device, Point3 point, String room) {
+    type = Type.Local;
+    this.device = device;
     this.room = room;
+    this.point = point;
   }
 
   public Point3 getPoint() {
@@ -41,5 +56,9 @@ public class LocationUpdate {
 
   public Type getType() {
     return type;
+  }
+
+  public String getDevice() {
+    return device;
   }
 }

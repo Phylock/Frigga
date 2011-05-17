@@ -24,7 +24,8 @@ public class VariableParser implements BlockParser {
   private static final String IS_GREATER = "isGreater";
   private static final String IS_LESS = "isLess";
   private static final String IS_BETWEEN = "isBetween";
-  private static final String[] VARIABLE_CONDITIONS = new String[]{IS_EQUAL, IS_NOT_EQUAL, IS_GREATER, IS_LESS, IS_BETWEEN};
+  private static final String IS_OF_CATEGORY = "isOfCategory";
+  private static final String[] VARIABLE_CONDITIONS = new String[]{IS_EQUAL, IS_NOT_EQUAL, IS_GREATER, IS_LESS, IS_BETWEEN, IS_OF_CATEGORY};
 
   private static final Map<String, Variable.Type> TYPE_LOOKUP;
   private static final Map<String, Variable.Comparison> COMPARISON_LOOKUP;
@@ -45,6 +46,7 @@ public class VariableParser implements BlockParser {
     comparison.put(IS_GREATER, Variable.Comparison.IsGreater);
     comparison.put(IS_LESS, Variable.Comparison.IsLess);
     comparison.put(IS_BETWEEN, Variable.Comparison.IsBetween);
+    comparison.put(IS_OF_CATEGORY, Variable.Comparison.IsOfCategory);
     //write protection + speed
     COMPARISON_LOOKUP = Collections.unmodifiableMap(comparison);
   }

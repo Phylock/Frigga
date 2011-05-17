@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog;
+package dk.itu.frigga.device.drivers.dog.protocol;
 
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.Executable;
@@ -10,6 +10,9 @@ import dk.itu.frigga.device.descriptor.CategoryDescriptor;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.device.descriptor.FunctionDescriptor;
 import dk.itu.frigga.device.descriptor.VariableDescriptor;
+import dk.itu.frigga.device.drivers.dog.DogDriver;
+import dk.itu.frigga.device.drivers.dog.Function;
+import dk.itu.frigga.device.drivers.dog.StructureUpdate;
 import dk.itu.frigga.utility.XmlHelper;
 import java.util.ArrayList;
 import java.util.Collections;

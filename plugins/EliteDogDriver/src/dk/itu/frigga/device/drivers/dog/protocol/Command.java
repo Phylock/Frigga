@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package dk.itu.frigga.device.drivers.dog;
+package dk.itu.frigga.device.drivers.dog.protocol;
 
 import dk.itu.frigga.device.Parameter;
 

@@ -1,5 +1,7 @@
 package dk.itu.frigga.device.drivers.dog;
 
+import dk.itu.frigga.device.drivers.dog.protocol.DogParser;
+import dk.itu.frigga.device.drivers.dog.protocol.DogMessage;
 import it.polito.elite.domotics.dog2.dog2leash.Dog2JLeash;
 import java.io.IOException;
 import java.util.logging.Level;
