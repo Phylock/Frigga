@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="dataapi" default="all">
+  
+  
+  <property file="dataapi.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.ftl"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.6" value="${jdk.home.1.6}/bin"/>
+  <path id="jdk.classpath.1.6">
+    <fileset dir="${jdk.home.1.6}">
+      <include name="jre/lib/alt-rt.jar"/>
+      <include name="jre/lib/alt-string.jar"/>
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/deploy.jar"/>
+      <include name="jre/lib/javaws.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/plugin.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunmscapi.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.6}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.6}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.6"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.frigga.classpath">
+    <fileset dir="${basedir}/../common/dist">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  
+  <!-- Global Libraries -->
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module Dataapi -->
+  
+  <dirname property="module.dataapi.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.dataapi" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.dataapi" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.dataapi" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.dataapi" value="${compiler.args}"/>
+  
+  <property name="dataapi.output.dir" value="${module.dataapi.basedir}/out/production/Dataapi"/>
+  <property name="dataapi.testoutput.dir" value="${module.dataapi.basedir}/out/test/Dataapi"/>
+  
+  <path id="dataapi.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="dataapi.module.production.classpath">
+    <path refid="${module.jdk.classpath.dataapi}"/>
+    <path refid="library.frigga.classpath"/>
+  </path>
+  
+  <path id="dataapi.runtime.production.module.classpath">
+    <pathelement location="${dataapi.output.dir}"/>
+    <path refid="library.frigga.classpath"/>
+  </path>
+  
+  <path id="dataapi.module.classpath">
+    <path refid="${module.jdk.classpath.dataapi}"/>
+    <pathelement location="${dataapi.output.dir}"/>
+    <path refid="library.frigga.classpath"/>
+  </path>
+  
+  <path id="dataapi.runtime.module.classpath">
+    <pathelement location="${dataapi.testoutput.dir}"/>
+    <pathelement location="${dataapi.output.dir}"/>
+    <path refid="library.frigga.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.dataapi">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.dataapi">
+    <patternset refid="excluded.from.module.dataapi"/>
+  </patternset>
+  
+  <path id="dataapi.module.sourcepath">
+    <dirset dir="${module.dataapi.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.dataapi" depends="compile.module.dataapi.production,compile.module.dataapi.tests" description="Compile module Dataapi"/>
+  
+  <target name="compile.module.dataapi.production" description="Compile module Dataapi; production classes">
+    <mkdir dir="${dataapi.output.dir}"/>
+    <javac destdir="${dataapi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.dataapi}/javac">
+      <compilerarg line="${compiler.args.dataapi}"/>
+      <bootclasspath refid="dataapi.module.bootclasspath"/>
+      <classpath refid="dataapi.module.production.classpath"/>
+      <src refid="dataapi.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.dataapi"/>
+    </javac>
+    
+    <copy todir="${dataapi.output.dir}">
+      <fileset dir="${module.dataapi.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.dataapi.tests" depends="compile.module.dataapi.production" description="compile module Dataapi; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.dataapi" description="cleanup module">
+    <delete dir="${dataapi.output.dir}"/>
+    <delete dir="${dataapi.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.dataapi" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.dataapi" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>
