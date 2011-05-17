@@ -1,6 +1,7 @@
 package dk.itu.frigga.protocol;
 
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.UUID;
 
 /**
@@ -70,7 +71,9 @@ class NeedServerPacket
 
     public boolean matchServer(final UUID serverId)
     {
-        return serverId == null || this.serverId.equals(serverId);
+        assert(serverId != null) : "ServerId can not be null";
+
+        return this.serverId == null || this.serverId.equals(serverId);
     }
 
     private void prepare()
@@ -124,9 +127,10 @@ class NeedServerPacket
         return bytes;
     }
 
-    public DatagramPacket build(final int port)
+    public DatagramPacket build(final InetAddress address, final int port)
     {
         DatagramPacket packet = new DatagramPacket(data, data.length);
+        packet.setAddress(address);
         packet.setPort(port);
         return packet;
     }

@@ -67,8 +67,6 @@ public final class Message
     public void writeToStream(OutputStream stream) throws ProtocolException, IOException
     {
         XmlSerializer serializer = new XmlSerializer(stream);
-        //serializer.setProperty("SERIALIZER INDENTATION", "");
-        //serializer.setProperty("SERIALIZER LINE SEPARATOR", "");
         build(serializer);
     }
 

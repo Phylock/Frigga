@@ -2,6 +2,7 @@ package dk.itu.frigga.protocol;
 
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.UUID;
 
 /**
@@ -12,7 +13,7 @@ import java.util.UUID;
  */
 class HasServerPacket
 {
-    public final static int LENGTH = 512;
+    public final static int LENGTH = 4095;
     private static final byte[] HEADER = { 0x68, 0x61, 0x73, 0x20, 0x66, 0x72, 0x69, 0x67, 0x67, 0x61 };
     private final byte[] data = new byte[LENGTH];
 
@@ -20,7 +21,7 @@ class HasServerPacket
     {
         if (!validate(packet)) throw new NotCorrectPacketException();
 
-        System.arraycopy(packet.getData(), packet.getLength(), data, 0, Math.min(packet.getLength(), data.length));
+        System.arraycopy(packet.getData(), 0, data, 0, Math.min(packet.getLength(), data.length));
     }
 
     public HasServerPacket(final String host, final int port, final UUID serverId, final String description) throws UnsupportedEncodingException
@@ -33,7 +34,7 @@ class HasServerPacket
         System.arraycopy(longToByteArray(serverId.getMostSignificantBits()), 0, data, 267, 8);
         System.arraycopy(longToByteArray(serverId.getLeastSignificantBits()), 0, data, 275, 8);
         byte[] str = description.getBytes("UTF-8");
-        System.arraycopy(str, 0, data, 283, Math.min(str.length, 229));
+        System.arraycopy(str, 0, data, 283, Math.min(str.length, 3812));
     }
 
     public static boolean validate(final DatagramPacket packet)
@@ -58,7 +59,7 @@ class HasServerPacket
 
     public String getServerDescription() throws UnsupportedEncodingException
     {
-        return new String(data, 283, 229, "UTF-8");
+        return getStringFromData(283, 3812);
     }
 
     public int getServerPort()
@@ -68,7 +69,7 @@ class HasServerPacket
 
     public String getServerHost() throws UnsupportedEncodingException
     {
-        return new String(data, 10, 255, "UTF-8");
+        return getStringFromData(10, 255);
     }
 
     public static long byteArrayToLong(final byte[] data, final int offset)
@@ -80,6 +81,19 @@ class HasServerPacket
                (long)(data[offset + 2] & 0xff) << 40 | (long)(data[offset + 3] & 0xff) << 32 |
                (long)(data[offset + 4] & 0xff) << 24 | (long)(data[offset + 5] & 0xff) << 16 |
                (long)(data[offset + 6] & 0xff) << 8  | (long)(data[offset + 7] & 0xff);
+    }
+
+    private String getStringFromData(final int offset, final int maxLength) throws UnsupportedEncodingException
+    {
+        int count;
+        for (count = 0; count < maxLength; count++)
+        {
+            if (data[offset + count] == 0)
+            {
+                break;
+            }
+        }
+        return new String(data, offset, count, "UTF-8");
     }
 
     private static byte[] longToByteArray(final long data)
@@ -99,5 +113,10 @@ class HasServerPacket
         final DatagramPacket packet = new DatagramPacket(data, data.length);
         packet.setPort(port);
         return packet;
+    }
+
+    public DatagramPacket build(final InetAddress address, final int port)
+    {
+        return new DatagramPacket(data, data.length, address, port);
     }
 }

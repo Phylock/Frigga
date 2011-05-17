@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Frigga Protocol">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../core/clientprotocol/out/artifacts/friggaprotocol/friggaprotocol.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../core/clientprotocol/src" />
+    </SOURCES>
+  </library>
+</component>

@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -20,13 +21,16 @@ public class NetworkDiscovery
 {
     private class DiscoverThread extends Thread
     {
-        private transient boolean running = true;
+        private transient boolean running = false;
+        private transient boolean blocked = false;
         private final int port;
+        private final InetAddress broadcastAddress;
 
-        public DiscoverThread(int port)
+        public DiscoverThread(final InetAddress broadcastAddress, final int port)
         {
             super();
 
+            this.broadcastAddress = broadcastAddress;
             this.port = port;
         }
 
@@ -35,11 +39,19 @@ public class NetworkDiscovery
             running = false;
         }
 
+        public final void startDiscover()
+        {
+            running = true;
+            start();
+        }
+
         @Override
         public void run()
         {
+            setName("Frigga Network Discovery Thread");
+
             DatagramSocket socket;
-            DatagramPacket needServerPacket = new NeedServerPacket().build(port);
+            DatagramPacket needServerPacket = new NeedServerPacket().build(broadcastAddress, port);
 
             try
             {
@@ -48,36 +60,39 @@ public class NetworkDiscovery
                     socket = new DatagramSocket(port);
                     socket.setBroadcast(true);
                     socket.setSoTimeout(500);
-                    socket.bind(null);
+                    //socket.bind(null);
 
                     while (running)
                     {
-                        try
+                        if (!blocked)
                         {
-                            DatagramPacket received = new DatagramPacket(new byte[HasServerPacket.LENGTH], HasServerPacket.LENGTH);
-
-                            socket.send(needServerPacket);
-                            socket.receive(received);
-
-                            if (HasServerPacket.validate(received))
+                            try
                             {
-                                HasServerPacket hasServerPacket = new HasServerPacket(received);
-                                final Peer server = new Peer(hasServerPacket.getServerHost(), hasServerPacket.getServerPort(), hasServerPacket.getServerDescription());
-                                notifyServerDiscoveredListeners(server);
+                                DatagramPacket received = new DatagramPacket(new byte[HasServerPacket.LENGTH], HasServerPacket.LENGTH);
+
+                                socket.send(needServerPacket);
+                                socket.receive(received);
+
+                                if (HasServerPacket.validate(received))
+                                {
+                                    HasServerPacket hasServerPacket = new HasServerPacket(received);
+                                    final Peer server = new Peer(hasServerPacket.getServerHost(), hasServerPacket.getServerPort(), hasServerPacket.getServerDescription(), hasServerPacket.getServerId());
+                                    notifyServerDiscoveredListeners(server);
+                                }
                             }
-                        }
-                        catch (IOException e)
-                        {
-                            // Allow
-                        }
-                        catch (NotCorrectPacketException e)
-                        {
-                            // Allow, should not happen due to validate call.
-                        }
-                        catch (StopDiscoveringException e)
-                        {
-                            // Stop discovering, do this by setting the running to false.
-                            running = false;
+                            catch (IOException e)
+                            {
+                                // Allow
+                            }
+                            catch (NotCorrectPacketException e)
+                            {
+                                // Allow, should not happen due to validate call.
+                            }
+                            catch (StopDiscoveringException e)
+                            {
+                                // Stop discovering, do this by setting the running to false.
+                                running = false;
+                            }
                         }
 
                         try
@@ -105,16 +120,16 @@ public class NetworkDiscovery
     private final List<ServerDiscoveredListener> serverDiscoveredListeners = Collections.synchronizedList(new LinkedList<ServerDiscoveredListener>());
     private final DiscoverThread discoverThread;
 
-    public NetworkDiscovery()
+    public NetworkDiscovery(final InetAddress broadcastAddress)
     {
-        discoverThread = new DiscoverThread(NetworkAnnouncer.DEFAULT_PORT);
+        discoverThread = new DiscoverThread(broadcastAddress, NetworkAnnouncer.DEFAULT_PORT);
     }
 
-    public NetworkDiscovery(final int port)
+    public NetworkDiscovery(final InetAddress broadcastAddress, final int port)
     {
         assert(port > 0 && port < 65536) : "Port is out of range.";
 
-        discoverThread = new DiscoverThread(port);
+        discoverThread = new DiscoverThread(broadcastAddress, port);
     }
 
     public void addServerDiscoveredListener(final ServerDiscoveredListener listener)
@@ -158,13 +173,34 @@ public class NetworkDiscovery
         return delay;
     }
 
-    public void start()
+    public Runnable start()
     {
-        discoverThread.start();
+        discoverThread.startDiscover();
+        return discoverThread;
     }
 
     public void stop()
     {
         discoverThread.stopDiscover();
+    }
+
+    public boolean isRunning()
+    {
+        return discoverThread.running;
+    }
+
+    public void block()
+    {
+        discoverThread.blocked = true;
+    }
+
+    public void unblock()
+    {
+        discoverThread.blocked = false;
+    }
+
+    public boolean isBlocked()
+    {
+        return discoverThread.blocked;
     }
 }
