@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Frigga Common">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../common/dist/common.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
