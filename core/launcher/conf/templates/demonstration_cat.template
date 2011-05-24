@@ -7,23 +7,47 @@
       <site>localhost</site>
       <description>This is a basic example, to be used in our demonstration room</description>
     </info>
+    <replacements>
+      <replace name="tv" description="a tv" type="string" />
+      <replace name="eyetrack" description="an eyetracker to control" type="string" />
+    </replacements>
     <rules>
       <rule id="rule1">
         <description>Handle tv, by looking at it</description>
+        <variables>
+          <variable name="$client">
+			<select device="deviceeyetrack" variable="attachedto"/>
+          </variable>
+          <variable name="$client_category">
+			<select device="$client" variable="category"/>
+          </variable>
+        </variables>
         <actions>
           <action event="validate">
-            <function selection="!tv" function="on"/>
+            <function selection="$client" function="on"/>
           </action>
           <action event="invalidate">
-            <function selection="!tv" function="off"/>
+            <function selection="$client" function="dialog">
+              <param>/select</param>
+            </function>
           </action>
         </actions>
         <condition>
-          <category name="eyetrack">
-		    <variable name="lookat" type="string">
-			  <isOfCategory>tv</isOfCategory>
-	  	    </variable>
-          </category>
+			<whereEqual>
+				  <variable name="symbolic" type="string" sid="devicetv">
+					  <or>
+						  <location type="local" where="work_room1"/>
+						  <location type="local" where="work_room2" position="10,10,10" radius="1m"/>
+						  <location type="global" position="10,10,10" radius="1m"/>
+					  </or>
+					  <isCategory category="tv"/>
+					  <hasVariable name="symbolic" type="string" />
+				 </variable>
+				 <variable name="lookat" type="string" sid="deviceeyetrack">
+					  <isCategory category="eyetracker"/>
+					  <hasVariable name="lookat" type="string" />				 
+				 </variable>
+            </whereEqual>
         </condition>
       </rule>
     </rules>

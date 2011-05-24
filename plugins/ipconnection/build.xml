@@ -7,13 +7,13 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project name="WirelessLanClient" default="default" basedir=".">
-    <description>Builds, tests, and runs the project WirelessLanClient.</description>
+<project name="ipconnection" default="default" basedir=".">
+    <description>Builds, tests, and runs the project ipconnection.</description>
     <import file="nbproject/build-impl.xml"/>
     <import file="../../shared/ant/deploy.xml"/>
 
     <target depends="generate-jar" name="jar"/>
-    <target depends="deploy-boundle-auto" name="-post-jar"/>
+    <target depends="deploy-bundle-plugins" name="-post-jar"/>
     <!--
 
     There exist several targets which are by default empty and which can be 

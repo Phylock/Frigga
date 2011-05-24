@@ -1,0 +1,6 @@
+Bundle-Version: 0.1.0.SNAPSHOT
+Bundle-Name: Frigga IP Client
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.device.drivers.ipconnection
+
+Private-Package: dk.itu.frigga.device.drivers.ipconnection.*

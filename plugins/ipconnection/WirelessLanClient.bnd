@@ -1,6 +1,0 @@
-Bundle-Version: 0.1
-Bundle-Name: Frigga Wireless Client
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-SymbolicName: dk.itu.frigga.core.client.wireless
-
-Private-Package: dk.itu.frigga.core.client.wireless.*
