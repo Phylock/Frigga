@@ -5,6 +5,8 @@
 
 package dk.itu.frigga.action;
 
+import java.util.List;
+
 /**
  *
  * @author phylock
@@ -16,6 +18,6 @@ public interface Rule {
   }
 
   public String getID();
-  public State check();
+  public List<ConditionResult> check();
   
 }

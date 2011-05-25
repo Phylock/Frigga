@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.action.manager;
 
+import dk.itu.frigga.action.ConditionResult;
 import dk.itu.frigga.action.block.And;
 import dk.itu.frigga.action.block.Category;
 import dk.itu.frigga.action.block.Condition;
@@ -20,7 +21,7 @@ import java.util.Stack;
  *
  * @author phylock
  */
-public class ConditionCheckerSql {
+public class ConditionCheckerSql implements ConditionChecker{
 
   private enum Type {
 
@@ -36,6 +37,10 @@ public class ConditionCheckerSql {
 
   public String getSelection() {
     return selection;
+  }
+
+  public ConditionResult[] check() {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   private class ConditionVisitor implements Visitor {

@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.action.manager;
 
+import dk.itu.frigga.action.ConditionResult;
 import dk.itu.frigga.action.Context;
 import dk.itu.frigga.action.Replacement;
 import dk.itu.frigga.action.Rule;
@@ -16,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,10 +32,11 @@ public class RuleSql implements Rule {
   private final String condition_template;
   private RuleTemplate template;
   private Context context;
+  private ConditionChecker checker;
 
   public RuleSql(Context context, RuleTemplate template) {
-    ConditionCheckerSql checker = new ConditionCheckerSql(template.getCondition());
-    String ctemplate = checker.getSelection();
+    checker = new ConditionCheckerSql(template.getCondition());
+    String ctemplate = "";//checker.getSelection();
     Template t = context.getTemplate();
     Map<String, String> r = context.getReplacements();
     Collection<Replacement> replacements = t.getReplacements().values();
@@ -55,7 +58,7 @@ public class RuleSql implements Rule {
     this.pool = pool;
   }
 
-  public State check() {
+  public List<ConditionResult> check() {
     State state = State.Invalid;
     if (pool != null) {
       //TODO: replace script values, for now ignore and set to true
@@ -79,7 +82,7 @@ public class RuleSql implements Rule {
         pool.releaseConnection(conn);
       }
     }
-    return state;
+    return checker.check();
   }
 
   public String getID() {
