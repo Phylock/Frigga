@@ -129,10 +129,10 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
    * Calls the getDevicesByType(String) internally with the type string of the
    * category.
    *
-   * @see getDevicesByType(String)
+   * @see
    *
-   * @param type A DeviceCategory object identifying the type whose devices to
-   *             fetch.
+   * @param category A DeviceCategory object identifying the type whose devices to
+   *                 fetch.
    *
    * @return Returns an array of devices of the given type.
    */

@@ -9,8 +9,12 @@ import dk.itu.frigga.action.block.Device;
 
 /**
  *
- * @author phylock
+ * @author Mikkel Wendt-Larsen (miwe@itu.dk),
+ *         Tommy Andersen (toan@itu.dk)
  */
-public interface ConditionResult {
-  Device getDevice(String sid) throws SidNotFoundException;
+public interface ConditionResult
+{
+    int getSectionIdCount();
+    String getSectionId(final int index) throws SidNotFoundException;
+    Device getDevice(final String sectionId) throws SidNotFoundException;
 }

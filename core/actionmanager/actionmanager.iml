@@ -2,7 +2,7 @@
 <module type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration osmorcControlsManifest="false" manifestLocation="dataapi.bnd" jarfileLocation="Dataapi.jar" outputPathType="CompilerOutputPath" useBndFile="false" bndFileLocation="" useBundlorFile="false" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="false" alwaysRebuildBundleJAR="false">
+      <configuration osmorcControlsManifest="false" manifestLocation="actionmanager.bnd" jarfileLocation="actionmanager.jar" outputPathType="CompilerOutputPath" useBndFile="false" bndFileLocation="" useBundlorFile="false" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="false" alwaysRebuildBundleJAR="false">
         <additionalProperties />
         <additionalJARContents />
       </configuration>
@@ -17,7 +17,10 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Common" />
-    <orderEntry type="library" name="SQLite" level="application" />
+    <orderEntry type="module" module-name="actionapi" />
+    <orderEntry type="module" module-name="Dataapi" />
+    <orderEntry type="library" name="OSGi" level="application" />
+    <orderEntry type="module" module-name="Deviceapi" />
   </component>
 </module>
 
