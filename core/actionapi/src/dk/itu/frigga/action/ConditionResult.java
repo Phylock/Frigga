@@ -14,7 +14,7 @@ import dk.itu.frigga.action.block.Device;
  */
 public interface ConditionResult
 {
-    int getSectionIdCount();
-    String getSectionId(final int index) throws SidNotFoundException;
-    Device getDevice(final String sectionId) throws SidNotFoundException;
+    int getScopeIdCount();
+    String getScopeId(final int index) throws SidNotFoundException;
+    Device getDevice(final String scopeId) throws SidNotFoundException;
 }
