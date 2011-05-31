@@ -8,13 +8,14 @@ package dk.itu.frigga.action;
 import dk.itu.frigga.action.block.Device;
 
 /**
+ * Store the result of a condition, this result is a collection of devices, each given a unique id.
  *
- * @author Mikkel Wendt-Larsen (miwe@itu.dk),
- *         Tommy Andersen (toan@itu.dk)
+ * @author Mikkel Wendt-Larsen (miwe@itu.dk)
+ * @author Tommy Andersen (toan@itu.dk)
  */
 public interface ConditionResult
 {
-    int getScopeIdCount();
-    String getScopeId(final int index) throws SidNotFoundException;
-    Device getDevice(final String scopeId) throws SidNotFoundException;
+    public int getScopeIdCount();
+    public String getScopeId(final int index) throws SidNotFoundException;
+    public Device getDevice(final String scopeId) throws SidNotFoundException;
 }

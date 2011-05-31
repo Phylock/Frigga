@@ -11,9 +11,9 @@ import dk.itu.frigga.FriggaException;
  *
  * @author phylock
  */
-public class MissingReplacementData extends FriggaException{
+public class MissingReplacementDataException extends FriggaException{
 
-  public MissingReplacementData(String message) {
+  public MissingReplacementDataException(String message) {
     super(message);
   }
 }

@@ -39,7 +39,7 @@ public class ConditionCheckerSql implements ConditionChecker{
     return selection;
   }
 
-  public ConditionResult[] check() {
+  public List<ConditionResult> check() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

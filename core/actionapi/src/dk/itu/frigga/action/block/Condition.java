@@ -5,20 +5,25 @@
 package dk.itu.frigga.action.block;
 
 /**
- *
- * @author phylock
+ * @author Mikkel Wendt-Larsen (miwe@itu.dk)
+ * @author Tommy Andersen (toan@itu.dk)
  */
-public interface Condition extends Traversable {
+public interface Condition
+{
 
-  public void addChild(Condition child);
+    public void addChild(Condition child);
 
-  public boolean hasChildren();
+    public boolean hasChildren();
 
-  public void removeChild(Condition child);
+    public void removeChild(Condition child);
 
-  public boolean hasReplacement();
+    public boolean hasReplacement();
 
-  void addReplacement(String replacement);
+    public void addReplacement(String replacement);
 
-  public long getUniqueId();
+    public long getUniqueId();
+
+    public boolean hasId();
+
+    public String getId();
 }
