@@ -1,4 +1,4 @@
-package dk.itu.frigga.action.manager.runtime;
+package dk.itu.frigga.action.runtime;
 
 import dk.itu.frigga.action.ConditionResult;
 

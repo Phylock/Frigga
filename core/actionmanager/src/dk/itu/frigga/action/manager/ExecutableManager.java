@@ -1,6 +1,6 @@
 package dk.itu.frigga.action.manager;
 
-import dk.itu.frigga.action.manager.runtime.Executable;
+import dk.itu.frigga.action.runtime.Executable;
 
 import java.util.*;
 

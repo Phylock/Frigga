@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Osmorc/Felix/felix" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.bundlerepository-1.6.2" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.gogo.command-0.8.0" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.gogo.runtime-0.8.0" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.gogo.shell-0.8.0" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.ipojo.annotations-1.8.0" level="application" />
+  </component>
+</module>
+

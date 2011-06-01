@@ -1,6 +1,7 @@
 package dk.itu.frigga.action.manager.runtime;
 
 import dk.itu.frigga.action.ConditionResult;
+import dk.itu.frigga.action.runtime.*;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -15,9 +16,20 @@ import java.util.List;
  */
 public class RuntimeContext implements DebugContext
 {
-    public enum RuntimeMode { RUN_NORMAL, RUN_DEBUG }
-    public enum RuntimeState { STATE_COMPLETED, STATE_STEP, STATE_BREAKPOINT }
-    private enum StepMode { STEP_NONE, STEP_INTO, STEP_OVER, STEP_OUT }
+    public enum RuntimeMode
+    {
+        RUN_NORMAL, RUN_DEBUG
+    }
+
+    public enum RuntimeState
+    {
+        STATE_COMPLETED, STATE_STEP, STATE_BREAKPOINT
+    }
+
+    private enum StepMode
+    {
+        STEP_NONE, STEP_INTO, STEP_OVER, STEP_OUT
+    }
 
     private RuntimeMode runtimeMode = RuntimeMode.RUN_NORMAL;
     private final CallStack callStack = new CallStack();
@@ -70,8 +82,7 @@ public class RuntimeContext implements DebugContext
             }
 
             resume();
-        }
-        finally
+        } finally
         {
             callStack.popCall();
         }
@@ -85,8 +96,7 @@ public class RuntimeContext implements DebugContext
             {
                 breakpoint.evaluate(currentExecutable);
             }
-        }
-        catch (BreakpointEncounteredException ex)
+        } catch (BreakpointEncounteredException ex)
         {
             for (DebugListener listener : debugListeners)
             {
@@ -181,8 +191,7 @@ public class RuntimeContext implements DebugContext
             {
                 currentStepId++;
                 currentExecutable.execute(this, currentResult);
-            }
-            catch (ExecutableException ex)
+            } catch (ExecutableException ex)
             {
                 if (runtimeMode == RuntimeMode.RUN_DEBUG)
                 {
@@ -218,7 +227,7 @@ public class RuntimeContext implements DebugContext
     @Override
     public void addBreakpoint(Breakpoint breakpoint)
     {
-        assert(breakpoint != null) : "Breakpoint can not be null.";
+        assert (breakpoint != null) : "Breakpoint can not be null.";
 
         breakpoints.add(breakpoint);
     }
@@ -226,7 +235,7 @@ public class RuntimeContext implements DebugContext
     @Override
     public void removeBreakpoint(Breakpoint breakpoint)
     {
-        assert(breakpoint != null) : "Breakpoint can not be null.";
+        assert (breakpoint != null) : "Breakpoint can not be null.";
 
         breakpoints.remove(breakpoint);
     }
@@ -240,7 +249,7 @@ public class RuntimeContext implements DebugContext
     @Override
     public void addDebugListener(DebugListener debugListener)
     {
-        assert(debugListener != null) : "DebugListener can not be null.";
+        assert (debugListener != null) : "DebugListener can not be null.";
 
         debugListeners.add(debugListener);
     }
@@ -248,7 +257,7 @@ public class RuntimeContext implements DebugContext
     @Override
     public void removeDebugListener(DebugListener debugListener)
     {
-        assert(debugListener != null) : "DebugListener can not be null.";
+        assert (debugListener != null) : "DebugListener can not be null.";
 
         debugListeners.remove(debugListener);
     }

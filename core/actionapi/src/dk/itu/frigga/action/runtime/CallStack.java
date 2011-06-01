@@ -1,6 +1,6 @@
-package dk.itu.frigga.action.manager.runtime;
+package dk.itu.frigga.action.runtime;
 
-import com.sun.java.browser.plugin2.liveconnect.v1.Result;
+import dk.itu.frigga.action.runtime.Call;
 
 import java.util.*;
 
@@ -18,7 +18,7 @@ public class CallStack
     {
     }
 
-    void pushCall(final Call call)
+    public void pushCall(final Call call)
     {
         synchronized (callStack)
         {
@@ -26,7 +26,7 @@ public class CallStack
         }
     }
 
-    void popCall()
+    public void popCall()
     {
         synchronized (callStack)
         {

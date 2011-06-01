@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
 public class ActionManagerImpl implements ActionManager {
   /* iPOJO services */
 
-  private LogService log;
+    private LogService log;
   private DataManager datamanager;
   private DeviceManager devicemanager;
   //local

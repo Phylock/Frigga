@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ipojo
-   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-   xmlns='org.apache.felix.ipojo'
-   xmlns:ev='org.apache.felix.ipojo.handlers.event'
-   xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='org.apache.felix.ipojo'
+        xmlns:ev='org.apache.felix.ipojo.handlers.event'
+        xsi:schemaLocation="org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd
+org.apache.felix.ipojo.handlers.event ">
 
-  <component name="ActionManagerImpl" classname="dk.itu.frigga.action.manager.ActionManagerImpl">
-    <provides specifications="dk.itu.frigga.action.ActionManager"/>
-    
-    <requires field="log" optional="true"/>
-    <requires field="datamanager" />
-    <requires field="devicemanager" />
-    
-    <callback transition="validate" method="validate"/>
-    <callback transition="invalidate" method="invalidate"/>
+    <component name="ActionManagerImpl" classname="dk.itu.frigga.action.manager.ActionManagerImpl">
+        <provides specifications="dk.itu.frigga.action.ActionManager"/>
 
-  </component>
-  <instance component="ActionManagerImpl" name="ActionManager"/>
+        <requires field="log" optional="true"/>
+        <requires field="datamanager"/>
+        <requires field="devicemanager"/>
+
+        <callback transition="validate" method="validate"/>
+        <callback transition="invalidate" method="invalidate"/>
+
+    </component>
+    <instance component="ActionManagerImpl" name="ActionManager"/>
 
 </ipojo>
