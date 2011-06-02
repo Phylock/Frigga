@@ -22,6 +22,9 @@
     <orderEntry type="library" name="OSGi" level="application" />
     <orderEntry type="module" module-name="Deviceapi" />
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.ipojo.annotations-1.8.0" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.log-1.0.0" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.bundlerepository-1.6.2" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/felix" level="application" />
   </component>
 </module>
 

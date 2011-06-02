@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="friggaCleanup" default="clean" basedir=".">
+    <description>Cleans up felix bundle directory.</description>
+
+    <target name="clean">
+        <delete dir="felix-cache"/>
+    </target>
+
+</project>

@@ -44,6 +44,6 @@ public class HasVariableFilter extends DbFilter
     @Override
     public void execute(RuntimeContext context, ConditionResult result) throws ExecutableException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 }

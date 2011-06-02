@@ -10,6 +10,7 @@
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.gogo.runtime-0.8.0" level="application" />
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.gogo.shell-0.8.0" level="application" />
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.ipojo.annotations-1.8.0" level="application" />
+    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.log-1.0.0" level="application" />
   </component>
 </module>
 
