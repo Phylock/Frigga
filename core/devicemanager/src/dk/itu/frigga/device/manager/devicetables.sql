@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS variabletype
 (
   id INTEGER NOT NULL,
   varname VARCHAR(25) NOT NULL,
-  vartype INTEGER NOT NULL,
+  vartype VARCHAR(25) NOT NULL,
   PRIMARY KEY (id)
 );
 
