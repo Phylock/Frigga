@@ -5,4 +5,18 @@
    xmlns:ev='org.apache.felix.ipojo.handlers.event'
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
+  <component name="IpClient" classname="dk.itu.frigga.device.drivers.ipconnection.IpClientDriver">
+    <provides/>
+
+    <callback transition="validate" method="validate" />
+    <callback transition="invalidate" method="invalidate" />
+
+    <requires field="log" optional="true"/>
+
+    <properties updated="updated" propagation="true"/>
+
+    <ev:publisher name="ipclient_device_event" field="devent" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
+    <ev:publisher name="ipclient_update_event" field="vevent" topics="dk/itu/frigga/device/change" data-key="data" data-type="dk.itu.frigga.device.VariableChangedEvent"/>
+
+  </component>
 </ipojo>

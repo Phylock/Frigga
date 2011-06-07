@@ -4,3 +4,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-SymbolicName: dk.itu.frigga.device.drivers.ipconnection
 
 Private-Package: dk.itu.frigga.device.drivers.ipconnection.*
+Include-Resource: clientprotocol.jar
+Bundle-ClassPath: clientprotocol.jar,.
