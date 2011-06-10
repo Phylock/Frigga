@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -73,10 +72,8 @@ public class DogMessage {
             Transformer transformer = factory.newTransformer();
             transformer.transform(source, result);
             return stringWriter.getBuffer().toString();
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
         } catch (TransformerException e) {
-            e.printStackTrace();
+          //should never happend, its generateded throug dom Document builder
         }
         return null;
     }

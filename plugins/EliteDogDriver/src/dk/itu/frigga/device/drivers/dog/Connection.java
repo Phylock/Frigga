@@ -4,8 +4,6 @@ import dk.itu.frigga.device.drivers.dog.protocol.DogParser;
 import dk.itu.frigga.device.drivers.dog.protocol.DogMessage;
 import it.polito.elite.domotics.dog2.dog2leash.Dog2JLeash;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.xmlrpc.XmlRpcException;
 import org.osgi.service.log.LogService;
@@ -41,21 +39,30 @@ public class Connection {
   }
 
   void reconnect() {
-    connect(uri);
+    if (connect(uri)) {
+      retry.kill();
+    }
   }
 
   public boolean connect(String uri) {
+    if(uri == null)
+    {
+      log.log(LogService.LOG_ERROR, "null uri not allowed");
+      return connected;
+    }
     log.log(LogService.LOG_INFO, String.format("Establish connection to: %s", uri));
-    //handle cases where connection alredy is established
+    //handle cases where a connection already is established
     try {
       if (connected) {
         if (this.uri.equals(uri)) {
           return true;
         } else {
           dogGateway.disconnect();
+          connected = false;
         }
       }
-
+      
+      this.uri = uri;
       session = dogGateway.connect(uri);
       dogGateway.addDog2MessageListener(parser);
       connected = true;
@@ -69,9 +76,16 @@ public class Connection {
 
     if (connected) {
       //TODO: Process queue
-    }
-    else
-    {
+    } else {
+      try {
+        //disconnect xmlrpc server, if failed to connect
+        dogGateway.disconnect();
+      } catch (XmlRpcException ex) {
+        log.log(LogService.LOG_INFO, "Could not disconnect: " + ex.getLocalizedMessage());
+      } catch (IOException ex) {
+        log.log(LogService.LOG_ERROR, null, ex);
+      }
+      //start if, its not already running
       retry.start();
     }
 
@@ -130,7 +144,7 @@ public class Connection {
     private final Connection conn;
     private final long delay;
     private final int retry;
-    private boolean running;
+    private volatile boolean running;
     private int current_retry;
 
     public ConnectionRetry(Connection conn, long delay, int retry) {
@@ -139,12 +153,18 @@ public class Connection {
       this.retry = retry;
     }
 
+    @Override
+    public synchronized void start() {
+      if (!running) {
+        super.start();
+      }
+    }
+
     public void kill() {
       synchronized (this) {
         running = false;
         this.interrupt();
       }
-
     }
 
     @Override
@@ -157,10 +177,9 @@ public class Connection {
         try {
           sleep(delay);
         } catch (InterruptedException ex) {
-          Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+          //allow, properly because thread is stopped
         }
       }
-      running = false;
     }
   }
 }

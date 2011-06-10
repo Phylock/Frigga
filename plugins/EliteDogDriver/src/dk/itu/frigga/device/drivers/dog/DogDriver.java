@@ -35,9 +35,8 @@ public class DogDriver implements Driver {
   private String url;
   private String id;
 
-  /*** TODO: read parameter, for now assume that the Dog gateway is running on localhost */
-  //public static String DEFAULT_DOG_ADDRESS = "http://localhost:65300/RPC2";
   public DogDriver() {
+    connection = new Connection(this);
   }
 
   public Connection getConnection() {
@@ -97,17 +96,15 @@ public class DogDriver implements Driver {
 
   /** iPOJO Callbacks **/
   private void validate() {
-    if (connection == null) {
-      connection = new Connection(this);
-    }
     log.log(LogService.LOG_INFO, "DogDriver Validate");
     updateSubclassFields("log", connection, log);
     updateSubclassFields("log", connection.getParser(), log);
 
     updateSubclassFields("event", DogDeviceManager.instance(), event);
 
-    connection.connect(url);
-
+    if (url != null && !url.isEmpty()) {
+      connection.connect(url);
+    }
   }
 
   private void invalidate() {
@@ -131,14 +128,17 @@ public class DogDriver implements Driver {
 
   public void updated(Dictionary conf) {
     id = parseID(conf.get("felix.fileinstall.filename").toString());
+    if (url != null && !url.isEmpty()) {
+      connection.connect(url);
+    }
   }
 
-  private static String parseID(String filename)
-  {
-    int start = filename.lastIndexOf('-')+1;
+  private static String parseID(String filename) {
+    int start = filename.lastIndexOf('-') + 1;
     int end = filename.lastIndexOf('.');
     return filename.substring(start, end);
   }
+
   public String getDriverId() {
     return String.format(DRIVER_ID, id);
   }

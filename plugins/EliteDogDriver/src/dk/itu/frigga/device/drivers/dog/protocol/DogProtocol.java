@@ -174,7 +174,9 @@ public class DogProtocol {
                 Parameter[] parameters = command.getParameters();
                 if (parameters != null) {
                     for (Parameter param : parameters) {
-                        //TODO: add parameters
+                        Element p = doc.createElement("param");
+                        p.setTextContent(param.getData().toString());
+                        c.appendChild(p);
                     }
                 }
                 commanddevice.appendChild(c);

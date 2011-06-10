@@ -44,8 +44,7 @@ public class Function implements Executable{
             for (int i = 0; i < devices.length; i++) {
                 items[i] = devices[i].getSymbolic();
             }
-            //TODO: how to set parameters ??
-            Command command = new Command(items, function, null);
+            Command command = new Command(items, function, parameters);
             DogMessage message = DogProtocol.generateCommandMessage(command);
             connection.send(message);
         } catch (ParserConfigurationException ex) {
