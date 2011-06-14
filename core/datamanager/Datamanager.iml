@@ -2,7 +2,7 @@
 <module type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration osmorcControlsManifest="false" manifestLocation="datamanager.bnd" jarfileLocation="C:\Users\Tommy\Documents\Private\itu\thesis\trunk\projects\frigga\core\launcher\bundle\Datamanager.jar" outputPathType="SpecificOutputPath" useBndFile="false" bndFileLocation="" useBundlorFile="false" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="false" alwaysRebuildBundleJAR="true">
+      <configuration osmorcControlsManifest="false" manifestLocation="datamanager.bnd" jarfileLocation="C:\Users\Tommy\Documents\Private\itu\thesis\trunk\projects\frigga\core\launcher\bundle\dk.itu.frigga.data.manager.jar" outputPathType="SpecificOutputPath" useBndFile="true" bndFileLocation="datamanager.bnd" useBundlorFile="false" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="false" alwaysRebuildBundleJAR="true">
         <additionalProperties />
         <additionalJARContents />
       </configuration>
@@ -15,8 +15,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Common" exported="" />
-    <orderEntry type="module" module-name="Dataapi" exported="" />
+    <orderEntry type="module" module-name="Common" />
+    <orderEntry type="module" module-name="Dataapi" />
     <orderEntry type="library" name="Osmorc/Felix/felix" level="application" />
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.log-1.0.0" level="application" />
     <orderEntry type="library" name="SQLite" level="application" />

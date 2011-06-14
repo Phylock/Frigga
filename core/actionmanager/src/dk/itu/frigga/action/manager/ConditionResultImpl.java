@@ -1,8 +1,8 @@
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.ConditionResult;
+import dk.itu.frigga.action.Device;
 import dk.itu.frigga.action.SidNotFoundException;
-import dk.itu.frigga.action.block.Device;
 
 /**
  * Class description here...

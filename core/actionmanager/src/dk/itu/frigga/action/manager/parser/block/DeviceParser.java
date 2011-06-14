@@ -4,8 +4,8 @@
  */
 package dk.itu.frigga.action.manager.parser.block;
 
+import dk.itu.frigga.action.Device;
 import dk.itu.frigga.action.block.Condition;
-import dk.itu.frigga.action.block.Device;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

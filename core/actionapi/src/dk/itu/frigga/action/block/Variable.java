@@ -10,7 +10,19 @@ package dk.itu.frigga.action.block;
  */
 public class Variable extends BaseCondition {
 
-  public enum Comparison {
+    @Override
+    public boolean hasId()
+    {
+        return false;
+    }
+
+    @Override
+    public String getId()
+    {
+        return null;
+    }
+
+    public enum Comparison {
 
     IsEqual, IsNotEqual, IsGreater, IsLess, IsBetween, IsOfCategory;
   }

@@ -5,10 +5,10 @@
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.ConditionResult;
+import dk.itu.frigga.action.Device;
 import dk.itu.frigga.action.block.And;
 import dk.itu.frigga.action.block.Category;
 import dk.itu.frigga.action.block.Condition;
-import dk.itu.frigga.action.block.Device;
 import dk.itu.frigga.action.block.Or;
 import dk.itu.frigga.action.block.Script;
 import dk.itu.frigga.action.block.Variable;

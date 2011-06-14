@@ -20,7 +20,4 @@ public interface DebugContext
     public void addBreakpoint(final Breakpoint breakpoint);
     public void removeBreakpoint(final Breakpoint breakpoint);
     public void removeAllBreakpoints();
-
-    public void addDebugListener(final DebugListener debugListener);
-    public void removeDebugListener(final DebugListener debugListener);
 }

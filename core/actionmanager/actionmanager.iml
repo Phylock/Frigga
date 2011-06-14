@@ -19,12 +19,21 @@
     <orderEntry type="module" module-name="Common" />
     <orderEntry type="module" module-name="actionapi" />
     <orderEntry type="module" module-name="Dataapi" />
-    <orderEntry type="library" name="OSGi" level="application" />
+    <orderEntry type="library" name="iPojo Ant" level="application" />
     <orderEntry type="module" module-name="Deviceapi" />
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.ipojo.annotations-1.8.0" level="application" />
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.log-1.0.0" level="application" />
     <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.bundlerepository-1.6.2" level="application" />
     <orderEntry type="library" name="Osmorc/Felix/felix" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/annotations.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
