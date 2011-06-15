@@ -5,6 +5,7 @@
 
 package dk.itu.frigga.core.clientapi;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -13,6 +14,8 @@ import java.util.UUID;
  */
 public class Session {
     private final UUID sessionId;
+    private Date initialized;
+    private Date last_action;
 
     public Session()
     {

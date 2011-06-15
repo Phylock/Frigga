@@ -12,12 +12,16 @@ import java.util.List;
  * @author phylock
  */
 public interface Rule {
-  public enum State
+  public enum Validation
   {
     Invalid, Valid
   }
 
+  public enum State
+  {
+    Active, InActive
+  }
+
   public String getID();
-  public List<ConditionResult> check();
-  
+  public List<ConditionResult> check();  
 }

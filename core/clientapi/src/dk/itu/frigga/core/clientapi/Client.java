@@ -10,5 +10,8 @@ package dk.itu.frigga.core.clientapi;
  * @author phylock
  */
 public interface Client {
-    Session getSession();
+
+  Session getSession();
+
+
 }

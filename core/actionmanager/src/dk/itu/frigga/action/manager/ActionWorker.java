@@ -4,12 +4,14 @@
  */
 package dk.itu.frigga.action.manager;
 
+import dk.itu.frigga.action.ConditionResult;
 import dk.itu.frigga.action.Rule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,14 +23,16 @@ public class ActionWorker {
   private final Worker worker;
 
   private final List<Rule> rules;
+  private final Map<Rule, Rule.Validation> validations;
   private final Map<Rule, Map<String, Rule.State>> states;
-  private final PriorityBlockingQueue<Rule> queue;
+  private final BlockingQueue<Rule> queue;
   
   public ActionWorker() {
-    this.queue = new PriorityBlockingQueue<Rule>();
+    this.queue = new LinkedBlockingQueue<Rule>();
     this.rules = new ArrayList<Rule>();
-    this.worker = new Worker(5000);
     this.states = new HashMap<Rule, Map<String,Rule.State>>();
+    this.validations = new HashMap<Rule, Rule.Validation>();
+    this.worker = new Worker();
   }
 
   public void start()
@@ -58,13 +62,11 @@ public class ActionWorker {
   }
 
   private class Worker extends Thread {
-
-    private final int delay;
+    private final static int delay = 5000;
     private int current = 0;
     private volatile boolean running;
 
-    public Worker(int delay) {
-      this.delay = delay;
+    public Worker() {
       this.setName("ActionWorker");
     }
 
@@ -91,7 +93,20 @@ public class ActionWorker {
           }
           rule = rules.get(current++);
         }
-        Rule.State current_state = rule.check();
+        List<ConditionResult> results = rule.check();
+        for(ConditionResult result : results)
+        {
+          String id = "";
+          final int length = result.getScopeIdCount();
+          for(int i = 0; i < length; i++)
+          {
+            if(i != 0)
+            {
+              id += ",";
+            }
+            id += i + ":" + result.getScopeId(i);
+          }
+        }
         if(current_state != states.get(rule))
         {
           states.put(rule, current_state);
