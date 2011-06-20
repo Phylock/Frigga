@@ -22,6 +22,7 @@ public class ClientManagerImpl implements ClientManager{
 
   public ClientManagerImpl() {
     clients = Collections.synchronizedMap(new HashMap<UUID, Client>());
+    authentication = new AuthenticationMock();
   }
 
   public Client login(Client client) {
