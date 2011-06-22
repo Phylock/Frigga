@@ -1,7 +1,7 @@
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.ConditionResult;
-import dk.itu.frigga.action.Device;
+import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.action.SidNotFoundException;
 
 /**

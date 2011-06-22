@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Integer.*;
+
 
 /**
  * Class description here...
@@ -17,6 +19,8 @@ import java.util.Map;
  */
 public class FilterManager implements FilterFactory
 {
+    private static final int PARSER_VERSION = 1;
+
     private final Map<String, Class<? extends Filter>> filterTypes = Collections.synchronizedMap(new HashMap<String, Class<? extends Filter>>());
 
     @Override
@@ -68,5 +72,48 @@ public class FilterManager implements FilterFactory
         f.parse(this, element);
 
         return f;
+    }
+
+    @Override
+    public boolean isConstraint(final Element element)
+    {
+        return element.getTagName().equals("constraint");
+    }
+
+    @Override
+    public boolean constraintPassed(final Element element)
+    {
+        boolean result = true;
+
+        if (element.hasAttribute("minVersion"))
+        {
+            if (parseInt(element.getAttribute("minVersion"), 10) > PARSER_VERSION)
+            {
+                result = false;
+            }
+        }
+
+        if (result && element.hasAttribute("maxVersion"))
+        {
+            if (parseInt(element.getAttribute("maxVersion"), 10) < PARSER_VERSION)
+            {
+                result = false;
+            }
+        }
+
+        if (result && element.hasAttribute("hasFilters"))
+        {
+            String[] filters = element.getAttribute("hasFilters").split("\\s");
+            for (String filter : filters)
+            {
+                if (!filterTypes.containsKey(filter))
+                {
+                    result = false;
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }

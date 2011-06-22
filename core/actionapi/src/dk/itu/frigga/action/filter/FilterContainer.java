@@ -1,7 +1,5 @@
 package dk.itu.frigga.action.filter;
 
-import dk.itu.frigga.action.filter.Filter;
-
 /**
  * Class description here...
  *
@@ -10,6 +8,7 @@ import dk.itu.frigga.action.filter.Filter;
  */
 public interface FilterContainer
 {
-    public void registerNamedFilter(final Filter filter);
-    public Filter getNamedFilter(final String name);
+    void registerNamedFilter(final Filter filter) throws NotANamedFilterException;
+    void unregisterNamedFilter(final Filter filter) throws FilterNotFoundException;
+    Filter getNamedFilter(final String name) throws FilterNotFoundException;
 }

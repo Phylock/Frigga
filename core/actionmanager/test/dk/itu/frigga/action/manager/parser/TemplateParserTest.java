@@ -55,10 +55,10 @@ public class TemplateParserTest {
     Template result = parseFile(file);
     System.out.println(result);
     //print condition structure
-    result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
+    //result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
 
     ConditionVerification cv = new ConditionVerification();
-    result.getRules().get("rule1").getCondition().traverse(cv);
+    //result.getRules().get("rule1").getCondition().traverse(cv);
     assertTrue(cv.validate());
 
   }
@@ -75,10 +75,10 @@ public class TemplateParserTest {
 
     System.out.println(result);
     //print condition structure
-    result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
+    //result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
 
     ConditionVerification cv = new ConditionVerification();
-    result.getRules().get("rule1").getCondition().traverse(cv);
+    //result.getRules().get("rule1").getCondition().traverse(cv);
     assertTrue(cv.validate());
 
   }

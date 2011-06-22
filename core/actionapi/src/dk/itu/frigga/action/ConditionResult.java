@@ -5,6 +5,8 @@
 
 package dk.itu.frigga.action;
 
+import dk.itu.frigga.device.model.Device;
+
 /**
  * Store the result of a condition, this result is a collection of devices, each given a unique id.
  *

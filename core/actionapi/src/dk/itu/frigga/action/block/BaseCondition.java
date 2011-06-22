@@ -28,7 +28,7 @@ public class BaseCondition implements Condition {
 
     if (children != null && !children.isEmpty()) {
       for (Condition con : children) {
-        con.traverse(visitor);
+        //con.traverse(visitor);
       }
     }
 
@@ -73,4 +73,16 @@ public class BaseCondition implements Condition {
   public long getUniqueId() {
     return unique;
   }
+
+    @Override
+    public boolean hasId()
+    {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getId()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

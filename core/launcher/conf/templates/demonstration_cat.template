@@ -37,8 +37,10 @@
                     <whereEqual>
                         <variable name="symbolic" type="string" sid="devicetv">
                             <or>
-                                <location type="local" where="work_room1"/>  <!-- Filter -->
-                                <location type="local" where="work_room2" position="10,10,10" radius="1m"/>  <!-- Filter -->
+                                <constraint minVersion="1">
+                                    <location type="local" where="work_room1"/>  <!-- Filter -->
+                                    <location type="local" where="work_room2" position="10,10,10" radius="1m"/>  <!-- Filter -->
+                                </constraint>
                                 <location type="global" position="10,10,10" radius="1m"/>  <!-- Filter -->
                             </or>
                             <isCategory category="tv"/>  <!-- Filter -->

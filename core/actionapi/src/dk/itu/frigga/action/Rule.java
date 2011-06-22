@@ -8,20 +8,21 @@ package dk.itu.frigga.action;
 import java.util.List;
 
 /**
- *
  * @author phylock
  */
-public interface Rule {
-  public enum Validation
-  {
-    Invalid, Valid
-  }
+public interface Rule
+{
+    public enum Validation
+    {
+        Invalid, Valid
+    }
 
-  public enum State
-  {
-    Active, InActive
-  }
+    public enum State
+    {
+        Active, InActive
+    }
 
-  public String getID();
-  public List<ConditionResult> check();  
+    public String getID();
+
+    public List<ConditionResult> check();
 }

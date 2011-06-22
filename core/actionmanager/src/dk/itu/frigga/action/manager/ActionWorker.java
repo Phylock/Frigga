@@ -104,15 +104,15 @@ public class ActionWorker {
             {
               id += ",";
             }
-            id += i + ":" + result.getScopeId(i);
+            //id += i + ":" + result.getScopeId(i);
           }
         }
-        if(current_state != states.get(rule))
+        /*if(current_state != states.get(rule))
         {
           states.put(rule, current_state);
           System.out.println("state change: " + rule.getID() + " is now " + current_state);
           //TODO: notify listeners
-        }
+        }*/
       }
       try {
         Thread.sleep(delay);

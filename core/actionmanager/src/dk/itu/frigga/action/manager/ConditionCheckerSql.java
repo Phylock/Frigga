@@ -5,7 +5,7 @@
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.ConditionResult;
-import dk.itu.frigga.action.Device;
+import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.action.block.And;
 import dk.itu.frigga.action.block.Category;
 import dk.itu.frigga.action.block.Condition;
@@ -31,7 +31,7 @@ public class ConditionCheckerSql implements ConditionChecker{
 
   public ConditionCheckerSql(Condition condition) {
     ConditionVisitor v = new ConditionVisitor();
-    condition.traverse(v);
+    //condition.traverse(v);
     selection = v.getSelection();
   }
 
@@ -67,7 +67,7 @@ public class ConditionCheckerSql implements ConditionChecker{
         current_operator = "OR";
       } else if (condition instanceof Device) {
         current_type = Type.Device;
-        current_name = ((Device) condition).getId();
+        //current_name = ((Device) condition).getId();
       } else if (condition instanceof Variable) {
         addOperator();
         parseVariable((Variable) condition);
@@ -78,7 +78,7 @@ public class ConditionCheckerSql implements ConditionChecker{
         opened = false;
       } else if (condition instanceof Category) {
         current_type = Type.Category;
-        current_name = ((Device) condition).getId();
+        //current_name = ((Device) condition).getId();
         opened = false;
       }
       return true;

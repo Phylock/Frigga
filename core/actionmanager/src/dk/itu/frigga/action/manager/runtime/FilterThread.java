@@ -15,7 +15,6 @@ import java.util.List;
 public class FilterThread extends Thread
 {
     private Filter filter;
-    private RuntimeContext context;
     private boolean running = false;
     private List<Selection> result;
 
@@ -35,10 +34,9 @@ public class FilterThread extends Thread
         running = false;
     }
 
-    public void runFilter(final Filter filter, final RuntimeContext context)
+    public void runFilter(final Filter filter)
     {
         this.filter = filter;
-        this.context = context;
 
         start();
     }

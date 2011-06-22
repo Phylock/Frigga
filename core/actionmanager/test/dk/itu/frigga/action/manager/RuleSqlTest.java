@@ -5,13 +5,14 @@
 
 package dk.itu.frigga.action.manager;
 
+import dk.itu.frigga.action.ConditionResult;
 import dk.itu.frigga.action.manager.parser.TemplateParser;
 import dk.itu.frigga.action.Context;
-import dk.itu.frigga.action.Rule;
 import dk.itu.frigga.action.Template;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import org.junit.After;
@@ -60,7 +61,7 @@ public class RuleSqlTest {
     Template t = parseFile(file);
     Context c = new Context("test1", t, r);
     RuleSql instance = new RuleSql(c, t.getRules().get("rule1"));
-    Rule.State s = instance.check();
+    List<ConditionResult> s = instance.check();
   }
   private Template parseFile(String file) throws ParserConfigurationException, SAXException, IOException {
     File f = new File(file);

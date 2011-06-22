@@ -5,7 +5,7 @@
 
 package dk.itu.frigga.action.manager.parser;
 
-import dk.itu.frigga.action.Info;
+import dk.itu.frigga.action.TemplateInfo;
 import dk.itu.frigga.action.Template;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Document;
@@ -44,6 +44,6 @@ public class InfoParser implements Parseable{
       }
       current = XmlHelper.getNextSiblingElement(current, ELEMENTS);
     }
-    template.setInfo(new Info(author, name, site, description));
+    template.setTemplateInfo(new TemplateInfo(author, name, site, description));
   }
 }

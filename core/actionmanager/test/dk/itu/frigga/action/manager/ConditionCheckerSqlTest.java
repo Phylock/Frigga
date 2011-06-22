@@ -48,7 +48,7 @@ public class ConditionCheckerSqlTest {
     System.out.println("testParse - file: " + file);
 
     Template result = parseFile(file);
-    result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
+    //result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
     ConditionCheckerSql cc = new ConditionCheckerSql(result.getRules().get("rule1").getCondition());
   }
 
@@ -58,7 +58,7 @@ public class ConditionCheckerSqlTest {
     System.out.println("testParse - file: " + file);
 
     Template result = parseFile(file);
-    result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
+    //result.getRules().get("rule1").getCondition().traverse(new PrintConditionTree());
     ConditionCheckerSql cc = new ConditionCheckerSql(result.getRules().get("rule1").getCondition());
   }
   private Template parseFile(String file) throws ParserConfigurationException, SAXException, IOException {

@@ -59,7 +59,7 @@ public class RuleSql implements Rule {
   }
 
   public List<ConditionResult> check() {
-    State state = State.Invalid;
+    State state = State.InActive;
     if (pool != null) {
       //TODO: replace script values, for now ignore and set to true
       String vreplaced = condition_template.replaceAll("\\$[0-9]*\\$", "1");
@@ -72,7 +72,7 @@ public class RuleSql implements Rule {
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
           if (rs.getLong(1) == 1) {
-            state = State.Valid;
+            state = State.Active;
           }
         }
         rs.close();

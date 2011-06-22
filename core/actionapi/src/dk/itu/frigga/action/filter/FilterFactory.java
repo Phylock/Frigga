@@ -19,7 +19,7 @@ public interface FilterFactory
      * @param type The name of the filter type, the name can not contain spaces or other special characters.
      * @param filterClass The class to instantiate to give a type of the specified filter.
      */
-    public void registerFilterType(final String type, final Class<? extends Filter> filterClass);
+    void registerFilterType(final String type, final Class<? extends Filter> filterClass);
 
     /**
      * Creates a filter of a specified type, and registers a filter container with it.
@@ -34,7 +34,7 @@ public interface FilterFactory
      *         the correct style, this exception is thrown.
      * @throws FilterInstantiationFailedException If the filter failed during creation this exception is thrown.
      */
-    public Filter createFilter(final FilterContainer owner, final String type) throws UnknownFilterException, FilterInstantiationFailedException;
+    Filter createFilter(final FilterContainer owner, final String type) throws UnknownFilterException, FilterInstantiationFailedException;
 
     /**
      * Creates a filter of a specified type, and registers a filter container with it.
@@ -49,5 +49,26 @@ public interface FilterFactory
      *         the correct style, this exception is thrown.
      * @throws FilterInstantiationFailedException If the filter failed during creation this exception is thrown.
      */
-    public Filter createFilter(final FilterContainer owner, final Element element) throws UnknownFilterException, FilterInstantiationFailedException;
+    Filter createFilter(final FilterContainer owner, final Element element) throws UnknownFilterException, FilterInstantiationFailedException;
+
+    /**
+     * Checks whether the given element is a constraint and if so, it returns true. A constraint requires special
+     * handling.
+     *
+     * Constraints are special in that their effect is limited to parse time only. Constraints do not result in filter
+     * objects, and filters should be searched for within the constraint body if the constraint is passed.
+     *
+     * @param element The element to evaluate
+     * @return A boolean value of true if the element is a constraint.
+     */
+    boolean isConstraint(final Element element);
+
+    /**
+     * This function returns true if the constraint's criteria is met and the child elements can be parsed as normal.
+     * If this function returns false any child elements will be ignored.
+     *
+     * @param element The constraint element to check.
+     * @return True if the constraint passed and the parser can parse the containing filters.
+     */
+    boolean constraintPassed(final Element element);
 }
