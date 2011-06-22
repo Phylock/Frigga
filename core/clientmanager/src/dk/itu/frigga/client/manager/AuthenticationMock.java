@@ -5,14 +5,15 @@
 
 package dk.itu.frigga.client.manager;
 
+import dk.itu.frigga.core.clientapi.Authentication;
 import dk.itu.frigga.core.clientapi.Client;
 
 /**
  *
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
-public class AuthenticationMock implements Authentication{
-  public Client authenticate(Client client) {
-    throw new UnsupportedOperationException("Not supported yet.");
+public class AuthenticationMock implements AuthenticationHandler{
+  public void authenticate(Client client, Authentication auth) {
+    //TODO: add authentication status to session
   }
 }

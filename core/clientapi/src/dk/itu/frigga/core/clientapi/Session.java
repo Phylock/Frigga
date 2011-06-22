@@ -14,21 +14,40 @@ import java.util.UUID;
  */
 public class Session {
     private final UUID sessionId;
-    private Date initialized;
+    private final UUID userId;
+    private final String deviceId;
+    private final Date initialized;
     private Date last_action;
 
-    public Session()
+    public Session(UUID userId, String deviceId)
     {
         sessionId = UUID.randomUUID();
-    }
-
-    public Session(final UUID session)
-    {
-        sessionId = session;
+        this.userId = userId;
+        this.deviceId = deviceId;
+        initialized = new Date();
+        last_action = initialized;
     }
 
     public UUID getSessionId()
     {
         return sessionId;
     }
+
+  public String getDeviceId() {
+    return deviceId;
+  }
+
+  public Date getInitialized() {
+    return initialized;
+  }
+
+  public Date getLastAction() {
+    return last_action;
+  }
+
+  public UUID getUserId() {
+    return userId;
+  }
+
+
 }

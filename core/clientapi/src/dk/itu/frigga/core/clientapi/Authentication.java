@@ -9,14 +9,14 @@ package dk.itu.frigga.core.clientapi;
  *
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
-public class Role {
-  private final String role;
+public class Authentication {
+  private final String answer;
 
-  public Role(String role) {
-    this.role = role;
+  public Authentication(String answer) {
+    this.answer = answer;
   }
 
-  public String getRole() {
-    return role;
+  public String getAnswer() {
+    return answer;
   }
 }

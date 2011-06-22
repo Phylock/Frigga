@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ipojo
+   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns='org.apache.felix.ipojo'
+   xmlns:ev='org.apache.felix.ipojo.handlers.event'
+   xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
+
+  <component name="GameOnTrackDriver" classname="dk.itu.frigga.device.drivers.got.GotDriver">
+    <provides/>
+
+    <callback transition="validate" method="validate" />
+    <callback transition="invalidate" method="invalidate" />
+    
+    <requires field="log" optional="true"/>
+
+    <properties updated="updated" propagation="true"/>
+
+    <ev:publisher name="got_device_event" field="devent" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
+    <ev:publisher name="got_update_event" field="vevent" topics="dk/itu/frigga/device/change" data-key="data" data-type="dk.itu.frigga.device.VariableChangedEvent"/>
+    
+  </component>
+</ipojo>

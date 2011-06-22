@@ -1,0 +1,18 @@
+Bundle-Version: 0.2.0.SNAPSHOT
+Bundle-Name: Frigga GoT Device Driver
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.device.drivers.got
+
+Private-Package: dk.itu.frigga.device.drivers.got.*
+Import-Package: \
+  org.osgi.service.log, \
+  dk.itu.frigga.device, \
+  org.apache.felix.ipojo.architecture;version= 1.6.0, \
+  org.apache.felix.ipojo.handlers.event.publisher, \
+  dk.itu.frigga.device.model, \
+  org.apache.felix.ipojo;version= 1.6.0, \
+  org.osgi.framework, dk.itu.frigga.device.descriptor, \
+  org.osgi.service.cm;version=1.2, \
+  gnu.io;resolution:=optional
+Include-Resource: GameOnTrack.jar
+Bundle-ClassPath: GameOnTrack.jar,.

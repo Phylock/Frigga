@@ -5,12 +5,13 @@
 
 package dk.itu.frigga.client.manager;
 
+import dk.itu.frigga.core.clientapi.Authentication;
 import dk.itu.frigga.core.clientapi.Client;
 
 /**
  *
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
-public interface Authentication {
-  Client authenticate(Client client);
+public interface AuthenticationHandler {
+  void authenticate(Client client, Authentication auth);
 }
