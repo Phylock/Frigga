@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class TemplateVariable
 {
-    private final String name;
+    private String name;
     private Value value = new Value();
     private List<VariableChangedListener> variableChangedListeners = Collections.synchronizedList(new LinkedList<VariableChangedListener>());
 
@@ -124,7 +124,13 @@ public class TemplateVariable
 
     public void parse(final Element element)
     {
+        if (element == null) throw new IllegalArgumentException("Argument 'element' is null");
 
+        if (element.getTagName().equals("variable"))
+        {
+            name = element.getAttribute("name");
+            set(element.getAttribute("value"));
+        }
     }
 
     public void addVariableChangedListener(final VariableChangedListener listener)

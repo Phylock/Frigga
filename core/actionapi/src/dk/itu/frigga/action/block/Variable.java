@@ -8,8 +8,8 @@ package dk.itu.frigga.action.block;
  *
  * @author phylock
  */
-public class Variable extends BaseCondition {
-
+public class Variable extends BaseCondition
+{
     @Override
     public boolean hasId()
     {

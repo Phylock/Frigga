@@ -32,14 +32,14 @@ public class RuleContainer
                 // TODO(toan@itu.dk): Add syntax check, id attribute is required.
                 if (elemReplacement.hasAttribute("id")) id = elemReplacement.getAttribute("id");
 
-                //addRule(new Replacement(name, description, type));
+                addRule(new Rule());
             }
         }
     }
 
     public void addRule(final Rule rule)
     {
-        String id = rule.getID();
+        String id = rule.getId();
         if (id.isEmpty())
         {
             id = UUID.randomUUID().toString();

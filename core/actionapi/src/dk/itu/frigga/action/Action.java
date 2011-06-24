@@ -7,8 +7,11 @@ package dk.itu.frigga.action;
 
 /**
  *
- * @author phylock
+ * @author Mikkel Wendt-Larsen (miwe@itu.dk)
+ * @author Tommy Andersen (toan@itu.dk)
  */
-public interface Action {
-  void execute();
+public interface Action
+{
+    void execute();
+    String getEvent();
 }

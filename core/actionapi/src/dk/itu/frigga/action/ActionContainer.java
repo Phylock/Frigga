@@ -1,5 +1,7 @@
 package dk.itu.frigga.action;
 
+import org.w3c.dom.Element;
+
 /**
  * Class description here...
  *
@@ -8,4 +10,8 @@ package dk.itu.frigga.action;
  */
 public class ActionContainer
 {
+    public void parse(final Element element)
+    {
+
+    }
 }

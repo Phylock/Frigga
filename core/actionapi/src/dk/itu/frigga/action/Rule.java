@@ -5,24 +5,57 @@
 
 package dk.itu.frigga.action;
 
-import java.util.List;
+import dk.itu.frigga.utility.XmlHelper;
+import org.w3c.dom.Element;
 
 /**
  * @author phylock
  */
-public interface Rule
+public class Rule
 {
-    public enum Validation
+    private String description;
+    private String id;
+    private final VariableContainer variableContainer = new VariableContainer();
+    private final ActionContainer actionContainer = new ActionContainer();
+    private final ConditionContainer conditionContainer = new ConditionContainer();
+
+    public String getDescription()
     {
-        Invalid, Valid
+        return description;
     }
 
-    public enum State
+    public String getId()
     {
-        Active, InActive
+        return id;
     }
 
-    public String getID();
+    public void parse(final Element element)
+    {
+        if (element == null) throw new IllegalArgumentException("Argument 'element' is null");
 
-    public List<ConditionResult> check();
+        if (element.hasAttribute("id")) id = element.getAttribute("id");
+
+        for (Element elem = XmlHelper.getFirstChildElement(element); elem != null; elem = XmlHelper.getNextSiblingElement(elem))
+        {
+            if (elem.getTagName().equals("description"))
+            {
+                description = elem.getTextContent();
+            }
+
+            else if (elem.getTagName().equals("variables"))
+            {
+                variableContainer.parse(elem);
+            }
+
+            else if (elem.getTagName().equals("actions"))
+            {
+                actionContainer.parse(elem);
+            }
+
+            else if (elem.getTagName().equals("condition"))
+            {
+                conditionContainer.parse(elem);
+            }
+        }
+    }
 }

@@ -34,15 +34,29 @@
                     </action>
                 </actions>
                 <condition>
+                    <!-- Select all devices where the symbolic variable of one 
+                         is equal to the lookat variable of another. And where 
+                         they are both equal to the constant string: 
+                         flatpanel_livingroom. In reality selecting the tv 
+                         with that symbolic itself, and any eyetracker current-
+                         ly looking at it. -->
                     <whereEqual>
+                        <!-- Select all devices that has the variable: symbolic
+                             and store these devices with the id: devicetv -->
                         <variable name="symbolic" type="string" sid="devicetv">
+                            <!-- Select any device that matches one of the fol-
+                                 lowing criteria. -->
                             <or>
+                                <!-- Only parse the code inside this block if 
+                                     the parser is atleast version 1. -->
                                 <constraint minVersion="1">
                                     <location type="local" where="work_room1"/>  <!-- Filter -->
                                     <location type="local" where="work_room2" position="10,10,10" radius="1m"/>  <!-- Filter -->
                                 </constraint>
                                 <location type="global" position="10,10,10" radius="1m"/>  <!-- Filter -->
                             </or>
+                            <!-- Only select devices that are of the category
+                                 tv. -->
                             <isCategory category="tv"/>  <!-- Filter -->
                             <hasVariable name="symbolic" type="string"/>  <!-- Filter -->
                         </variable>
