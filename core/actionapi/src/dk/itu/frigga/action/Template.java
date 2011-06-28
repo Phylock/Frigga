@@ -57,6 +57,7 @@ public class Template
         Document document = builder.parse(source);
 
         parse(document.getDocumentElement());
+
     }
 
     protected void parse(final Element element) throws InvalidTemplateFormatException
