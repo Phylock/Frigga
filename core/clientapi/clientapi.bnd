@@ -3,4 +3,4 @@ Bundle-Name: Frigga Client Manager
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-SymbolicName: dk.itu.frigga.core.clientapi
 
-Private-Package: dk.itu.frigga.core.clientapi.*
+Export-Package: dk.itu.frigga.core.clientapi.*

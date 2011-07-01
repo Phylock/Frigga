@@ -7,7 +7,7 @@ package dk.itu.frigga.device.drivers.got;
 import java.util.Date;
 
 /**
- *
+ * private container class
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
 class GotDevice {

@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package dk.itu.frigga.device.drivers.dog;
 
 import dk.itu.frigga.device.drivers.dog.protocol.Command;
 import dk.itu.frigga.device.drivers.dog.protocol.DogMessage;
-import dk.itu.frigga.device.drivers.dog.protocol.DogProtocol;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;
@@ -14,9 +9,12 @@ import dk.itu.frigga.device.InvalidFunctionException;
 import dk.itu.frigga.device.InvalidParameterException;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.UnknownDeviceException;
+import dk.itu.frigga.device.drivers.dog.protocol.CommandMessage;
+import dk.itu.frigga.device.drivers.dog.protocol.DescribeCategory;
+import dk.itu.frigga.device.drivers.dog.protocol.DescribeDevice;
+import dk.itu.frigga.device.drivers.dog.protocol.ListDevices;
 import dk.itu.frigga.utility.ReflectionHelper;
 import java.util.Dictionary;
-import javax.xml.parsers.ParserConfigurationException;
 import org.osgi.service.log.LogService;
 import org.apache.felix.ipojo.handlers.event.publisher.Publisher;
 
@@ -47,51 +45,36 @@ public class DogDriver implements Driver {
   @Override
   public FunctionResult callFunction(String[] devices, String function, Parameter... parameters)
           throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
-    try {
-      //TODO: how to set parameters ??
-      Command command = new Command(devices, function, null);
-      DogMessage message = DogProtocol.generateCommandMessage(command);
-      connection.send(message);
-    } catch (ParserConfigurationException ex) {
-      log.log(LogService.LOG_ERROR, "failed", ex);
-    }
+
+    Command command = new Command(devices, function, parameters);
+    DogMessage message = new CommandMessage(command);
+    connection.send(message);
 
     return new FunctionResult();
   }
 
   @Override
   public void update() {
-    try {
-      DogMessage command = DogProtocol.generateDescribeDevice(null);
-      connection.send(command);
-    } catch (ParserConfigurationException ex) {
-      log.log(LogService.LOG_WARNING, null, ex);
-    }
+    DogMessage command = new DescribeDevice(null);
+    connection.send(command);
   }
 
   @Override
   public void update(String[] devicecategories) {
-    try {
-      DogMessage command = DogProtocol.generateDescribeDeviceCategory(devicecategories);
-      connection.send(command);
-    } catch (ParserConfigurationException ex) {
-      log.log(LogService.LOG_WARNING, null, ex);
-    }
+    DogMessage command = new DescribeCategory(devicecategories);
+    connection.send(command);
   }
 
   @Override
   public void update(DeviceId[] devices) {
-    try {
-      int length = devices.length;
-      String[] d = new String[length];
-      for (int i = 0; i < length; i++) {
-        d[i] = devices[i].toString();
-      }
-      DogMessage command = DogProtocol.generateDescribeDevices(d);
-      connection.send(command);
-    } catch (ParserConfigurationException ex) {
-      log.log(LogService.LOG_WARNING, null, ex);
+
+    int length = devices.length;
+    String[] d = new String[length];
+    for (int i = 0; i < length; i++) {
+      d[i] = devices[i].toString();
     }
+    DogMessage command = new ListDevices(d);
+    connection.send(command);
   }
 
   /** iPOJO Callbacks **/

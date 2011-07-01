@@ -4,6 +4,8 @@
  */
 package dk.itu.frigga.device.drivers.ipconnection;
 
+import dk.itu.frigga.core.clientapi.Client;
+import dk.itu.frigga.core.clientapi.ClientManager;
 import dk.itu.frigga.protocol.ActionReceivedListener;
 import dk.itu.frigga.protocol.FriggaConnection;
 import dk.itu.frigga.protocol.InformationReceivedListener;
@@ -30,9 +32,10 @@ import java.util.logging.Logger;
 public class FriggaConnectionHandler implements ActionReceivedListener, InformationReceivedListener, QueryReceivedListener {
 
   private final FriggaConnection connection;
-
-  public FriggaConnectionHandler(FriggaConnection connection) {
-
+  private ClientManager manager;
+  private Client client = null;
+  public FriggaConnectionHandler(ClientManager manager, FriggaConnection connection) {
+    this.manager = manager;
     this.connection = connection;
     connection.addActionReceivedListener(this);
     connection.addInformationReceivedListener(this);
@@ -60,7 +63,7 @@ public class FriggaConnectionHandler implements ActionReceivedListener, Informat
   }
 
   public void reportsReceived(MessageSource source, MessageResult result, Reports reports) {
-    if (reports.has("gps.latitude")) {
+    if (reports.has("gps.latitude")&&reports.has("gps.longitude")&&reports.has("gps.provider")) {
       try {
         String latitude = reports.get("gps.latitude").getValue();
         String longitude = reports.get("gps.longitude").getValue();

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.osgi.service.log.LogService;
 
 /**
  *
@@ -22,6 +23,8 @@ public class ClientManagerImpl implements ClientManager {
 
   private final Map<UUID, Session> clients;
   private final AuthenticationHandler authentication;
+
+  private LogService log;
 
   public ClientManagerImpl() {
     clients = Collections.synchronizedMap(new HashMap<UUID, Session>());
@@ -35,12 +38,16 @@ public class ClientManagerImpl implements ClientManager {
 
   @Override
   public void logout(Client client) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if(clients.containsKey(client.getClientId()))
+    {
+      clients.remove(client.getClientId());
+      client.getSession().invalidate();
+    }
   }
 
   @Override
   public void handleUserRequest(Client client, UserRequest request) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    log.log(LogService.LOG_INFO, "userrequest: " + request + " from " + client.getDeviceId());
   }
 
   @Override

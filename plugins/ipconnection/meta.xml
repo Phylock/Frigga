@@ -12,7 +12,8 @@
     <callback transition="invalidate" method="invalidate" />
 
     <requires field="log" optional="true"/>
-
+    <requires field="clientmanager"/>
+    
     <properties updated="updated" propagation="true"/>
 
     <ev:publisher name="ipclient_device_event" field="devent" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>

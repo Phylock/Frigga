@@ -1,1 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<ipojo
+   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns='org.apache.felix.ipojo'
+   xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
+
+    <component name="ClientManagerImpl" classname="dk.itu.frigga.client.manager.ClientManagerImpl">
+
+        <requires field="log" optional="true"/>
+    </component>
+    <instance component="ClientManagerImpl" name="ClientManager"/>
+
+</ipojo>

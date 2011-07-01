@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.device.drivers.ipconnection;
 
+import dk.itu.frigga.core.clientapi.ClientManager;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.Driver;
@@ -35,6 +36,7 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
   private org.apache.felix.ipojo.handlers.event.publisher.Publisher devent;
   private org.apache.felix.ipojo.handlers.event.publisher.Publisher vevent;
   private LogService log;
+  private ClientManager clientmanager;
   //OSGi
   private final BundleContext context;
 
@@ -113,6 +115,6 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
   }
 
   public void newConnection(FriggaConnection connection) {
-    clients.add(new FriggaConnectionHandler(connection));
+    clients.add(new FriggaConnectionHandler(clientmanager, connection));
   }
 }

@@ -11,10 +11,10 @@
 package dk.itu.frigga.debug.demo.gui;
 
 import dk.itu.frigga.action.ActionManager;
-import dk.itu.frigga.action.Info;
 import dk.itu.frigga.action.Replacement;
 import dk.itu.frigga.action.RuleTemplate;
 import dk.itu.frigga.action.Template;
+import dk.itu.frigga.action.TemplateInfo;
 import dk.itu.frigga.data.ConnectionPool;
 import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
@@ -485,7 +485,7 @@ public class MainWindow extends JFrame {
   }
 
   private void updateCurrentTemplateInfo(Template t) {
-    Info i = t.getInfo();
+    TemplateInfo i = t.getTemplateInfo();
     txt_template_name.setText(i.getName());
     txt_template_description.setText(i.getDescription());
     txt_template_auther.setText(i.getAuthor());
@@ -605,7 +605,7 @@ public class MainWindow extends JFrame {
 
     @Override
     public String toString() {
-      return t.getInfo().getName();
+      return t.getTemplateInfo().getName();
     }
   }
 }
