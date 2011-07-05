@@ -14,6 +14,7 @@ import static java.lang.Integer.*;
 /**
  * Class description here...
  *
+ * @deprecated Use DefaultFilterFactory instead
  * @author Tommy Andersen (toan@itu.dk)
  * @version 1.00, 2011-06-01
  */
@@ -115,5 +116,17 @@ public class FilterManager implements FilterFactory
         }
 
         return result;
+    }
+
+    @Override
+    public void addFilterTypeRequestListener(FilterTypeRequestListener listener)
+    {
+        // TODO: Remove this file and use DefaultFilterFactory instead
+    }
+
+    @Override
+    public void removeFilterTypeRequestListener(FilterTypeRequestListener listener)
+    {
+        // TODO: Remove this file and use DefaultFilterFactory instead
     }
 }

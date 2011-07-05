@@ -85,8 +85,9 @@ public class TemplateParserTest {
 
   private Template parseFile(String file) throws ParserConfigurationException, SAXException, IOException {
     File f = new File(file);
-    TemplateParser instance = new TemplateParser();
-    return instance.parse(f);
+    //TemplateParser instance = new TemplateParser();
+    //return instance.parse(f);
+    return null;
   }
 
   private class ConditionVerification implements Visitor {

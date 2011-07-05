@@ -5,6 +5,7 @@ import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import sun.rmi.runtime.Log;
 
 import java.util.*;
 
@@ -16,6 +17,8 @@ import java.util.*;
  */
 public abstract class Filter
 {
+    public enum LogicMergeMethod { AND, OR };
+
     protected FilterContainer filterContainer;
     protected List<Filter> childFilters = new LinkedList<Filter>();
 
@@ -41,6 +44,11 @@ public abstract class Filter
     public String getId()
     {
         return name;
+    }
+
+    public LogicMergeMethod mergeMethod()
+    {
+        return LogicMergeMethod.AND;
     }
 
     public void setContainer(final FilterContainer container)
@@ -145,7 +153,7 @@ public abstract class Filter
         filterListeners.remove(listener);
     }
 
-    public abstract List<Selection> run(final FilterContext context) throws FilterFailedException;
+    public abstract FilterOutput run(final FilterContext context, final FilterInput input) throws FilterFailedException;
 
     protected abstract boolean allowChildFilters();
 }

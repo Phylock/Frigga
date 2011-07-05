@@ -64,6 +64,7 @@
                             <isCategory category="eyetracker"/>  <!-- Filter -->
                             <hasVariable name="lookat" type="string"/>  <!-- Filter -->
                         </variable>
+                        <constant name="name_of_tv" value="flatpanel_livingroom" />
                     </whereEqual>
                 </condition>
             </rule>

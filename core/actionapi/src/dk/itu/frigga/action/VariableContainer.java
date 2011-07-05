@@ -1,6 +1,6 @@
 package dk.itu.frigga.action;
 
-import dk.itu.frigga.action.block.Variable;
+import dk.itu.frigga.action.runtime.TemplateVariable;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
@@ -14,18 +14,18 @@ import java.util.*;
  */
 public class VariableContainer
 {
-    private final Map<String, Variable> variables = Collections.synchronizedMap(new HashMap<String, Variable>());
+    private final Map<String, TemplateVariable> variables = Collections.synchronizedMap(new HashMap<String, TemplateVariable>());
 
     public VariableContainer()
     {
     }
 
-    public void addVariable(final Variable variable)
+    public void addVariable(final TemplateVariable variable)
     {
         variables.put(variable.getName(), variable);
     }
 
-    public Variable getVariable(final String name)
+    public TemplateVariable getVariable(final String name)
     {
         return variables.get(name);
     }
@@ -40,7 +40,7 @@ public class VariableContainer
         return variables.keySet();
     }
 
-    public Collection<Variable> getVariables()
+    public Collection<TemplateVariable> getVariables()
     {
         return variables.values();
     }
@@ -53,7 +53,7 @@ public class VariableContainer
         {
             for (Element elemReplacement = XmlHelper.getFirstChildElement(element, "variable"); elemReplacement != null; elemReplacement = XmlHelper.getNextSiblingElement(elemReplacement, "variable"))
             {
-                //Variable variable = new Variable();
+                //TemplateVariable variable = new TemplateVariable(elemReplacement.);
                 //variable.
                 //String id = "";
 

@@ -23,15 +23,15 @@ public class ActionWorker {
   private final Worker worker;
 
   private final List<Rule> rules;
-  private final Map<Rule, Rule.Validation> validations;
-  private final Map<Rule, Map<String, Rule.State>> states;
+  //private final Map<Rule, Rule.Validation> validations;
+  //private final Map<Rule, Map<String, Rule.State>> states;
   private final BlockingQueue<Rule> queue;
   
   public ActionWorker() {
     this.queue = new LinkedBlockingQueue<Rule>();
     this.rules = new ArrayList<Rule>();
-    this.states = new HashMap<Rule, Map<String,Rule.State>>();
-    this.validations = new HashMap<Rule, Rule.Validation>();
+    //this.states = new HashMap<Rule, Map<String,Rule.State>>();
+    //this.validations = new HashMap<Rule, Rule.Validation>();
     this.worker = new Worker();
   }
 
@@ -47,7 +47,7 @@ public class ActionWorker {
 
   public void addRule(Rule r) {
     synchronized (rules) {
-      states.put(r, new HashMap<String, Rule.State>());
+      //states.put(r, new HashMap<String, Rule.State>());
       rules.add(r);
       rules.notifyAll();
     }
@@ -55,7 +55,7 @@ public class ActionWorker {
 
     public void removeRule(Rule r) {
     synchronized (rules) {
-      states.remove(r);
+      //states.remove(r);
       rules.remove(r);
       rules.notifyAll();
     }
@@ -93,8 +93,8 @@ public class ActionWorker {
           }
           rule = rules.get(current++);
         }
-        List<ConditionResult> results = rule.check();
-        for(ConditionResult result : results)
+        //List<ConditionResult> results = rule.check();
+        /*for(ConditionResult result : results)
         {
           String id = "";
           final int length = result.getScopeIdCount();
@@ -106,7 +106,7 @@ public class ActionWorker {
             }
             //id += i + ":" + result.getScopeId(i);
           }
-        }
+        }*/
         /*if(current_state != states.get(rule))
         {
           states.put(rule, current_state);

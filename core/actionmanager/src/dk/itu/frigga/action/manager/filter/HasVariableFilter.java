@@ -3,6 +3,7 @@ package dk.itu.frigga.action.manager.filter;
 import dk.itu.frigga.action.filter.FilterContainer;
 import dk.itu.frigga.action.filter.FilterContext;
 import dk.itu.frigga.action.filter.FilterFailedException;
+import dk.itu.frigga.action.filter.FilterInput;
 import dk.itu.frigga.action.manager.runtime.DeviceSelection;
 import dk.itu.frigga.action.runtime.Selection;
 import dk.itu.frigga.device.model.Device;
@@ -40,8 +41,11 @@ public class HasVariableFilter extends DbFilter
     }
 
     @Override
-    public List<Selection> run(final FilterContext context) throws FilterFailedException
+    public List<Selection> run(final FilterContext context, final FilterInput filterInput) throws FilterFailedException
     {
+        if (context == null) throw new IllegalArgumentException("Argument 'context' is null.");
+        if (filterInput == null) throw new IllegalArgumentException("Argument 'filterInput' is null.");
+
         LinkedList<Selection> result = new LinkedList<Selection>();
 
         try
@@ -79,6 +83,8 @@ public class HasVariableFilter extends DbFilter
     @Override
     protected void loadFilter(Map<String, String> attributes)
     {
+        assert(attributes != null) : "attributes can not be null.";
+
         if (attributes.containsKey("name"))
         {
             attrName = attributes.get("name");

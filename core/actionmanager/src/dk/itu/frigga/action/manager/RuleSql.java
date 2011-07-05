@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author phylock
  */
-public class RuleSql implements Rule {
+public class RuleSql extends Rule {
 
   private ConnectionPool pool = null;
   private final String condition_template;
@@ -39,7 +39,7 @@ public class RuleSql implements Rule {
     String ctemplate = "";//checker.getSelection();
     Template t = context.getTemplate();
     Map<String, String> r = context.getReplacements();
-    Collection<Replacement> replacements = t.getReplacements().values();
+    /*Collection<Replacement> replacements = t.getReplacements().values();
     for (Replacement replace : replacements) {
       String name = replace.getName();
       if ("String".equals(replace.getType())) {
@@ -47,7 +47,7 @@ public class RuleSql implements Rule {
       } else {
         ctemplate = ctemplate.replaceAll("!" + name, r.get(name));
       }
-    }
+    }*/
 
     condition_template = ctemplate;
     this.template = template;
@@ -59,7 +59,7 @@ public class RuleSql implements Rule {
   }
 
   public List<ConditionResult> check() {
-    State state = State.InActive;
+    //State state = State.InActive;
     if (pool != null) {
       //TODO: replace script values, for now ignore and set to true
       String vreplaced = condition_template.replaceAll("\\$[0-9]*\\$", "1");
@@ -72,7 +72,7 @@ public class RuleSql implements Rule {
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
           if (rs.getLong(1) == 1) {
-            state = State.Active;
+            //state = State.Active;
           }
         }
         rs.close();

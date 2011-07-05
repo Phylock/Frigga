@@ -3,6 +3,9 @@ package dk.itu.frigga.action.manager.template;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Class description here...
  *
@@ -11,14 +14,14 @@ import org.w3c.dom.Node;
  */
 public class Info
 {
-    private Author author;
+    private List<Author> authors = new LinkedList<Author>();
     private String name;
     private String site;
     private String description;
 
     public Info(final String author, final String name, final String site, final String description)
     {
-        this.author = new Author(name);
+        this.authors.add(new Author(name));
         this.name = name;
         this.site = site;
         this.description = description;
@@ -36,7 +39,7 @@ public class Info
 
                     if (elem.getTagName().equals("author"))
                     {
-                        author = new Author(elem);
+                        authors.add(new Author(elem));
                     }
                     else if (elem.getTagName().equals("name"))
                     {
@@ -62,9 +65,16 @@ public class Info
     @Override
     public String toString()
     {
+        String authorStr = "";
+        for (Author author : authors)
+        {
+            if (authorStr.length() > 0) authorStr = authorStr + ", ";
+            authorStr = authorStr + author.toString();
+        }
+
         return "Template: " + name + "\n" +
-                "  author:      " + author + "\n" +
-                "  site:        " + site + "\n" +
-                "  description: " + description;
+               "  author(s):   " + authorStr + "\n" +
+               "  site:        " + site + "\n" +
+               "  description: " + description;
     }
 }

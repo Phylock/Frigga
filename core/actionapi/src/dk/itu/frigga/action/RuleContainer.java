@@ -1,5 +1,6 @@
 package dk.itu.frigga.action;
 
+import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
@@ -17,9 +18,10 @@ public class RuleContainer
 
     public RuleContainer()
     {
+
     }
 
-    public void parse(final Element element)
+    public void parse(final Element element) throws FilterSyntaxErrorException
     {
         if (element == null) throw new IllegalArgumentException("Argument 'element' is null.");
 
@@ -27,12 +29,9 @@ public class RuleContainer
         {
             for (Element elemReplacement = XmlHelper.getFirstChildElement(element, "rule"); elemReplacement != null; elemReplacement = XmlHelper.getNextSiblingElement(elemReplacement, "rule"))
             {
-                String id = "";
-
-                // TODO(toan@itu.dk): Add syntax check, id attribute is required.
-                if (elemReplacement.hasAttribute("id")) id = elemReplacement.getAttribute("id");
-
-                addRule(new Rule());
+                Rule rule = new Rule();
+                rule.parse(elemReplacement);
+                addRule(rule);
             }
         }
     }

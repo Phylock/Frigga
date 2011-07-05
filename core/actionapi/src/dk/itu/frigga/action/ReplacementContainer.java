@@ -4,6 +4,9 @@ import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Class description here...
@@ -31,6 +34,11 @@ public class ReplacementContainer
         replacements.remove(replacement.getName());
     }
 
+    public void removeAllReplacements()
+    {
+        replacements.clear();
+    }
+
     public Replacement getReplacement(final String name)
     {
         return replacements.get(name);
@@ -51,13 +59,54 @@ public class ReplacementContainer
         return replacements.values();
     }
 
+    public String prepare(final String input)
+    {
+        StringBuffer resultString = new StringBuffer();
+        try
+        {
+            Pattern regex = Pattern.compile("\\{([^}\\{]+)\\}");
+            Matcher regexMatcher = regex.matcher(input);
+            while (regexMatcher.find())
+            {
+                try
+                {
+                    String replacement = regexMatcher.group(1);
+                    if (hasReplacement(replacement))
+                    {
+                        regexMatcher.appendReplacement(resultString, getReplacement(replacement).getValue());
+                    }
+                }
+                catch (IllegalStateException ex)
+                {
+                    // appendReplacement() called without a prior successful call to find()
+                }
+                catch (IllegalArgumentException ex)
+                {
+                    // Syntax error in the replacement text (unescaped $ signs?)
+                }
+                catch (IndexOutOfBoundsException ex)
+                {
+                    // Non-existent backreference used the replacement text
+                }
+            }
+            regexMatcher.appendTail(resultString);
+        }
+        catch (PatternSyntaxException ex)
+        {
+            // Syntax error in the regular expression
+        }
+
+
+        return resultString.toString();
+    }
+
     public void parse(final Element element)
     {
         if (element == null) throw new IllegalArgumentException("Argument 'element' is null.");
 
         if (element.getTagName().equals("replacements"))
         {
-            for (Element elemReplacement = XmlHelper.getFirstChildElement(element, "replacement"); elemReplacement != null; elemReplacement = XmlHelper.getNextSiblingElement(elemReplacement, "replacement"))
+            for (Element elemReplacement = XmlHelper.getFirstChildElement(element, "replace"); elemReplacement != null; elemReplacement = XmlHelper.getNextSiblingElement(elemReplacement, "replace"))
             {
                 String name = "";
                 String description = "";

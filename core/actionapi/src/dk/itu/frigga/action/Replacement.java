@@ -9,12 +9,14 @@ public class Replacement
     private final String name;
     private final String description;
     private final String type;
+    private String value;
 
     public Replacement(final String name, final String description, final String type)
     {
         this.name = name;
         this.description = description;
         this.type = type;
+        value = "";
     }
 
     public String getDescription()
@@ -30,6 +32,16 @@ public class Replacement
     public String getType()
     {
         return type;
+    }
+
+    public void setValue(final String value)
+    {
+        this.value = value;
+    }
+
+    public String getValue()
+    {
+        return value;
     }
 
     @Override

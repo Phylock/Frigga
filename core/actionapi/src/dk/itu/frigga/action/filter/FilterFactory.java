@@ -71,4 +71,7 @@ public interface FilterFactory
      * @return True if the constraint passed and the parser can parse the containing filters.
      */
     boolean constraintPassed(final Element element);
+
+    void addFilterTypeRequestListener(final FilterTypeRequestListener listener);
+    void removeFilterTypeRequestListener(final FilterTypeRequestListener listener);
 }

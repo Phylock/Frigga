@@ -43,6 +43,6 @@ public class Context {
 
   public void addRule(Rule rule)
   {
-    rules.put(rule.getID(), rule);
+    rules.put(rule.getId(), rule);
   }
 }

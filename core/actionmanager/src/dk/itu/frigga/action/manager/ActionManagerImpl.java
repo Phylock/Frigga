@@ -1,35 +1,22 @@
 package dk.itu.frigga.action.manager;
 
 import dk.itu.frigga.action.ActionManager;
-import dk.itu.frigga.action.RuleTemplate;
-import dk.itu.frigga.action.manager.parser.TemplateParser;
-import dk.itu.frigga.action.Template;
 import dk.itu.frigga.action.Context;
+import dk.itu.frigga.action.Template;
 import dk.itu.frigga.data.ConnectionPool;
 import dk.itu.frigga.data.DataGroupNotFoundException;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.data.UnknownDataDriverException;
 import dk.itu.frigga.device.DeviceManager;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.service.log.LogService;
 import org.xml.sax.SAXException;
+
+import java.io.*;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author phylock
@@ -44,7 +31,6 @@ public class ActionManagerImpl implements ActionManager
     //local
     private final Map<String, Template> templates;
     private final Map<String, Context> contexts;
-    private final TemplateParser parser;
     private ConnectionPool cpool;
     private BundleContext bc;
     private final ActionWorker actionworker;
@@ -54,7 +40,6 @@ public class ActionManagerImpl implements ActionManager
         this.bc = bc;
         templates = Collections.synchronizedMap(new HashMap<String, Template>());
         contexts = Collections.synchronizedMap(new HashMap<String, Context>());
-        parser = new TemplateParser();
         actionworker = new ActionWorker();
     }
 
@@ -86,7 +71,7 @@ public class ActionManagerImpl implements ActionManager
     public String LoadTemplate(File file) throws IOException, SAXException
     {
         String id = "";
-        try
+        /*try
         {
             Template template = parser.parse(file);
             id = template.getTemplateInfo().getName();
@@ -102,7 +87,7 @@ public class ActionManagerImpl implements ActionManager
             catch (BundleException bex)
             {
             }
-        }
+        }*/
         return id;
     }
 
@@ -137,14 +122,14 @@ public class ActionManagerImpl implements ActionManager
     public void CompileTemplate(String id, Template template, Map<String, String> replace)
     {
         Context c = new Context(id, template, replace);
-        Map<String, RuleTemplate> rules = template.getRules();
+        /*Map<String, RuleTemplate> rules = template.getRules();
         for (RuleTemplate rule : rules.values())
         {
             RuleSql r = new RuleSql(c, rule);
             r.setDeviceDatabaseConnectionPool(cpool);
             c.addRule(r);
             actionworker.addRule(r);
-        }
+        }*/
         contexts.put(id, c);
     }
 

@@ -23,13 +23,13 @@ public class FilterThread extends Thread
     {
         running = true;
 
-        try
+        /*try
         {
             result = filter.run();
         }
         catch (FilterFailedException e)
         {
-        }
+        }*/
 
         running = false;
     }

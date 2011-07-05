@@ -18,13 +18,14 @@ import java.util.List;
 public class TemplateVariable
 {
     private String name;
+    private String source;
     private Value value = new Value();
     private List<VariableChangedListener> variableChangedListeners = Collections.synchronizedList(new LinkedList<VariableChangedListener>());
 
     public class Value
     {
         private boolean hasValue = false;
-        private String value;
+        private Object value;
         private String type;
 
         public Value()
@@ -62,17 +63,35 @@ public class TemplateVariable
 
         public String asString()
         {
-            return value;
+            return value.toString();
         }
 
-        public double asNumber()
+        public double asNumber() throws InvalidVariableTypeException
         {
-            return Double.parseDouble(value);
+            if (value instanceof Double)
+            {
+                return (Double)value;
+            }
+            if (value instanceof String)
+            {
+                return Double.parseDouble((String)value);
+            }
+
+            throw new InvalidVariableTypeException();
         }
 
-        public Date asDate() throws ParseException
+        public Date asDate() throws ParseException, InvalidVariableTypeException
         {
-            return DateFormat.getInstance().parse(value);
+            if (value instanceof Date)
+            {
+                return (Date)value;
+            }
+            if (value instanceof String)
+            {
+                return DateFormat.getInstance().parse((String)value);
+            }
+
+            throw new InvalidVariableTypeException();
         }
 
         @Override
@@ -99,11 +118,17 @@ public class TemplateVariable
         return name;
     }
 
-    public void set(final String value)
+    public String getSource()
+    {
+        return source;
+    }
+
+    private void set(final Object value, final String type)
     {
         Value oldValue = new Value(this.value);
 
         this.value.value = value;
+        this.value.type = type;
         this.value.hasValue = true;
 
         for (VariableChangedListener listener : variableChangedListeners)
@@ -112,14 +137,19 @@ public class TemplateVariable
         }
     }
 
+    public void set(final String value)
+    {
+        set(value, "string");
+    }
+
     public void set(final double value)
     {
-        set(Double.toString(value));
+        set(value, "number");
     }
 
     public void set(final Date value)
     {
-        set(value.toString());
+        set(value, "date");
     }
 
     public void parse(final Element element)
@@ -129,6 +159,7 @@ public class TemplateVariable
         if (element.getTagName().equals("variable"))
         {
             name = element.getAttribute("name");
+            source = element.getAttribute("source");
             set(element.getAttribute("value"));
         }
     }

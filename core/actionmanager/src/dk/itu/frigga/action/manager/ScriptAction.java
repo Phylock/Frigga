@@ -21,4 +21,10 @@ public class ScriptAction implements Action{
   public void execute() {
     //TODO: get context
   }
+
+    @Override
+    public String getEvent()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

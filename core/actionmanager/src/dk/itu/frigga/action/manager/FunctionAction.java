@@ -34,4 +34,10 @@ public class FunctionAction implements Action{
     //TODO: access devicemanager and call function
     System.out.println(String.format("Call selection %s with function: %s (%s)", selection, name, StringHelper.implodeString(params, ", ")));
   }
+
+    @Override
+    public String getEvent()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
