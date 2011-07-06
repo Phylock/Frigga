@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JScrollBar;
 import javax.swing.JTable;
@@ -36,12 +37,14 @@ public class LogWindow extends JFrame implements LogListener {
 
   private BundleContext bc;
   private LogFilter logfilter;
+  private DefaultListModel event_model = new DefaultListModel();
 
   /** Creates new form LogWindow */
   public LogWindow(BundleContext bc) {
     this.bc = bc;
     initComponents();
     initLogTable();
+    list_events.setModel(event_model);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
   }
 
@@ -103,6 +106,9 @@ public class LogWindow extends JFrame implements LogListener {
     tab_bundles = new javax.swing.JPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
     jTable2 = new javax.swing.JTable();
+    tab_events = new javax.swing.JPanel();
+    jScrollPane3 = new javax.swing.JScrollPane();
+    list_events = new javax.swing.JList();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     addWindowListener(new java.awt.event.WindowAdapter() {
@@ -196,14 +202,29 @@ public class LogWindow extends JFrame implements LogListener {
     tab_bundles.setLayout(tab_bundlesLayout);
     tab_bundlesLayout.setHorizontalGroup(
       tab_bundlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
     );
     tab_bundlesLayout.setVerticalGroup(
       tab_bundlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
     );
 
     jTabbedPane1.addTab("Bundles", tab_bundles);
+
+    jScrollPane3.setViewportView(list_events);
+
+    javax.swing.GroupLayout tab_eventsLayout = new javax.swing.GroupLayout(tab_events);
+    tab_events.setLayout(tab_eventsLayout);
+    tab_eventsLayout.setHorizontalGroup(
+      tab_eventsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
+    );
+    tab_eventsLayout.setVerticalGroup(
+      tab_eventsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+    );
+
+    jTabbedPane1.addTab("Events", tab_events);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -306,6 +327,12 @@ public class LogWindow extends JFrame implements LogListener {
 
   }
 
+  public void addEvent(String event)
+  {
+    int pos = list_events.getModel().getSize();
+    event_model.add(pos, event);
+  }
+
   private LogEntryModel.Type parseType(int type) {
     switch (type) {
       case LogService.LOG_DEBUG:
@@ -329,14 +356,17 @@ public class LogWindow extends JFrame implements LogListener {
   private javax.swing.JPanel jPanel3;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
+  private javax.swing.JScrollPane jScrollPane3;
   private javax.swing.JTabbedPane jTabbedPane1;
   private javax.swing.JTable jTable1;
   private javax.swing.JTable jTable2;
   private javax.swing.JLabel label_bundle;
   private javax.swing.JLabel label_message;
+  private javax.swing.JList list_events;
   private javax.swing.JComboBox select_bundle;
   private javax.swing.JTextField select_message;
   private javax.swing.JPanel tab_bundles;
+  private javax.swing.JPanel tab_events;
   private javax.swing.JPanel tab_log;
   // End of variables declaration//GEN-END:variables
 }
