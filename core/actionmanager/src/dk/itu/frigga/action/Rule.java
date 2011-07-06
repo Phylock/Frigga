@@ -21,14 +21,14 @@ import java.util.Set;
  */
 public class Rule
 {
-    private String description;
-    private String id;
     private final VariableContainer variableContainer = new VariableContainer();
     private final ActionContainer actionContainer = new ActionContainer();
     private final ConditionContainer conditionContainer;
     private final ReplacementContainer replacementContainer;
     private final FilterFactory filterFactory;
     private final Set<Device> validDevices = Collections.synchronizedSet(new LinkedHashSet<Device>());
+    private String description;
+    private String id;
 
     public Rule(final FilterFactory factory, final ReplacementContainer replacementContainer)
     {
@@ -43,6 +43,26 @@ public class Rule
 
         Collection<Device> validated = output.matchingDevices();
 
+        Set<Device> invalidates = new LinkedHashSet<Device>();
+        Set<Device> validates = new LinkedHashSet<Device>();
+
+        // Find invalidated items.
+        for (Device device : validDevices)
+        {
+            if (!validated.contains(device))
+            {
+                invalidates.add(device);
+            }
+        }
+
+        // Find newly validated items.
+        for (Device device : validated)
+        {
+            if (!validDevices.contains(device))
+            {
+                validates.add(device);
+            }
+        }
     }
 
     public String getDescription()
