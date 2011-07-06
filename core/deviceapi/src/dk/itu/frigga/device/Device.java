@@ -35,6 +35,17 @@ public class Device
         this.lastUpdate = Calendar.getInstance().getTime();
     }
 
+    public Device(final String name, final String symbolic, final String driver, final boolean online, final Date lastUpdated, final Collection<DeviceCategory> categories, final Map<String, DeviceVariable> variables)
+    {
+        this.name = name;
+        this.symbolic = symbolic;
+        this.driver = driver;
+        this.online = online;
+        this.lastUpdate = lastUpdated;
+        this.categories.addAll(categories);
+        this.variables.putAll(variables);
+    }
+
     @Override
     public String toString()
     {
@@ -67,14 +78,7 @@ public class Device
         {
             if (matcherName.reset(variableEntry.getKey()).matches())
             {
-                if (matcherType.reset(variableEntry.getValue().getType()).matches())
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return matcherType.reset(variableEntry.getValue().getType()).matches();
             }
         }
 

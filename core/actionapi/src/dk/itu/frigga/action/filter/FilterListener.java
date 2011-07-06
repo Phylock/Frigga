@@ -1,9 +1,5 @@
 package dk.itu.frigga.action.filter;
 
-import dk.itu.frigga.action.runtime.Selection;
-
-import java.util.List;
-
 /**
  * Class description here...
  *
@@ -13,6 +9,6 @@ import java.util.List;
 public interface FilterListener
 {
     void FilterNameChanged(final Filter filter, final String oldName, final String newName);
-    void FilterBeforeRun(final Filter filter);
-    void FilterAfterRun(final Filter filter, final List<Selection> result);
+    void FilterBeforeRun(final Filter filter, final FilterContext context, final FilterInput input);
+    void FilterAfterRun(final Filter filter, final FilterContext context, final FilterOutput output);
 }

@@ -1,9 +1,6 @@
 package dk.itu.frigga.action.filter.filters;
 
 import dk.itu.frigga.action.filter.*;
-import dk.itu.frigga.action.runtime.Selection;
-
-import java.util.List;
 
 /**
  * Class description here...

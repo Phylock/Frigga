@@ -1,7 +1,5 @@
 package dk.itu.frigga.action.filter;
 
-import dk.itu.frigga.action.runtime.Selection;
-
 import java.util.List;
 
 /**
@@ -12,25 +10,28 @@ import java.util.List;
  */
 public class FilterContext
 {
-    public FilterInput runFilter(final Filter filter, final FilterInput input) throws FilterFailedException
-    {
-        FilterInput result = input;
+    private FilterDataGenerator filterGenerator = new FilterDataGenerator();
 
+    public FilterOutput run(final Filter filter) throws FilterFailedException
+    {
+        return runFilter(filter, filterGenerator.getFilterInput());
+    }
+
+    protected FilterOutput runFilter(final Filter filter, final FilterInput input) throws FilterFailedException
+    {
         if (filter.childFilters.size() > 0)
         {
             switch (filter.mergeMethod())
             {
                 case OR:
-                    result = new FilterInput(runOrFilter(filter.childFilters, new FilterInput()));
-                    break;
+                    return filter.execute(this, new FilterInput(runOrFilter(filter.childFilters, filterGenerator.getFilterInput())));
 
                 case AND:
-                    result = new FilterInput(runAndFilter(filter.childFilters, input));
-                    break;
+                    return filter.execute(this, new FilterInput(runAndFilter(filter.childFilters, input)));
             }
         }
 
-        return result;
+        return filter.run(this, input);
     }
 
     protected FilterOutput runAndFilter(final List<Filter> filters, final FilterInput input) throws FilterFailedException
@@ -46,9 +47,9 @@ public class FilterContext
                 inp = new FilterInput(output);
             }
 
-            inp = runFilter(filter, inp);
+            inp = new FilterInput(runFilter(filter, inp));
 
-            output = filter.run(this, inp);
+            output = runFilter(filter, inp);
             first = false;
         }
 
@@ -61,8 +62,7 @@ public class FilterContext
 
         for (Filter filter : filters)
         {
-            FilterInput inp = runFilter(filter, input);
-            output.merge(filter.run(this, inp));
+            output.merge(runFilter(filter, input));
         }
 
         return output;

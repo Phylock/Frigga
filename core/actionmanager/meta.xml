@@ -2,11 +2,9 @@
 <ipojo
         xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
         xmlns='org.apache.felix.ipojo'
-        xmlns:ev='org.apache.felix.ipojo.handlers.event'
-        xsi:schemaLocation="org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd
-org.apache.felix.ipojo.handlers.event ">
+        xsi:schemaLocation="org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd">
 
-    <component name="ActionManagerImpl" classname="dk.itu.frigga.action.manager.ActionManagerImpl">
+    <!--<component name="ActionManagerImpl" classname="dk.itu.frigga.action.manager.ActionManagerImpl">
         <provides specifications="dk.itu.frigga.action.ActionManager"/>
 
         <requires field="log" optional="true"/>
@@ -17,6 +15,6 @@ org.apache.felix.ipojo.handlers.event ">
         <callback transition="invalidate" method="invalidate"/>
 
     </component>
-    <instance component="ActionManagerImpl" name="ActionManager"/>
+    <instance component="ActionManagerImpl" name="ActionManager"/>-->
 
 </ipojo>

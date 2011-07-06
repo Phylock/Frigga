@@ -1,11 +1,9 @@
 package dk.itu.frigga.action.filter;
 
-import dk.itu.frigga.action.runtime.Selection;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-import sun.rmi.runtime.Log;
 
 import java.util.*;
 
@@ -17,7 +15,7 @@ import java.util.*;
  */
 public abstract class Filter
 {
-    public enum LogicMergeMethod { AND, OR };
+    public enum LogicMergeMethod { AND, OR }
 
     protected FilterContainer filterContainer;
     protected List<Filter> childFilters = new LinkedList<Filter>();
@@ -153,7 +151,24 @@ public abstract class Filter
         filterListeners.remove(listener);
     }
 
-    public abstract FilterOutput run(final FilterContext context, final FilterInput input) throws FilterFailedException;
+    protected final FilterOutput execute(final FilterContext context, final FilterInput input) throws FilterFailedException
+    {
+        for (FilterListener filterListener : filterListeners)
+        {
+            filterListener.FilterBeforeRun(this, context, input);
+        }
+
+        FilterOutput output = run(context, input);
+
+        for (FilterListener filterListener : filterListeners)
+        {
+            filterListener.FilterAfterRun(this, context, output);
+        }
+
+        return output;
+    }
+
+    protected abstract FilterOutput run(final FilterContext context, final FilterInput input) throws FilterFailedException;
 
     protected abstract boolean allowChildFilters();
 }

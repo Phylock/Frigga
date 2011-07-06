@@ -4,12 +4,10 @@
  */
 package dk.itu.frigga.action.manager;
 
-import dk.itu.frigga.action.ConditionResult;
 import dk.itu.frigga.action.Rule;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
