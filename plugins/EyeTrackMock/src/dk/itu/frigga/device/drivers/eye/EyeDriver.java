@@ -170,11 +170,12 @@ public class EyeDriver implements Driver {
     }
 
     public void localChanged(Point p) {
-      if (id != null) {
+      //TODO: disabled for now, this is spamming to much, add some kin of filter or forced delay
+      /*if (id != null) {
         VariableChangedEvent vce = new VariableChangedEvent();
         vce.getVariables().add(new VariableUpdate(id, "local", p.toString()));
         vevent.sendData(vce);
-      }
+      }*/
     }
   }
 }
