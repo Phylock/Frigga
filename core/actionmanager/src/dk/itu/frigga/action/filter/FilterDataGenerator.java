@@ -120,6 +120,7 @@ public class FilterDataGenerator
             try
             {
                 connectionPool = datamanager.requestConnection("device");
+                buildData();
             }
             catch (SQLException e)
             {

@@ -63,6 +63,9 @@ public class Rule
                 validates.add(device);
             }
         }
+
+        actionContainer.callEvent(variableContainer, "invalidate", invalidates);
+        actionContainer.callEvent(variableContainer, "validate", validates);
     }
 
     public String getDescription()

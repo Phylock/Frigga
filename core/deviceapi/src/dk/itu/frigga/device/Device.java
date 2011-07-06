@@ -1,5 +1,7 @@
 package dk.itu.frigga.device;
 
+import dk.itu.frigga.device.model.Category;
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

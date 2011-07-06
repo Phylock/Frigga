@@ -1,6 +1,9 @@
 package dk.itu.frigga.action;
 
 import dk.itu.frigga.action.filter.FilterFailedException;
+import org.apache.felix.ipojo.annotations.Component;
+import org.apache.felix.ipojo.annotations.Instantiate;
+import org.apache.felix.ipojo.annotations.Provides;
 
 import java.util.*;
 
@@ -10,6 +13,9 @@ import java.util.*;
  * @author Tommy Andersen (toan@itu.dk)
  * @version 1.00, 2011-07-06
  */
+@Component
+@Provides
+@Instantiate
 public class TemplateContainer implements TemplateManager
 {
     private final Set<Template> templates = Collections.synchronizedSet(new LinkedHashSet<Template>());

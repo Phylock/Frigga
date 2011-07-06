@@ -5,8 +5,8 @@
 
 package dk.itu.frigga.device;
 
+import dk.itu.frigga.device.Device;
 import dk.itu.frigga.device.model.Category;
-import dk.itu.frigga.device.model.Device;
 
 /**
  *

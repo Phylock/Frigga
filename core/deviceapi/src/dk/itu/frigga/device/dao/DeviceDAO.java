@@ -9,6 +9,8 @@ import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Variable;
 import dk.itu.frigga.device.model.VariableType;
+
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -16,6 +18,9 @@ import java.util.List;
  * @author phylock
  */
 public interface DeviceDAO extends GenericDAO<Device, Long> {
+
+    dk.itu.frigga.device.Device getDeviceById(long id);
+    dk.itu.frigga.device.Device getDeviceByModel(Device device);
 
   List<Device> findByCategory(Category category);
   
