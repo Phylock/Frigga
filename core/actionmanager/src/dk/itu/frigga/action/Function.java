@@ -23,7 +23,7 @@ public class Function
     private Parameter[] parameters;
     private String function;
 
-    @Requires
+    //@Requires
     private DeviceManager deviceManager;
 
     public Function()

@@ -26,7 +26,7 @@ import java.util.*;
 public class FilterDataGenerator
 {
     // iPOJO fields
-    @Requires
+    //@Requires
     private DataManager datamanager;
     private ConnectionPool connectionPool;
 

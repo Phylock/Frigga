@@ -4,17 +4,24 @@
         xmlns='org.apache.felix.ipojo'
         xsi:schemaLocation="org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd">
 
-    <!--<component name="ActionManagerImpl" classname="dk.itu.frigga.action.manager.ActionManagerImpl">
-        <provides specifications="dk.itu.frigga.action.ActionManager"/>
+    <component name="TemplateContainer" classname="dk.itu.frigga.action.manager.TemplateContainer">
+        <provides specifications="dk.itu.frigga.action.TemplateManager"/>
 
-        <requires field="log" optional="true"/>
+        <!--<requires field="log" optional="true"/>
         <requires field="datamanager"/>
-        <requires field="devicemanager"/>
+        <requires field="devicemanager"/>-->
 
-        <callback transition="validate" method="validate"/>
-        <callback transition="invalidate" method="invalidate"/>
+        <!--<callback transition="validate" method="validate"/>
+        <callback transition="invalidate" method="invalidate"/>-->
 
     </component>
-    <instance component="ActionManagerImpl" name="ActionManager"/>-->
+    <instance component="TemplateContainer" name="TemplateManager"/>
 
+    <component classname="dk.itu.frigga.action.filter.FilterDataGenerator" name="FilterDataGenerator">
+        <requires field="datamanager"/>
+    </component>
+
+    <component classname="dk.itu.frigga.action.Function" name="Function">
+        <requires field="deviceManager"/>
+    </component>
 </ipojo>

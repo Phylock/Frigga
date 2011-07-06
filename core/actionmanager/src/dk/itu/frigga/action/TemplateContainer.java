@@ -13,9 +13,9 @@ import java.util.*;
  * @author Tommy Andersen (toan@itu.dk)
  * @version 1.00, 2011-07-06
  */
-@Component
-@Provides
-@Instantiate
+//@Component
+//@Provides
+//@Instantiate
 public class TemplateContainer implements TemplateManager
 {
     private final Set<Template> templates = Collections.synchronizedSet(new LinkedHashSet<Template>());
