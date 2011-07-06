@@ -66,6 +66,11 @@ public abstract class Filter
         }
     }
 
+    public final void addFilter(final Filter filter)
+    {
+        childFilters.add(filter);
+    }
+
     public final void parse(final FilterFactory factory, final Element element)
     {
         if (factory == null) throw new IllegalArgumentException("Argument 'factory' is null");

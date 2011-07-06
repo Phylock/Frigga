@@ -54,7 +54,7 @@ public class DefaultFilterFactory implements FilterFactory
         {
             try
             {
-                return filterClass.getConstructor(FilterContainer.class).newInstance(new FilterContainer[]{owner});
+                return filterClass.getConstructor(FilterContainer.class).newInstance(owner);
             }
             catch (NoSuchMethodException e)
             {

@@ -1,6 +1,7 @@
 package dk.itu.frigga.action;
 
-import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
+import dk.itu.frigga.action.filter.*;
+import dk.itu.frigga.action.filter.filters.*;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.Iterator;
 
 /**
  * Container class for a loaded template, this can be used to compile context
@@ -22,12 +24,33 @@ import java.io.StringReader;
  */
 public class Template
 {
+    private static final FilterFactory filterFactory = new DefaultFilterFactory();
+
+    static
+    {
+        filterFactory.registerFilterType("hasVariable", HasVariableFilter.class);
+        filterFactory.registerFilterType("and", AndFilter.class);
+        filterFactory.registerFilterType("or", OrFilter.class);
+        filterFactory.registerFilterType("isCategory", IsCategoryFilter.class);
+        filterFactory.registerFilterType("empty", EmptyFilter.class);
+    }
+
     private TemplateInfo templateInfo = new TemplateInfo();
     private final ReplacementContainer replacementContainer = new ReplacementContainer();
-    private final RuleContainer ruleContainer = new RuleContainer();
+    private final RuleContainer ruleContainer = new RuleContainer(filterFactory, replacementContainer);
 
     public Template()
     {
+    }
+
+    public void run() throws FilterFailedException
+    {
+        FilterContext context = new FilterContext();
+
+        for (Rule rule : ruleContainer.getRules())
+        {
+            rule.run(context);
+        }
     }
 
     public void loadFromStream(final InputStream stream) throws ParserConfigurationException, IOException, SAXException, InvalidTemplateFormatException, FilterSyntaxErrorException

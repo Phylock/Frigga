@@ -1,8 +1,5 @@
 package dk.itu.frigga.device;
 
-import dk.itu.frigga.device.model.Location;
-
-import java.awt.geom.AffineTransform;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

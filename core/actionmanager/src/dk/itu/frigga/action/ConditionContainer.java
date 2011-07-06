@@ -1,6 +1,7 @@
 package dk.itu.frigga.action;
 
 import dk.itu.frigga.action.filter.*;
+import dk.itu.frigga.action.filter.filters.EmptyFilter;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
@@ -14,16 +15,19 @@ import java.util.*;
  */
 public class ConditionContainer implements FilterContainer
 {
-    private final List<Filter> conditions = Collections.synchronizedList(new LinkedList<Filter>());
+    private final Filter rootFilter = new EmptyFilter();
     private final Map<String, Filter> namedFilters = Collections.synchronizedMap(new HashMap<String, Filter>());
-    private final FilterFactory factory;
 
-    public ConditionContainer(final FilterFactory factory)
+    public ConditionContainer()
     {
-        this.factory = factory;
     }
 
-    public void parse(final Element element)
+    public Filter getRootFilter()
+    {
+        return rootFilter;
+    }
+
+    public void parse(final Element element, final FilterFactory factory)
     {
         if (element == null) throw new IllegalArgumentException("Argument 'element' is null.");
         if (!element.getTagName().equals("condition")) throw new IllegalArgumentException("Argument 'element' is not at the condition element.");
@@ -32,7 +36,7 @@ public class ConditionContainer implements FilterContainer
         {
             try
             {
-                conditions.add(factory.createFilter(this, elem));
+                rootFilter.addFilter(factory.createFilter(this, elem));
             }
             catch (UnknownFilterException e)
             {
@@ -43,32 +47,6 @@ public class ConditionContainer implements FilterContainer
                 // Either the correct constructor was unavailable or an exception was throw during construction.
             }
         }
-    }
-
-    public void addFilter(final Filter filter)
-    {
-        if (filter == null) throw new IllegalArgumentException("Argument 'filter' is null.");
-
-        conditions.add(filter);
-    }
-
-    public void removeFilter(final Filter filter)
-    {
-        if (filter == null) throw new IllegalArgumentException("Argument 'filter' is null.");
-
-        conditions.remove(filter);
-    }
-
-    public boolean hasFilter(final Filter filter)
-    {
-        if (filter == null) throw new IllegalArgumentException("Argument 'filter' is null.");
-
-        return conditions.contains(filter);
-    }
-
-    public Filter[] getFilters()
-    {
-        return (Filter[])conditions.toArray();
     }
 
     @Override

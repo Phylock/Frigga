@@ -1,5 +1,6 @@
 package dk.itu.frigga.action;
 
+import dk.itu.frigga.action.filter.FilterFactory;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
@@ -14,11 +15,14 @@ import java.util.*;
  */
 public class RuleContainer
 {
+    private final FilterFactory factory;
+    private final ReplacementContainer replacementContainer;
     private final Map<String, Rule> rules = Collections.synchronizedMap(new HashMap<String, Rule>());
 
-    public RuleContainer()
+    public RuleContainer(final FilterFactory filterFactory, final ReplacementContainer replacementContainer)
     {
-
+        factory = filterFactory;
+        this.replacementContainer = replacementContainer;
     }
 
     public void parse(final Element element) throws FilterSyntaxErrorException
@@ -27,10 +31,10 @@ public class RuleContainer
 
         if (element.getTagName().equals("rules"))
         {
-            for (Element elemReplacement = XmlHelper.getFirstChildElement(element, "rule"); elemReplacement != null; elemReplacement = XmlHelper.getNextSiblingElement(elemReplacement, "rule"))
+            for (Element elemRule = XmlHelper.getFirstChildElement(element, "rule"); elemRule != null; elemRule = XmlHelper.getNextSiblingElement(elemRule, "rule"))
             {
-                Rule rule = new Rule();
-                rule.parse(elemReplacement);
+                Rule rule = new Rule(factory, replacementContainer);
+                rule.parse(elemRule);
                 addRule(rule);
             }
         }

@@ -22,11 +22,12 @@ import java.io.StringReader;
 public class ConditionContainerTest
 {
     private ConditionContainer conditionContainer;
+    private FilterFactory filterFactory;
 
     @Before
     public void setUp() throws Exception
     {
-        FilterFactory filterFactory = new DefaultFilterFactory();
+        filterFactory = new DefaultFilterFactory();
         filterFactory.registerFilterType("whereEqual", EmptyFilter.class);
         filterFactory.registerFilterType("variable", EmptyFilter.class);
         filterFactory.registerFilterType("location", EmptyFilter.class);
@@ -36,7 +37,7 @@ public class ConditionContainerTest
         filterFactory.registerFilterType("and", AndFilter.class);
         filterFactory.registerFilterType("or", OrFilter.class);
 
-        conditionContainer = new ConditionContainer(filterFactory);
+        conditionContainer = new ConditionContainer();
     }
 
     @After
@@ -75,7 +76,7 @@ public class ConditionContainerTest
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(source);
 
-        conditionContainer.parse(document.getDocumentElement());
+        conditionContainer.parse(document.getDocumentElement(), filterFactory);
     }
 
     @Test

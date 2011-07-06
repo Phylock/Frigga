@@ -38,6 +38,11 @@ public class FilterOutput implements Iterable<Device>
         devices.addAll(output.devices);
     }
 
+    public Collection<Device> matchingDevices()
+    {
+        return devices;
+    }
+
     @Override
     public Iterator<Device> iterator()
     {

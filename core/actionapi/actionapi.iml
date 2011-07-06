@@ -17,9 +17,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Common" />
-    <orderEntry type="module" module-name="Deviceapi" />
-    <orderEntry type="module" module-name="Dataapi" />
-    <orderEntry type="library" name="Osmorc/Felix/org.apache.felix.ipojo.annotations-1.8.0" level="application" />
   </component>
 </module>
 
