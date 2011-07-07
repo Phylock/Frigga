@@ -1,6 +1,6 @@
 package dk.itu.frigga.action.impl.filter;
 
-import dk.itu.frigga.device.Device;
+import dk.itu.frigga.device.model.Device;
 
 import java.util.*;
 

@@ -1,6 +1,8 @@
 package dk.itu.frigga.action.impl;
 
 import dk.itu.frigga.action.InvalidTemplateFormatException;
+import dk.itu.frigga.action.Replacement;
+import dk.itu.frigga.action.Template;
 import dk.itu.frigga.action.TemplateInfo;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
@@ -18,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.Collection;
 
 /**
  * Container class for a loaded template, this can be used to compile context
@@ -25,7 +28,7 @@ import java.io.StringReader;
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  * @author Tommy Andersen (toan@itu.dk)
  */
-public class Template
+public class TemplateData implements Template
 {
     private static final FilterFactory filterFactory = new DefaultFilterFactory();
 
@@ -42,10 +45,11 @@ public class Template
     private final ReplacementContainer replacementContainer = new ReplacementContainer();
     private final RuleContainer ruleContainer = new RuleContainer(filterFactory, replacementContainer);
 
-    public Template()
+    public TemplateData()
     {
     }
 
+    @Override
     public void run() throws FilterFailedException
     {
         FilterContext context = new FilterContext();
@@ -112,6 +116,7 @@ public class Template
         }
     }
 
+    @Override
     public TemplateInfo getTemplateInfo()
     {
         return templateInfo;
@@ -120,6 +125,12 @@ public class Template
     public void setTemplateInfo(TemplateInfo templateInfo)
     {
         this.templateInfo = templateInfo;
+    }
+
+    @Override
+    public Collection<Replacement> getReplacements()
+    {
+        return replacementContainer.getReplacements();
     }
 
     @Override

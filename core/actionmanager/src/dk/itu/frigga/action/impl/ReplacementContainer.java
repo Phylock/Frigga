@@ -1,5 +1,6 @@
 package dk.itu.frigga.action.impl;
 
+import dk.itu.frigga.action.Replacement;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
@@ -56,7 +57,7 @@ public class ReplacementContainer
 
     public Collection<Replacement> getReplacements()
     {
-        return replacements.values();
+        return Collections.unmodifiableCollection(replacements.values());
     }
 
     public String prepare(final String input)

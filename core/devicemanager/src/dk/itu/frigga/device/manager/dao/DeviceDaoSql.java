@@ -111,33 +111,6 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
         return variables;
     }
 
-    public dk.itu.frigga.device.Device getDeviceById(long id)
-    {
-        try
-        {
-        Set<DeviceCategory> categories = loadCategories(id);
-        Map<String, DeviceVariable> variables = loadVariables(id);
-
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM device");
-        ResultSet result = stmt.executeQuery();
-
-        if (result.next())
-        {
-            return new dk.itu.frigga.device.Device(result.getString("devname"), result.getString("symbolic"), result.getString("driver"), result.getBoolean("online"), result.getDate("last_update"), categories, variables);
-        }
-        }
-        catch(SQLException ex)
-        {
-        }
-
-        return null;
-    }
-
-    public dk.itu.frigga.device.Device getDeviceByModel(Device device)
-    {
-        return getDeviceById(device.getId());
-    }
-
     public List<Device> findByCategory(Category category)
     {
         List<Device> list = new ArrayList<Device>();

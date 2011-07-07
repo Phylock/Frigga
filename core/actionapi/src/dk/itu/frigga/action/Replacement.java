@@ -1,4 +1,4 @@
-package dk.itu.frigga.action.impl;
+package dk.itu.frigga.action;
 
 /**
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)

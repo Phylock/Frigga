@@ -19,9 +19,6 @@ import java.util.List;
  */
 public interface DeviceDAO extends GenericDAO<Device, Long> {
 
-    dk.itu.frigga.device.Device getDeviceById(long id);
-    dk.itu.frigga.device.Device getDeviceByModel(Device device);
-
   List<Device> findByCategory(Category category);
   
   Device findBySymbolic(String symbolic);

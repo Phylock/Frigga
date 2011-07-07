@@ -25,7 +25,7 @@ import dk.itu.frigga.Singleton;
 import dk.itu.frigga.data.ConnectionPool;
 import dk.itu.frigga.data.DataManager;
 import dk.itu.frigga.device.*;
-import dk.itu.frigga.device.Device;
+import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.model.*;
 import dk.itu.frigga.utility.ReflectionHelper;
@@ -120,7 +120,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager
         {
             conn = pool.getConnection();
             DeviceDAO d = DeviceDaoFactorySql.instance().getDeviceDao(conn);
-            return d.getDeviceByModel(d.findBySymbolic(id.toString()));
+            return d.findBySymbolic(id.toString());
         }
         catch (SQLException ex)
         {
@@ -149,12 +149,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager
             conn = pool.getConnection();
             DeviceDAO d = DeviceDaoFactorySql.instance().getDeviceDao(conn);
 
-            List<Device> devices = new LinkedList<Device>();
-            for (dk.itu.frigga.device.model.Device device : d.findByCategory(category))
-            {
-                devices.add(d.getDeviceByModel(device));
-            }
-            return devices;
+            return d.findByCategory(category);
         }
         catch (SQLException ex)
         {
@@ -189,12 +184,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager
             conn = pool.getConnection();
             DeviceDAO d = DeviceDaoFactorySql.instance().getDeviceDao(conn);
 
-            List<Device> devices = new LinkedList<Device>();
-            for (dk.itu.frigga.device.model.Device device : d.findAll())
-            {
-                devices.add(d.getDeviceByModel(device));
-            }
-            return devices;
+            return d.findAll();
         }
         catch (SQLException ex)
         {

@@ -1,19 +1,8 @@
 package dk.itu.frigga.action.impl.filter;
 
-import dk.itu.frigga.data.ConnectionPool;
-import dk.itu.frigga.data.DataGroupNotFoundException;
-import dk.itu.frigga.data.DataManager;
-import dk.itu.frigga.data.UnknownDataDriverException;
-import dk.itu.frigga.device.Device;
-import dk.itu.frigga.device.DeviceCategory;
-import dk.itu.frigga.device.DeviceVariable;
-//import org.apache.felix.ipojo.annotations.Invalidate;
-//import org.apache.felix.ipojo.annotations.Requires;
-//import org.apache.felix.ipojo.annotations.Validate;
+import dk.itu.frigga.device.model.Device;
+import dk.itu.frigga.device.DeviceManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -27,10 +16,8 @@ public class FilterDataGenerator
 {
     // iPOJO fields
     //@Requires
-    private DataManager datamanager;
-    private ConnectionPool connectionPool;
+    private DeviceManager deviceManager;
 
-    private Set<Device> devices = Collections.synchronizedSet(new LinkedHashSet<Device>());
     private FilterInput filterInput = new FilterInput();
 
 
@@ -39,7 +26,7 @@ public class FilterDataGenerator
 
     }
 
-    private Set<String> loadVariableNames(final long categoryIndex, final Connection conn) throws SQLException
+    /*private Set<String> loadVariableNames(final long categoryIndex, final Connection conn) throws SQLException
     {
         Set<String> variables = new LinkedHashSet<String>();
         PreparedStatement statementVariables = conn.prepareStatement("SELECT vt.varname AS varname FROM variabletype vt, category_variable cv WHERE cv.variable_id = vt.id AND cv.category_id = ?");
@@ -87,24 +74,19 @@ public class FilterDataGenerator
         }
 
         return variables;
-    }
+    }*/
 
     public void buildData() throws SQLException
     {
-        Connection conn = connectionPool.getConnection();
-        PreparedStatement statement = conn.prepareStatement("SELECT * FROM device");
-        ResultSet result = statement.executeQuery();
-
-        while (result.next())
+        if (deviceManager != null)
         {
-            Set<DeviceCategory> categories = loadCategories(result.getLong("id"), conn);
-            Map<String, DeviceVariable> variables = loadVariables(result.getLong("id"), conn);
+            Iterable<Device> devices = deviceManager.getDevices();
 
-            Device device = new Device(result.getString("devname"), result.getString("symbolic"), result.getString("driver"), result.getBoolean("online"), result.getDate("last_update"), categories, variables);
-            devices.add(device);
+            for (Device device : devices)
+            {
+                filterInput.devices.add(device);
+            }
         }
-
-        filterInput.devices.addAll(devices);
     }
 
     public FilterInput getFilterInput()
@@ -115,31 +97,19 @@ public class FilterDataGenerator
     //@Validate
     private void validate()
     {
-        if (datamanager.hasConnection("device"))
+        try
         {
-            try
-            {
-                connectionPool = datamanager.requestConnection("device");
-                buildData();
-            }
-            catch (SQLException e)
-            {
-                // Failed
-            }
-            catch (DataGroupNotFoundException e)
-            {
-                // Failed
-            }
-            catch (UnknownDataDriverException e)
-            {
-                // Failed
-            }
+            buildData();
+        }
+        catch (SQLException e)
+        {
+            // Ignore
         }
     }
 
     //@Invalidate
     private void invalidate()
     {
-        connectionPool = null;
+        deviceManager = null;
     }
 }

@@ -2,9 +2,11 @@ package dk.itu.frigga.action.impl.filter.filters;
 
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.impl.filter.*;
-import dk.itu.frigga.device.Device;
+import dk.itu.frigga.device.model.Category;
+import dk.itu.frigga.device.model.Device;
 
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -32,12 +34,17 @@ public class IsCategoryFilter extends Filter
     public FilterOutput run(FilterContext context, FilterInput input) throws FilterFailedException
     {
         FilterOutput output = new FilterOutput();
+        Matcher matcher = category.matcher("");
 
         for (Device device : input)
         {
-            if (device.hasCategoryMatch(category))
+            for (Category c : device.getCategories())
             {
-                output.addDevice(device);
+                if (matcher.reset(c.getName()).matches())
+                {
+                    output.addDevice(device);
+                    break;
+                }
             }
         }
 

@@ -1,6 +1,5 @@
 package dk.itu.frigga.action;
 
-import dk.itu.frigga.action.impl.Replacement;
 import dk.itu.frigga.action.impl.ReplacementContainer;
 import org.junit.After;
 import org.junit.Before;

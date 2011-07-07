@@ -1,7 +1,7 @@
 package dk.itu.frigga.action.impl;
 
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
-import dk.itu.frigga.device.Device;
+import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.utility.XmlHelper;

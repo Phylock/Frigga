@@ -5,7 +5,7 @@
 
 package dk.itu.frigga.device;
 
-import dk.itu.frigga.device.Device;
+import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Category;
 
 /**
@@ -31,9 +31,7 @@ public interface DeviceManager {
    * Calls the getDevicesByType(String) internally with the type string of the
    * category.
    *
-   * @see getDevicesByType(String)
-   *
-   * @param type A DeviceCategory object identifying the type whose devices to
+   * @param category A DeviceCategory object identifying the type whose devices to
    * fetch.
    *
    * @return Returns an array of devices of the given type.
