@@ -43,6 +43,11 @@ public class FilterOutput implements Iterable<Device>
         return devices;
     }
 
+    public void useInput(final FilterInput input)
+    {
+        devices.addAll(input.devices);
+    }
+
     @Override
     public Iterator<Device> iterator()
     {

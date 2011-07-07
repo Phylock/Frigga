@@ -5,9 +5,7 @@ import dk.itu.frigga.action.impl.filter.Filter;
 import dk.itu.frigga.action.impl.filter.FilterContext;
 import dk.itu.frigga.action.impl.filter.FilterInput;
 import dk.itu.frigga.action.impl.filter.FilterOutput;
-import dk.itu.frigga.device.model.Device;
 
-import java.util.Collection;
 import java.util.Map;
 
 import static java.lang.Integer.parseInt;
@@ -18,30 +16,36 @@ import static java.lang.Integer.parseInt;
  * @author Tommy Andersen (toan@itu.dk)
  * @version 1.00, 2011-07-07
  */
-public class PassCountFilter extends Filter
+public class CountFilter extends Filter
 {
-    int max = Integer.MAX_VALUE;
-    int offset = -1;
-    boolean reverse = false;
+    private int min = 0;
+    private int max = Integer.MAX_VALUE;
+
+    @Override
+    public int optimizeMaxReturnCount()
+    {
+        return Math.max(max - min, 0);
+    }
+
+    @Override
+    public boolean optimizeCanDiscardChildFilters()
+    {
+        return (max - min) <= 0;
+    }
 
     @Override
     protected void loadFilter(Map<String, String> attributes)
     {
         super.loadFilter(attributes);
 
+        if (attributes.containsKey("min"))
+        {
+            min = parseInt(attributes.get("min"), 10);
+        }
+
         if (attributes.containsKey("max"))
         {
             max = parseInt(attributes.get("max"), 10);
-        }
-
-        if (attributes.containsKey("offset"))
-        {
-            offset = parseInt(attributes.get("offset"), 10);
-        }
-
-        if (attributes.containsKey("reverse"))
-        {
-            reverse = Boolean.parseBoolean(attributes.get("reverse"));
         }
     }
 
@@ -49,20 +53,11 @@ public class PassCountFilter extends Filter
     protected FilterOutput run(FilterContext context, FilterInput input) throws FilterFailedException
     {
         FilterOutput output = new FilterOutput();
-        int remaining = max;
-        int first = (offset >= 0) ? offset : 0;
-        int pos = 0;
+        int count = input.getDevices().size();
 
-        Collection<Device> devices = input.getDevices();
-        first = (reverse) ? devices.size() - first - max : first;
-
-        for (Device device : input)
+        if (count >= min && count <= max)
         {
-            if (remaining > 0 && pos >= first)
-            {
-                output.addDevice(device);
-                remaining--;
-            }
+            output.useInput(input);
         }
 
         return output;

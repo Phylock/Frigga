@@ -60,6 +60,16 @@ public abstract class Filter
         return LogicMergeMethod.AND;
     }
 
+    public boolean optimizeCanDiscardChildFilters()
+    {
+        return false;
+    }
+
+    public int optimizeMaxReturnCount()
+    {
+        return Integer.MAX_VALUE;
+    }
+
     public void setContainer(final FilterContainer container)
     {
         filterContainer = container;
