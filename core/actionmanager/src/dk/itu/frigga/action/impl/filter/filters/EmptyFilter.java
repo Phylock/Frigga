@@ -11,16 +11,16 @@ import dk.itu.frigga.action.impl.filter.*;
  */
 public class EmptyFilter extends Filter
 {
-    private final boolean childFilters;
+    private final boolean allowChildren;
 
     public EmptyFilter()
     {
-        this.childFilters = true;
+        this.allowChildren = true;
     }
 
-    public EmptyFilter(final boolean childFilters)
+    public EmptyFilter(final boolean allowChildFilters)
     {
-        this.childFilters = childFilters;
+        this.allowChildren = allowChildFilters;
     }
 
     public EmptyFilter(FilterContainer filterContainer)
@@ -28,7 +28,7 @@ public class EmptyFilter extends Filter
         super();
 
         setContainer(filterContainer);
-        this.childFilters = true;
+        this.allowChildren = true;
     }
 
     @Override
@@ -40,6 +40,6 @@ public class EmptyFilter extends Filter
     @Override
     protected boolean allowChildFilters()
     {
-        return childFilters;
+        return allowChildren;
     }
 }

@@ -47,13 +47,13 @@ public class Function
             }
         }
 
-        this.parameters = (Parameter[])parameters.toArray();
+        this.parameters = parameters.toArray(new Parameter[0]);
     }
 
     public void execute(final VariableContainer variables, Collection<Device> devices)
     {
         // Magic stuff happens here...
         System.out.println("Calling function: " + function + " called.");
-        deviceManager.callFunction(function, (Device[]) devices.toArray(), parameters);
+        deviceManager.callFunction(function, devices.toArray(new Device[0]), parameters);
     }
 }

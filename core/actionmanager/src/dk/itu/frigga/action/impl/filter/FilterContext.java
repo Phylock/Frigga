@@ -1,8 +1,12 @@
 package dk.itu.frigga.action.impl.filter;
 
 import dk.itu.frigga.action.filter.FilterFailedException;
+import dk.itu.frigga.device.DeviceManager;
+import java.sql.SQLException;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class description here...
@@ -12,7 +16,22 @@ import java.util.List;
  */
 public class FilterContext
 {
-    private FilterDataGenerator filterGenerator = new FilterDataGenerator();
+    private final FilterDataGenerator filterGenerator;
+
+    public FilterContext(DeviceManager deviceManager)
+    {
+        FilterDataGenerator temp = null;
+        try
+        {
+            temp = new FilterDataGenerator(deviceManager);
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(FilterContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        filterGenerator = temp;
+    }
 
     public FilterOutput run(final Filter filter) throws FilterFailedException
     {

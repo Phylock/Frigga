@@ -1,12 +1,8 @@
 package dk.itu.frigga.action;
 
 import dk.itu.frigga.action.filter.FilterFailedException;
-import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
@@ -21,11 +17,14 @@ public interface TemplateManager
     int getTemplateCount();
     TemplateInfo getTemplateInfo(int index) throws TemplateNotFoundException;
 
-    void loadTemplateFromFile(String filename) throws FileNotFoundException, InvalidTemplateFormatException, UnableToReadTemplateException;
-    void loadTemplateFromString(String templateData) throws InvalidTemplateFormatException, UnableToReadTemplateException;
-    void loadTemplateFromStream(InputStream stream) throws InvalidTemplateFormatException, UnableToReadTemplateException;
+    void loadTemplateFromFile(String filename) throws FileNotFoundException, InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException;
+    void loadTemplateFromString(String templateData) throws InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException;
+    void loadTemplateFromStream(InputStream stream) throws InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException;
 
     void run() throws FilterFailedException;
 
     Collection<Template> getTemplates();
+
+    void addTemplateLoadedListener(TemplateLoadedListener listener);
+    void removeTemplateLoadedListener(TemplateLoadedListener listener);
 }

@@ -8,6 +8,7 @@ package dk.itu.frigga.action.impl;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.*;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
@@ -66,8 +67,15 @@ public class Rule
             }
         }
 
-        actionContainer.callEvent(variableContainer, "invalidate", invalidates);
-        actionContainer.callEvent(variableContainer, "validate", validates);
+        if (invalidates.size() > 0)
+        {
+            actionContainer.callEvent(variableContainer, "invalidate", invalidates);
+        }
+
+        if (validates.size() > 0)
+        {
+            actionContainer.callEvent(variableContainer, "validate", validates);
+        }
     }
 
     public String getDescription()

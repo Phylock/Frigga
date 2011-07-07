@@ -10,5 +10,5 @@ import java.util.Collection;
  */
 public interface TemplateLoadedListener
 {
-    void templateLoaded(TemplateManager manager, TemplateInfo info, Collection<Replacement> replacements);
+    void templateLoaded(TemplateManager manager, Template template) throws IgnoreTemplateException;
 }

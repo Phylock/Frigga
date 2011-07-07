@@ -4,6 +4,7 @@ import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterInstantiationFailedException;
 import dk.itu.frigga.action.filter.NotANamedFilterException;
 import dk.itu.frigga.action.filter.UnknownFilterException;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -25,6 +26,7 @@ public abstract class Filter
     protected List<Filter> childFilters = new LinkedList<Filter>();
 
     private String name = "";
+    protected DeviceManager deviceManager;
     private List<FilterListener> filterListeners = Collections.synchronizedList(new LinkedList<FilterListener>());
 
     protected void setId(final String name)
@@ -46,6 +48,11 @@ public abstract class Filter
     public String getId()
     {
         return name;
+    }
+
+    public void setDeviceManager(DeviceManager deviceManager)
+    {
+        this.deviceManager = deviceManager;
     }
 
     public LogicMergeMethod mergeMethod()

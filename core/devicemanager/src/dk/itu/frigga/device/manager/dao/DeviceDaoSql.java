@@ -14,7 +14,6 @@ import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Variable;
 import dk.itu.frigga.device.model.VariableType;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -270,6 +269,9 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
         String driver = rs.getString("driver");
 
         Device d = new Device(id, name, symbolic, last, online, driver);
+        d.setDeviceDao(this);
+
+        //DeviceDaoFactorySql.instance().getCategoryDao().
 
         return d;
     }
@@ -301,7 +303,30 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
     public List<Category> getCategories(Device device)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        long id = device.getId();
+        List<Category> categories = new LinkedList<Category>();
+
+        try
+        {
+            PreparedStatement stmt = connection.prepareStatement("SELECT c.id AS id, c.catname AS catname FROM device_category dc, category c WHERE dc.category_id = c.id AND dc.device_id = ?");
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next())
+            {
+                Category category = new Category();
+                category.setName(rs.getString("catname"));
+                category.setId(rs.getLong("id"));
+
+                categories.add(category);
+            }
+        }
+        catch (SQLException e)
+        {
+            Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        return categories;
     }
 
     public void setState(String symbolic, boolean state)

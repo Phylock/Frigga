@@ -8,6 +8,7 @@ import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.*;
 import dk.itu.frigga.action.impl.filter.filters.*;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,15 +45,17 @@ public class TemplateData implements Template
     private TemplateInfo templateInfo = new TemplateInfo();
     private final ReplacementContainer replacementContainer = new ReplacementContainer();
     private final RuleContainer ruleContainer = new RuleContainer(filterFactory, replacementContainer);
+    private DeviceManager deviceManager;
 
-    public TemplateData()
+    public TemplateData(DeviceManager deviceManager)
     {
+        this.deviceManager = deviceManager;
     }
 
     @Override
     public void run() throws FilterFailedException
     {
-        FilterContext context = new FilterContext();
+        FilterContext context = new FilterContext(deviceManager);
 
         for (Rule rule : ruleContainer.getRules())
         {

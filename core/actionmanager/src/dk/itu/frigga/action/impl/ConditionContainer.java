@@ -6,6 +6,7 @@ import dk.itu.frigga.action.filter.NotANamedFilterException;
 import dk.itu.frigga.action.filter.UnknownFilterException;
 import dk.itu.frigga.action.impl.filter.*;
 import dk.itu.frigga.action.impl.filter.filters.EmptyFilter;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 

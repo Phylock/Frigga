@@ -3,11 +3,9 @@ package dk.itu.frigga.action.impl;
 import dk.itu.frigga.action.*;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
+import dk.itu.frigga.device.DeviceManager;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-//import org.apache.felix.ipojo.annotations.Component;
-//import org.apache.felix.ipojo.annotations.Instantiate;
-//import org.apache.felix.ipojo.annotations.Provides;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
@@ -25,6 +23,9 @@ import java.util.*;
 public class TemplateContainer implements TemplateManager
 {
     private final Set<TemplateData> templates = Collections.synchronizedSet(new LinkedHashSet<TemplateData>());
+    private final List<TemplateLoadedListener> templateLoadedListeners = Collections.synchronizedList(new LinkedList<TemplateLoadedListener>());
+
+    private DeviceManager deviceManager;
 
     public TemplateContainer()
     {
@@ -57,29 +58,35 @@ public class TemplateContainer implements TemplateManager
     }
 
     @Override
-    public void loadTemplateFromFile(final String filename) throws FileNotFoundException, InvalidTemplateFormatException, UnableToReadTemplateException
+    public void loadTemplateFromFile(final String filename) throws FileNotFoundException, InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException
     {
         loadTemplateFromStream(new FileInputStream(filename));
     }
 
     @Override
-    public void loadTemplateFromString(String templateData) throws InvalidTemplateFormatException, UnableToReadTemplateException
+    public void loadTemplateFromString(String templateData) throws InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException
     {
         loadTemplateFromSource(new InputSource(new StringReader(templateData)));
     }
 
     @Override
-    public void loadTemplateFromStream(final InputStream stream) throws InvalidTemplateFormatException, UnableToReadTemplateException
+    public void loadTemplateFromStream(final InputStream stream) throws InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException
     {
         loadTemplateFromSource(new InputSource(stream));
     }
 
-    protected void loadTemplateFromSource(final InputSource source) throws InvalidTemplateFormatException, UnableToReadTemplateException
+    protected void loadTemplateFromSource(final InputSource source) throws InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException
     {
-        TemplateData templateData = new TemplateData();
+        TemplateData templateData = new TemplateData(deviceManager);
         try
         {
             templateData.loadFromSource(source);
+
+            for (TemplateLoadedListener listener : templateLoadedListeners)
+            {
+                listener.templateLoaded(this, templateData);
+            }
+
             templates.add(templateData);
         }
         catch (ParserConfigurationException e)
@@ -98,6 +105,10 @@ public class TemplateContainer implements TemplateManager
         {
             throw new InvalidTemplateFormatException();
         }
+        catch (IgnoreTemplateException e)
+        {
+            throw new TemplateIgnoredException();
+        }
     }
 
     @Override
@@ -112,7 +123,18 @@ public class TemplateContainer implements TemplateManager
     @Override
     public Collection<Template> getTemplates()
     {
-        //Set<Template> test = templates;
-        return null;
+        return Collections.unmodifiableSet(new LinkedHashSet<Template>(templates));
+    }
+
+    @Override
+    public void addTemplateLoadedListener(TemplateLoadedListener listener)
+    {
+        templateLoadedListeners.add(listener);
+    }
+
+    @Override
+    public void removeTemplateLoadedListener(TemplateLoadedListener listener)
+    {
+        templateLoadedListeners.remove(listener);
     }
 }

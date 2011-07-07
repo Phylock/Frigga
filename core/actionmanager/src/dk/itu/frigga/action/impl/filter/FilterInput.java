@@ -37,6 +37,5 @@ public class FilterInput implements Iterable<Device>
     public Iterator<Device> iterator()
     {
         return devices.iterator();
-
     }
 }

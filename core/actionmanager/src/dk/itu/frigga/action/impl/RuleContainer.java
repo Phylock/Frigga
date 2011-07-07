@@ -2,6 +2,7 @@ package dk.itu.frigga.action.impl;
 
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.FilterFactory;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 

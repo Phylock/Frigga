@@ -4,148 +4,212 @@
  */
 package dk.itu.frigga.device.model;
 
+import dk.itu.frigga.device.dao.CategoryDAO;
+import dk.itu.frigga.device.dao.DeviceDAO;
+import dk.itu.frigga.device.dao.VariableDao;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
- *
  * @author phylock
  */
 //@Entity
 //@Table(name = "device")
-public class Device implements Serializable {
+public class Device implements Serializable
+{
 
-  private static final long serialVersionUID = 1L;
-  //@Id
-  //@GeneratedValue
-  private Long id;
-  //@Column(name = "name", nullable = false)
-  private String name;
-  //@Column(name = "symbolic", nullable = false, unique = true)
-  private String symbolic;
-  //@Temporal(TemporalType.TIME)
-  //@Column(name = "last_update", nullable = false)
-  private Date last_update;
-  //@Column(name = "online", nullable = false)
-  private boolean online;
+    private static final long serialVersionUID = 1L;
+    //@Id
+    //@GeneratedValue
+    private Long id;
+    //@Column(name = "name", nullable = false)
+    private String name;
+    //@Column(name = "symbolic", nullable = false, unique = true)
+    private String symbolic;
+    //@Temporal(TemporalType.TIME)
+    //@Column(name = "last_update", nullable = false)
+    private Date last_update;
+    //@Column(name = "online", nullable = false)
+    private boolean online;
 
-  private String driver;
-  //@ManyToMany(cascade=CascadeType.ALL)
-  //@JoinTable(name="device_category", joinColumns= { @JoinColumn(name = "device_id")}, inverseJoinColumns={@JoinColumn(name="category_id")} )
-  private List<Category> categories = new ArrayList<Category>(0);
+    private String driver;
+    //@ManyToMany(cascade=CascadeType.ALL)
+    //@JoinTable(name="device_category", joinColumns= { @JoinColumn(name = "device_id")}, inverseJoinColumns={@JoinColumn(name="category_id")} )
+    private List<Category> categories = new ArrayList<Category>(0);
 
-  //@OneToMany(cascade=CascadeType.ALL)
-  //@JoinColumn(name="device_id")
-  private Set<Variable> variables = new HashSet<Variable>(0);
+    private DeviceDAO deviceDao;
+    private boolean hasCategories = false;
+    private boolean hasVariables = false;
 
-  public Device() {
-    this.id = null;
-    this.name = "";
-    this.symbolic = "";
-    this.last_update = null;
-    this.online = false;
-    this.driver = "";
-  }
+    //@OneToMany(cascade=CascadeType.ALL)
+    //@JoinColumn(name="device_id")
+    private Set<Variable> variables = new HashSet<Variable>(0);
 
-  public Device(Long id) {
-    this.id = id;
-    this.name = "";
-    this.symbolic = "";
-    this.last_update = null;
-    this.online = false;
-    this.driver = "";
-  }
+    public Device()
+    {
+        this.id = null;
+        this.name = "";
+        this.symbolic = "";
+        this.last_update = null;
+        this.online = false;
+        this.driver = "";
+    }
 
-  public Device(String name, String symbolic, Date last_update, boolean online, String driver) {
-    this.id = null;
-    this.name = name;
-    this.symbolic = symbolic;
-    this.last_update = last_update;
-    this.online = online;
-    this.driver = driver;
-  }
+    public Device(Long id)
+    {
+        this.id = id;
+        this.name = "";
+        this.symbolic = "";
+        this.last_update = null;
+        this.online = false;
+        this.driver = "";
+    }
 
-  public Device(Long id, String name, String symbolic, Date last_update, boolean online, String driver) {
-    this.id = id;
-    this.name = name;
-    this.symbolic = symbolic;
-    this.last_update = last_update;
-    this.online = online;
-    this.driver = driver;
-  }
-  
-  public Long getId() {
-    return id;
-  }
+    public Device(String name, String symbolic, Date last_update, boolean online, String driver)
+    {
+        this.id = null;
+        this.name = name;
+        this.symbolic = symbolic;
+        this.last_update = last_update;
+        this.online = online;
+        this.driver = driver;
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public Device(Long id, String name, String symbolic, Date last_update, boolean online, String driver)
+    {
+        this.id = id;
+        this.name = name;
+        this.symbolic = symbolic;
+        this.last_update = last_update;
+        this.online = online;
+        this.driver = driver;
+    }
 
-  public Date getLastUpdate() {
-    return last_update;
-  }
+    public void setDeviceDao(DeviceDAO deviceDao)
+    {
+        this.deviceDao = deviceDao;
+    }
 
-  public void setLastUpdate(Date last_update) {
-    this.last_update = last_update;
-  }
+    public Long getId()
+    {
+        return id;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public Date getLastUpdate()
+    {
+        return last_update;
+    }
 
-  public boolean isOnline() {
-    return online;
-  }
+    public void setLastUpdate(Date last_update)
+    {
+        this.last_update = last_update;
+    }
 
-  public void setOnline(boolean online) {
-    this.online = online;
-  }
+    public String getName()
+    {
+        return name;
+    }
 
-  public String getSymbolic() {
-    return symbolic;
-  }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
-  public void setSymbolic(String symbolic) {
-    this.symbolic = symbolic;
-  }
+    public boolean isOnline()
+    {
+        return online;
+    }
 
-  public List<Category>getCategories()
-  {
-    return categories;
-  }
+    public void setOnline(boolean online)
+    {
+        this.online = online;
+    }
 
-  public void setCategories(List<Category> categories)
-  {
-    this.categories = categories;
-  }
+    public String getSymbolic()
+    {
+        return symbolic;
+    }
 
-  public Set<Variable> getVariables() {
-    return variables;
-  }
+    public void setSymbolic(String symbolic)
+    {
+        this.symbolic = symbolic;
+    }
 
-  public void setVariables(Set<Variable> variables) {
-    this.variables = variables;
-  }
+    public List<Category> getCategories()
+    {
+        if (!hasCategories)
+        {
+            synchronized (this)
+            {
+                if (!hasCategories)
+                {
+                    categories = deviceDao.getCategories(this);
+                    hasCategories = true;
+                }
+            }
+        }
 
-  public String getDriver() {
-    return driver;
-  }
+        return categories;
+    }
 
-  public void setDriver(String driver) {
-    this.driver = driver;
-  }
+    public void setCategories(List<Category> categories)
+    {
+        synchronized (this)
+        {
+            this.categories = categories;
+            hasCategories = true;
+        }
+    }
 
-  @Override
-  public String toString() {
-    return "Device{" + "id=" + id + ", name=" + name + ", symbolic=" + symbolic + ", last_update=" + last_update + ", online=" + online + '}';
-  }
+    public Set<Variable> getVariables()
+    {
+        if (!hasVariables)
+        {
+            synchronized (this)
+            {
+                if (!hasVariables)
+                {
+                    variables.addAll(deviceDao.getVariables(this));
+                }
+            }
+        }
+
+        return variables;
+    }
+
+    public void setVariables(Set<Variable> variables)
+    {
+        synchronized (this)
+        {
+            this.variables = variables;
+            hasVariables = true;
+        }
+    }
+
+    public boolean isOfCategory(final String category)
+    {
+        return deviceDao.isOfCategory(this, new Category(category));
+    }
+
+    public String getDriver()
+    {
+        return driver;
+    }
+
+    public void setDriver(String driver)
+    {
+        this.driver = driver;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Device{" + "id=" + id + ", name=" + name + ", symbolic=" + symbolic + ", last_update=" + last_update + ", online=" + online + '}';
+    }
 }

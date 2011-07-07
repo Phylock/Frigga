@@ -2,6 +2,7 @@ package dk.itu.frigga.action.impl.filter;
 
 import dk.itu.frigga.action.filter.FilterInstantiationFailedException;
 import dk.itu.frigga.action.filter.UnknownFilterException;
+import dk.itu.frigga.device.DeviceManager;
 import org.w3c.dom.Element;
 
 import java.lang.reflect.InvocationTargetException;

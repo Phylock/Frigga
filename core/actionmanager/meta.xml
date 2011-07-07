@@ -7,6 +7,7 @@
 
     <component name="TemplateContainer" classname="dk.itu.frigga.action.impl.TemplateContainer">
         <provides specifications="dk.itu.frigga.action.TemplateManager"/>
+        <requires field="deviceManager" />
 
         <!--<requires field="log" optional="true"/>
         <requires field="datamanager"/>
@@ -18,11 +19,4 @@
     </component>
     <instance component="TemplateContainer" name="TemplateManager"/>
 
-    <component classname="dk.itu.frigga.action.impl.filter.FilterDataGenerator" name="FilterDataGenerator">
-        <requires field="deviceManager"/>
-    </component>
-
-    <component classname="dk.itu.frigga.action.impl.Function" name="Function">
-        <requires field="deviceManager"/>
-    </component>
 </ipojo>
