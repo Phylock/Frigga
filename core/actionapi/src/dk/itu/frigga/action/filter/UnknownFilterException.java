@@ -1,4 +1,4 @@
-package dk.itu.frigga.action.impl.filter;
+package dk.itu.frigga.action.filter;
 
 import dk.itu.frigga.FriggaException;
 

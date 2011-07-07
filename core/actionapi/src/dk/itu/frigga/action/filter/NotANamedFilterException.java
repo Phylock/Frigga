@@ -1,4 +1,4 @@
-package dk.itu.frigga.action.impl.filter;
+package dk.itu.frigga.action.filter;
 
 import dk.itu.frigga.FriggaException;
 
@@ -8,6 +8,6 @@ import dk.itu.frigga.FriggaException;
  * @author Tommy Andersen (toan@itu.dk)
  * @version 1.00, 2011-06-21
  */
-public class FilterNotFoundException extends FriggaException
+public class NotANamedFilterException extends FriggaException
 {
 }

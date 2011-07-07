@@ -1,5 +1,6 @@
 package dk.itu.frigga.action.impl.filter.filters;
 
+import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.impl.filter.*;
 import dk.itu.frigga.device.Device;
 

@@ -1,5 +1,8 @@
 package dk.itu.frigga.action.impl.filter;
 
+import dk.itu.frigga.action.filter.FilterNotFoundException;
+import dk.itu.frigga.action.filter.NotANamedFilterException;
+
 /**
  * Class description here...
  *

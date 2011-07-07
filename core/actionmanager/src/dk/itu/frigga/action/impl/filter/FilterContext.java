@@ -1,5 +1,7 @@
 package dk.itu.frigga.action.impl.filter;
 
+import dk.itu.frigga.action.filter.FilterFailedException;
+
 import java.util.List;
 
 /**

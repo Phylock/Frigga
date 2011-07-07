@@ -1,6 +1,6 @@
 package dk.itu.frigga.action;
 
-import dk.itu.frigga.action.impl.filter.FilterFailedException;
+import dk.itu.frigga.action.filter.FilterFailedException;
 
 /**
  * Class description here...

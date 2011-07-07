@@ -2,6 +2,8 @@ package dk.itu.frigga.action.impl;
 
 import dk.itu.frigga.action.InvalidTemplateFormatException;
 import dk.itu.frigga.action.TemplateInfo;
+import dk.itu.frigga.action.filter.FilterFailedException;
+import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.*;
 import dk.itu.frigga.action.impl.filter.filters.*;
 import dk.itu.frigga.utility.XmlHelper;

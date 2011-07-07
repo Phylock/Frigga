@@ -3,7 +3,7 @@ package dk.itu.frigga.action.impl;
 import dk.itu.frigga.action.TemplateInfo;
 import dk.itu.frigga.action.TemplateManager;
 import dk.itu.frigga.action.TemplateNotFoundException;
-import dk.itu.frigga.action.impl.filter.FilterFailedException;
+import dk.itu.frigga.action.filter.FilterFailedException;
 //import org.apache.felix.ipojo.annotations.Component;
 //import org.apache.felix.ipojo.annotations.Instantiate;
 //import org.apache.felix.ipojo.annotations.Provides;

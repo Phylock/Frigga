@@ -1,5 +1,9 @@
 package dk.itu.frigga.action.impl;
 
+import dk.itu.frigga.action.filter.FilterInstantiationFailedException;
+import dk.itu.frigga.action.filter.FilterNotFoundException;
+import dk.itu.frigga.action.filter.NotANamedFilterException;
+import dk.itu.frigga.action.filter.UnknownFilterException;
 import dk.itu.frigga.action.impl.filter.*;
 import dk.itu.frigga.action.impl.filter.filters.EmptyFilter;
 import dk.itu.frigga.utility.XmlHelper;
