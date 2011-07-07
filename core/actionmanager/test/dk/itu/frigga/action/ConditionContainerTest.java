@@ -1,8 +1,9 @@
 package dk.itu.frigga.action;
 
-import dk.itu.frigga.action.filter.DefaultFilterFactory;
-import dk.itu.frigga.action.filter.filters.*;
-import dk.itu.frigga.action.filter.FilterFactory;
+import dk.itu.frigga.action.impl.ConditionContainer;
+import dk.itu.frigga.action.impl.filter.DefaultFilterFactory;
+import dk.itu.frigga.action.impl.filter.filters.*;
+import dk.itu.frigga.action.impl.filter.FilterFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

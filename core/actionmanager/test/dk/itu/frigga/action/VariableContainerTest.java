@@ -1,6 +1,7 @@
 package dk.itu.frigga.action;
 
-import dk.itu.frigga.action.runtime.TemplateVariable;
+import dk.itu.frigga.action.impl.VariableContainer;
+import dk.itu.frigga.action.impl.runtime.TemplateVariable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,11 +10,9 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Set;
 
 import static org.junit.Assert.*;

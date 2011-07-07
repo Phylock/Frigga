@@ -2,9 +2,10 @@
 <ipojo
         xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
         xmlns='org.apache.felix.ipojo'
+        xmlns:ev='org.apache.felix.ipojo.handlers.event'
         xsi:schemaLocation="org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd">
 
-    <component name="TemplateContainer" classname="dk.itu.frigga.action.manager.TemplateContainer">
+    <component name="TemplateContainer" classname="dk.itu.frigga.action.impl.TemplateContainer">
         <provides specifications="dk.itu.frigga.action.TemplateManager"/>
 
         <!--<requires field="log" optional="true"/>
@@ -17,11 +18,11 @@
     </component>
     <instance component="TemplateContainer" name="TemplateManager"/>
 
-    <component classname="dk.itu.frigga.action.filter.FilterDataGenerator" name="FilterDataGenerator">
+    <component classname="dk.itu.frigga.action.impl.filter.FilterDataGenerator" name="FilterDataGenerator">
         <requires field="datamanager"/>
     </component>
 
-    <component classname="dk.itu.frigga.action.Function" name="Function">
+    <component classname="dk.itu.frigga.action.impl.Function" name="Function">
         <requires field="deviceManager"/>
     </component>
 </ipojo>
