@@ -30,13 +30,23 @@ import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.model.*;
 import dk.itu.frigga.utility.ReflectionHelper;
 import org.osgi.service.log.LogService;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 
 /**
  * @author Tommy Andersen (toan@itu.dk)
@@ -45,7 +55,11 @@ import java.util.concurrent.TimeUnit;
 public final class DeviceManagerImpl extends Singleton implements DeviceManager
 {
 
-    private final static String DATAGROUP = "device";
+  enum DeviceChangedType {
+
+    Variable, Online, LocalLocation, GlobalLocation
+  }
+  private final static String DATAGROUP = "device";
 
     /* iPOJO services */
     private LogService log;
@@ -55,20 +69,36 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager
     private DeviceDatabase connection;
     private ConnectionPool pool;
     private ThreadPoolExecutor variable_update_pool;
+  private BundleContext context;
 
-    /**
-     * We do not wish to have multiple instances, so the constructor is private.
-     */
-    private DeviceManagerImpl()
-    {
+  /**
+   * We do not wish to have multiple instances, so the constructor is private.
+   */
+  private DeviceManagerImpl(BundleContext context) {
+    this.context = context;
+  }
+
+  void fireDeviceChanged(String device, DeviceChangedType type, String value) {
+    //TODO: cache this for a short time, because there is a minimal change that EventAdmin will go offline, for performence
+    ServiceReference ref = context.getServiceReference(EventAdmin.class.getName());
+    if (ref != null) {
+      EventAdmin eventAdmin = (EventAdmin) context.getService(ref);
+
+      Map properties = new HashMap<String,String>();
+      properties.put("device", device);
+      properties.put("value", value);
+      properties.put("time", System.currentTimeMillis());
+
+      Event reportGeneratedEvent = new Event("dk/itu/frigga/device/"+type.toString(), properties);
+
+      eventAdmin.postEvent(reportGeneratedEvent);
     }
+  }
 
-    public final boolean deviceIsOnline(final Device device)
-    {
-        //todo: implement
-        return false;
-    }
-
+  public final boolean deviceIsOnline(final Device device) {
+    //todo: implement
+    return false;
+  }
     public final Category getDeviceCategory(String id)
     {
         return null;//categories.get(id);
@@ -216,10 +246,11 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager
         //TODO: set the devices that the driver is responsible of offline
     }
 
+
     public void validate()
     {
         log.log(LogService.LOG_INFO, "Device Manager: Validate");
-        connection = new DeviceDatabase(DATAGROUP, "devices.db");
+        connection = new DeviceDatabase(DATAGROUP, "devices.db", this);
         try
         {
             ReflectionHelper.updateSubclassFields("log", connection, log);
