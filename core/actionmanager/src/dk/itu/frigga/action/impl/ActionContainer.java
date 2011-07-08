@@ -1,6 +1,8 @@
 package dk.itu.frigga.action.impl;
 
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
+import dk.itu.frigga.action.impl.filter.FilterContext;
+import dk.itu.frigga.action.impl.filter.FilterDeviceState;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
@@ -24,11 +26,11 @@ public class ActionContainer
     {
     }
 
-    public void callEvent(final VariableContainer variables, final String event, final Collection<Device> devices)
+    public void callEvent(final VariableContainer variables, final String event, final Collection<FilterDeviceState> devices, FilterContext context)
     {
         if (actions.containsKey(event))
         {
-            actions.get(event).execute(variables, devices);
+            actions.get(event).execute(variables, devices, context);
         }
     }
 

@@ -3,7 +3,7 @@
   <template>
     <info>
       <author>author</author>
-      <name>basic</name>
+      <name>DemoBasic</name>
       <site>site</site>
       <description>This is a basic example</description>
     </info>

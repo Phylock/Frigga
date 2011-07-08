@@ -8,7 +8,6 @@ package dk.itu.frigga.action.impl;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.*;
-import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
@@ -29,7 +28,7 @@ public class Rule
     private final ConditionContainer conditionContainer;
     private final ReplacementContainer replacementContainer;
     private final FilterFactory filterFactory;
-    private final Set<Device> validDevices = Collections.synchronizedSet(new LinkedHashSet<Device>());
+    private final Set<FilterDeviceState> validDevices = Collections.synchronizedSet(new LinkedHashSet<FilterDeviceState>());
     private String description;
     private String id;
 
@@ -42,24 +41,36 @@ public class Rule
 
     public void run(final FilterContext context) throws FilterFailedException
     {
-        FilterOutput output = context.run(conditionContainer.getRootFilter());
+        // Run all filters in a way so that filters depending on each other will be run in the right order.
+        Collection<ConditionContainer.RootFilterInformation> dependencyResolvedFilters = conditionContainer.getPrioritizedFilterList();
+        for (ConditionContainer.RootFilterInformation rootFilter : dependencyResolvedFilters)
+        {
+            FilterOutput output = context.run(rootFilter.getFilter());
 
-        Collection<Device> validated = output.matchingDevices();
+            context.storeOutput(rootFilter.getName(), output);
+        }
 
-        Set<Device> invalidates = new LinkedHashSet<Device>();
-        Set<Device> validates = new LinkedHashSet<Device>();
+        // Get the resulting output from all the filters.
+        FilterOutput output = context.getAllOutput();
+
+        // Find out which devices to validate and which to invalidate. We store the validated items so we can always
+        // find out whether an item is changed from valid to invalid or invalid to valid since last run.
+        Collection<FilterDeviceState> validated = output.matchingDevices();
+
+        Set<FilterDeviceState> invalidates = new LinkedHashSet<FilterDeviceState>();
+        Set<FilterDeviceState> validates = new LinkedHashSet<FilterDeviceState>();
 
         // Find invalidated items.
-        for (Device device : validDevices)
+        for (FilterDeviceState device : validDevices)
         {
-            if (!validated.contains(device))
+            if (validated.contains(device))
             {
                 invalidates.add(device);
             }
         }
 
         // Find newly validated items.
-        for (Device device : validated)
+        for (FilterDeviceState device : validated)
         {
             if (!validDevices.contains(device))
             {
@@ -67,14 +78,19 @@ public class Rule
             }
         }
 
+        // Update the list of valid devices for next time.
+        validDevices.removeAll(invalidates);
+        validDevices.addAll(validates);
+
+        // Call the associated actions
         if (invalidates.size() > 0)
         {
-            actionContainer.callEvent(variableContainer, "invalidate", invalidates);
+            actionContainer.callEvent(variableContainer, "invalidate", invalidates, context);
         }
 
         if (validates.size() > 0)
         {
-            actionContainer.callEvent(variableContainer, "validate", validates);
+            actionContainer.callEvent(variableContainer, "validate", validates, context);
         }
     }
 

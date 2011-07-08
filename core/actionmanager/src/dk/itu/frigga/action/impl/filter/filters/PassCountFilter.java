@@ -1,10 +1,7 @@
 package dk.itu.frigga.action.impl.filter.filters;
 
 import dk.itu.frigga.action.filter.FilterFailedException;
-import dk.itu.frigga.action.impl.filter.Filter;
-import dk.itu.frigga.action.impl.filter.FilterContext;
-import dk.itu.frigga.action.impl.filter.FilterInput;
-import dk.itu.frigga.action.impl.filter.FilterOutput;
+import dk.itu.frigga.action.impl.filter.*;
 import dk.itu.frigga.device.model.Device;
 
 import java.util.Collection;
@@ -53,10 +50,10 @@ public class PassCountFilter extends Filter
         int first = (offset >= 0) ? offset : 0;
         int pos = 0;
 
-        Collection<Device> devices = input.getDevices();
+        Collection<FilterDeviceState> devices = input.getDevices();
         first = (reverse) ? devices.size() - first - max : first;
 
-        for (Device device : input)
+        for (FilterDeviceState device : input)
         {
             if (remaining > 0 && pos >= first)
             {

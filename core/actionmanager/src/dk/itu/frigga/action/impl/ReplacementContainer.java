@@ -60,47 +60,6 @@ public class ReplacementContainer
         return Collections.unmodifiableCollection(replacements.values());
     }
 
-    public String prepare(final String input)
-    {
-        StringBuffer resultString = new StringBuffer();
-        try
-        {
-            Pattern regex = Pattern.compile("\\{([^}\\{]+)\\}");
-            Matcher regexMatcher = regex.matcher(input);
-            while (regexMatcher.find())
-            {
-                try
-                {
-                    String replacement = regexMatcher.group(1);
-                    if (hasReplacement(replacement))
-                    {
-                        regexMatcher.appendReplacement(resultString, getReplacement(replacement).getValue());
-                    }
-                }
-                catch (IllegalStateException ex)
-                {
-                    // appendReplacement() called without a prior successful call to find()
-                }
-                catch (IllegalArgumentException ex)
-                {
-                    // Syntax error in the replacement text (unescaped $ signs?)
-                }
-                catch (IndexOutOfBoundsException ex)
-                {
-                    // Non-existent backreference used the replacement text
-                }
-            }
-            regexMatcher.appendTail(resultString);
-        }
-        catch (PatternSyntaxException ex)
-        {
-            // Syntax error in the regular expression
-        }
-
-
-        return resultString.toString();
-    }
-
     public void parse(final Element element)
     {
         if (element == null) throw new IllegalArgumentException("Argument 'element' is null.");

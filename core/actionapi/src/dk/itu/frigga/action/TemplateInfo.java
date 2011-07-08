@@ -85,4 +85,29 @@ public class TemplateInfo
         return "Template: " + name + " by " + author + "\nSite: " + site + "\nDescription: " + description;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TemplateInfo that = (TemplateInfo) o;
+
+        if (author != null ? !author.equals(that.author) : that.author != null) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (!name.equals(that.name)) return false;
+        if (site != null ? !site.equals(that.site) : that.site != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = author != null ? author.hashCode() : 0;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (site != null ? site.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
+    }
 }

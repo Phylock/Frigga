@@ -10,9 +10,9 @@ import java.util.*;
  * @author Tommy Andersen (toan@itu.dk)
  * @version 1.00, 2011-07-01
  */
-public class FilterInput implements Iterable<Device>
+public class FilterInput implements Iterable<FilterDeviceState>
 {
-    protected final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+    protected final List<FilterDeviceState> devices = Collections.synchronizedList(new LinkedList<FilterDeviceState>());
     private boolean limitDevices = false;
 
     public FilterInput()
@@ -30,13 +30,13 @@ public class FilterInput implements Iterable<Device>
         return limitDevices;
     }
 
-    public Collection<Device> getDevices()
+    public Collection<FilterDeviceState> getDevices()
     {
         return devices;
     }
 
     @Override
-    public Iterator<Device> iterator()
+    public Iterator<FilterDeviceState> iterator()
     {
         return devices.iterator();
     }

@@ -12,8 +12,6 @@ import java.util.Collection;
  */
 public interface Template
 {
-    void run() throws FilterFailedException;
-
     TemplateInfo getTemplateInfo();
 
     Collection<Replacement> getReplacements();

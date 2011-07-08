@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.example.com template.xsd">
+    <template>
+        <info>
+            <author>Frigga Team</author>
+            <name>DemoLookAt</name>
+            <site>localhost</site>
+            <description>This is a basic example, to be used in our demonstration room. It displays how an action can be chosen by the user for the eyetracking by first looking at, and then looking away from the television.</description>
+        </info>
+        <replacements>
+            <replace name="onLookAt" description="Action to perform when looking at television" type="enum(on,off)" />
+            <replace name="onLookAway" description="Action to perform when looking away from television" type="enum(on,off)"/>
+        </replacements>
+        <rules>
+            <rule id="rule1" description="Perform action when looking at and away from television.">
+                <actions>
+                    <action event="validate">
+                        <function selection="tvselection" function="on" />
+                    </action>
+                    <action event="invalidate">
+                        <function selection="tvselection" function="off" />
+                    </action>
+                </actions>
+                <condition id="eyetrackselection">
+                    <isCategory category="eyetrack" />
+                </condition>
+                <condition id="tvselection" dependsOn="eyetrackselection">
+                    <remoteCompare source="eyetrackselection" sourceVariable="lookat" variable="symbolic" tagName="eyeTracker">
+                        <!-- <lookedAt> this is an alias of the above -->
+                            <isCategory category="tv" />
+                        <!-- </lookedAt> -->
+                    </remoteCompare>
+                </condition>
+            </rule>
+        </rules>
+    </template>
+</frigga>

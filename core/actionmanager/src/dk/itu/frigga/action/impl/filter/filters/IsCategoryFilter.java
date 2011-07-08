@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 public class IsCategoryFilter extends Filter
 {
-    private Pattern category = Pattern.compile(".*");
+    private Pattern category = Pattern.compile(".*", Pattern.CASE_INSENSITIVE);
 
     @Override
     protected void loadFilter(Map<String, String> attributes)
@@ -26,7 +26,7 @@ public class IsCategoryFilter extends Filter
 
         if (attributes.containsKey("category"))
         {
-            category = Pattern.compile(attributes.get("category"));
+            category = Pattern.compile(attributes.get("category"), Pattern.CASE_INSENSITIVE);
         }
     }
 
@@ -36,13 +36,13 @@ public class IsCategoryFilter extends Filter
         FilterOutput output = new FilterOutput();
         Matcher matcher = category.matcher("");
 
-        for (Device device : input)
+        for (FilterDeviceState deviceState : input)
         {
-            for (Category c : device.getCategories())
+            for (Category c : deviceState.getDevice().getCategories())
             {
                 if (matcher.reset(c.getName()).matches())
                 {
-                    output.addDevice(device);
+                    output.addDevice(deviceState);
                     break;
                 }
             }

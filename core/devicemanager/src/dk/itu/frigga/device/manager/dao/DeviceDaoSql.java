@@ -9,15 +9,15 @@ import dk.itu.frigga.data.dao.GenericSqlDao;
 import dk.itu.frigga.device.DeviceCategory;
 import dk.itu.frigga.device.DeviceVariable;
 import dk.itu.frigga.device.dao.DeviceDAO;
-import dk.itu.frigga.device.model.Category;
-import dk.itu.frigga.device.model.Device;
-import dk.itu.frigga.device.model.Variable;
-import dk.itu.frigga.device.model.VariableType;
+import dk.itu.frigga.device.model.*;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -253,10 +253,37 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Variable> getVariables(Device device)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Variable> variables = new LinkedList<Variable>();
+
+        try
+        {
+            PreparedStatement stmt = connection.prepareStatement("SELECT " +
+                    "  vt.id AS vartypeId, " +
+                    "  vt.varname AS vartypeName, " +
+                    "  vt.vartype AS vartypeType, " +
+                    "  dv.variable_value AS varValue " +
+                    "FROM " +
+                    "  device_variable dv, " +
+                    "  variabletype vt " +
+                    "WHERE " +
+                    "  dv.device_id = ? AND dv.variable_id = vt.id");
+            stmt.setLong(1, device.getId());
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next())
+            {
+                VariableType vt = new VariableType(rs.getLong("vartypeId"), rs.getString("vartypeName"), rs.getString("vartypeType"));
+                variables.add(new Variable(new VariablePK(device, vt), rs.getString("varValue")));
+            }
+        }
+        catch (SQLException e)
+        {
+            Logger.getLogger(DeviceDaoSql.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        return variables;
     }
 
     protected Device parseCurrent(ResultSet rs) throws SQLException
@@ -384,21 +411,21 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
 
     public void addVariable(Device device, VariableType category)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // <---------- : ( .. .. . . .   .      .       .
     }
 
     public void removeVariable(Device device, VariableType category)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // <---------- : ( .. .. . . .   .      .       .
     }
 
     public boolean hasVariable(Device device, VariableType category)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // <---------- : ( .. .. . . .   .      .       .
     }
 
     public void setStateByDriver(String driver, boolean state)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // <---------- : ( .. .. . . .   .      .       .
     }
 }

@@ -176,6 +176,7 @@ public class Device implements Serializable
                 if (!hasVariables)
                 {
                     variables.addAll(deviceDao.getVariables(this));
+                    hasVariables = true;
                 }
             }
         }

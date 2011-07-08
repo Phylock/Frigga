@@ -10,12 +10,15 @@
  */
 package dk.itu.frigga.debug.demo.gui;
 
+import dk.itu.frigga.action.ErrorCreatingTemplateInstanceException;
 import dk.itu.frigga.action.InvalidTemplateFormatException;
 import dk.itu.frigga.action.Replacement;
 import dk.itu.frigga.action.Template;
 import dk.itu.frigga.action.TemplateIgnoredException;
 import dk.itu.frigga.action.TemplateManager;
 import dk.itu.frigga.action.TemplateInfo;
+import dk.itu.frigga.action.TemplateInstance;
+import dk.itu.frigga.action.TemplateNotFoundException;
 import dk.itu.frigga.action.UnableToReadTemplateException;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.data.ConnectionPool;
@@ -29,14 +32,17 @@ import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.model.Variable;
 import dk.itu.frigga.utility.FileExtensionFilter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,9 +79,9 @@ public class MainWindow extends JFrame {
         template_fc.setAcceptAllFileFilterUsed(false);
         template_fc.setFileFilter(new FileExtensionFilter(new String[]{"template"}, "frigga template file(*.template)"));
 
-        action_fc.setCurrentDirectory(new File(conf_dir + "actions/"));
+        action_fc.setCurrentDirectory(new File(conf_dir + "instances/"));
         action_fc.setAcceptAllFileFilterUsed(false);
-        action_fc.setFileFilter(new FileExtensionFilter(new String[]{"action"}, "frigga action file(*.action)"));
+        action_fc.setFileFilter(new FileExtensionFilter(new String[]{"prop"}, "frigga instances file(*.prop)"));
     }
 
     /** This method is called from within the constructor to
@@ -133,6 +139,7 @@ public class MainWindow extends JFrame {
         lst_templates1 = new javax.swing.JList();
         btn_refresh2 = new javax.swing.JButton();
         btn_template_open1 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -278,7 +285,7 @@ public class MainWindow extends JFrame {
 
         jLabel10.setText("Auther:");
 
-        jButton1.setText("Run");
+        jButton1.setText("Create Instance");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -290,31 +297,27 @@ public class MainWindow extends JFrame {
         device_info_panel1Layout.setHorizontalGroup(
             device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(device_info_panel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txt_template_description, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
                     .addGroup(device_info_panel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(device_info_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_template_description, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
-                            .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
-                            .addGroup(device_info_panel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(75, 75, 75)
-                                .addComponent(txt_template_name, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
-                            .addComponent(jLabel6)
-                            .addGroup(device_info_panel1Layout.createSequentialGroup()
-                                .addComponent(jLabel9)
-                                .addGap(88, 88, 88)
-                                .addComponent(txt_template_site, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE))
-                            .addGroup(device_info_panel1Layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addGap(68, 68, 68)
-                                .addComponent(txt_template_auther, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE))
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel7)
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)))
+                        .addComponent(jLabel5)
+                        .addGap(75, 75, 75)
+                        .addComponent(txt_template_name, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
+                    .addComponent(jLabel6)
                     .addGroup(device_info_panel1Layout.createSequentialGroup()
-                        .addGap(99, 99, 99)
-                        .addComponent(jButton1)))
+                        .addComponent(jLabel9)
+                        .addGap(88, 88, 88)
+                        .addComponent(txt_template_site, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE))
+                    .addGroup(device_info_panel1Layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addGap(68, 68, 68)
+                        .addComponent(txt_template_auther, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE))
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel7)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE))
                 .addContainerGap())
         );
         device_info_panel1Layout.setVerticalGroup(
@@ -346,9 +349,8 @@ public class MainWindow extends JFrame {
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                .addComponent(jButton1))
         );
 
         tab_templates.add(device_info_panel1);
@@ -391,6 +393,19 @@ public class MainWindow extends JFrame {
         tab_actions.add(template_search_panel1);
 
         main_panel.addTab("Actions", tab_actions);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 593, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 513, Short.MAX_VALUE)
+        );
+
+        main_panel.addTab("tab4", jPanel1);
 
         getContentPane().add(main_panel, java.awt.BorderLayout.CENTER);
 
@@ -445,11 +460,12 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_btn_refresh1ActionPerformed
 
     private void btn_template_openActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_template_openActionPerformed
-        int returnVal = template_fc.showOpenDialog(this);
+        /*int returnVal = template_fc.showOpenDialog(this);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             try {
                 actionmanager.loadTemplateFromFile(template_fc.getSelectedFile().getAbsolutePath());
+
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvalidTemplateFormatException ex) {
@@ -460,7 +476,10 @@ public class MainWindow extends JFrame {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
             btn_refresh1ActionPerformed(null);
-        }
+        }*/
+
+        actionmanager.loadTemplatesFromDisk();
+        btn_refresh1ActionPerformed(null);
     }//GEN-LAST:event_btn_template_openActionPerformed
 
     private void lst_templates1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_templates1ValueChanged
@@ -468,28 +487,62 @@ public class MainWindow extends JFrame {
     }//GEN-LAST:event_lst_templates1ValueChanged
 
     private void btn_refresh2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refresh2ActionPerformed
-        // TODO add your handling code here:
+        File path = new File("conf/instances/");
+        List<InstanceInfoItem> items = new LinkedList<InstanceInfoItem>();
+        File[] files = path.listFiles();
+        for (File file : files)
+        {
+            Properties properties = new Properties();
+            try {
+                properties.load(new FileInputStream(file.getAbsolutePath()));
+                items.add(new InstanceInfoItem(properties));
+                //properties.
+            } catch (IOException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        lst_templates1.setListData(items.toArray());
     }//GEN-LAST:event_btn_refresh2ActionPerformed
 
     private void btn_template_open1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_template_open1ActionPerformed
-        int returnVal = action_fc.showOpenDialog(this);
+        InstanceInfoItem instanceInfo = (InstanceInfoItem)lst_templates1.getSelectedValue();
+        for (Template template : actionmanager.getTemplates())
+        {
+            if (template.getTemplateInfo().getName().equals(instanceInfo.getTemplate()))
+            {
+                try {
+                    TemplateInstance instance = actionmanager.createTemplateInstance(template, instanceInfo.getId());
+                    instance.setReplacementValue("onLookAt", "on");
+                    instance.setReplacementValue("onLookAway", "off");
+                    actionmanager.startRunner();
+                } catch (TemplateNotFoundException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ErrorCreatingTemplateInstanceException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        /*int returnVal = action_fc.showOpenDialog(this);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            /*File f = action_fc.getSelectedFile();
+            File f = action_fc.getSelectedFile();
             try {
             actionmanager.CompileTemplate(f);
             } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }*/
-        }
+        
     }//GEN-LAST:event_btn_template_open1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // KEEP ME FROM MESSING UP
-        Template template = (Template)lst_templates.getSelectedValue();
         try {
-            template.run();
-        } catch (FilterFailedException ex) {
+            Template template = (Template) lst_templates.getSelectedValue();
+            actionmanager.createTemplateInstance(template, "test");
+        } catch (TemplateNotFoundException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ErrorCreatingTemplateInstanceException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -559,6 +612,7 @@ public class MainWindow extends JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -623,6 +677,30 @@ public class MainWindow extends JFrame {
         @Override
         public String toString() {
             return d.getName();
+        }
+    }
+
+    private class InstanceInfoItem {
+        private final String template;
+        private final String id;
+
+        public String getId() {
+            return id;
+        }
+
+        public String getTemplate() {
+            return template;
+        }
+
+        public InstanceInfoItem(final Properties properties)
+        {
+            template = properties.getProperty("template.name", "");
+            id = properties.getProperty("instance.id", "");
+        }
+
+        public String toString()
+        {
+            return "Instance " + id + " using template: " + template;
         }
     }
 

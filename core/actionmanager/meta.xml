@@ -5,7 +5,7 @@
         xmlns:ev='org.apache.felix.ipojo.handlers.event'
         xsi:schemaLocation="org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd">
 
-    <component name="TemplateContainer" classname="dk.itu.frigga.action.impl.TemplateContainer">
+    <component name="TemplateManagerImpl" classname="dk.itu.frigga.action.impl.TemplateManagerImpl">
         <provides specifications="dk.itu.frigga.action.TemplateManager"/>
         <requires field="deviceManager" />
 
@@ -17,6 +17,6 @@
         <callback transition="invalidate" method="invalidate"/>-->
 
     </component>
-    <instance component="TemplateContainer" name="TemplateManager"/>
+    <instance component="TemplateManagerImpl" name="TemplateManager"/>
 
 </ipojo>

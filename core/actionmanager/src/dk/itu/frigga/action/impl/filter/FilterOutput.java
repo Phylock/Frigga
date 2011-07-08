@@ -10,9 +10,9 @@ import java.util.*;
  * @author Tommy Andersen (toan@itu.dk)
  * @version 1.00, 2011-07-05
  */
-public class FilterOutput implements Iterable<Device>
+public class FilterOutput implements Iterable<FilterDeviceState>
 {
-    protected final Set<Device> devices = Collections.synchronizedSet(new LinkedHashSet<Device>());
+    protected final Set<FilterDeviceState> devices = Collections.synchronizedSet(new LinkedHashSet<FilterDeviceState>());
 
     public FilterOutput()
     {
@@ -23,12 +23,12 @@ public class FilterOutput implements Iterable<Device>
         devices.addAll(input.devices);
     }
 
-    public void addDevice(final Device device)
+    public void addDevice(final FilterDeviceState device)
     {
         devices.add(device);
     }
 
-    public void removeDevice(final Device device)
+    public void removeDevice(final FilterDeviceState device)
     {
         devices.remove(device);
     }
@@ -38,7 +38,7 @@ public class FilterOutput implements Iterable<Device>
         devices.addAll(output.devices);
     }
 
-    public Collection<Device> matchingDevices()
+    public Collection<FilterDeviceState> matchingDevices()
     {
         return devices;
     }
@@ -49,7 +49,7 @@ public class FilterOutput implements Iterable<Device>
     }
 
     @Override
-    public Iterator<Device> iterator()
+    public Iterator<FilterDeviceState> iterator()
     {
         return devices.iterator();
     }

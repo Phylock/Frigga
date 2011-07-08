@@ -14,17 +14,17 @@ import java.util.*;
  */
 public class FilterDataGenerator
 {
-    // iPOJO fields
-    //@Requires
+    private final DeviceManager deviceManager;
     private final FilterInput filterInput = new FilterInput();
 
 
     public FilterDataGenerator(DeviceManager deviceManager) throws SQLException
     {
-        buildData(deviceManager);
+        this.deviceManager = deviceManager;
+        buildData();
     }
 
-    private void buildData(DeviceManager deviceManager) throws SQLException
+    private void buildData() throws SQLException
     {
         if (deviceManager != null)
         {
@@ -35,6 +35,22 @@ public class FilterDataGenerator
                 filterInput.devices.add(device);
             }
         }
+    }
+
+    public FilterInput getByCategory(final String category)
+    {
+        FilterInput input = new FilterInput();
+
+        if (deviceManager != null)
+        {
+            Iterable<Device> devices = deviceManager.getDevicesByType(category);
+            for (Device device : devices)
+            {
+                input.devices.add(device);
+            }
+        }
+
+        return input;
     }
 
     public FilterInput getFilterInput()

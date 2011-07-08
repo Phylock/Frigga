@@ -77,7 +77,7 @@ public class ConditionContainerTest
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(source);
 
-        conditionContainer.parse(document.getDocumentElement(), filterFactory, deviceManager);
+        conditionContainer.parse(document.getDocumentElement(), filterFactory);
     }
 
     @Test

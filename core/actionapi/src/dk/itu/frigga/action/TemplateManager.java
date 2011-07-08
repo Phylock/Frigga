@@ -21,10 +21,18 @@ public interface TemplateManager
     void loadTemplateFromString(String templateData) throws InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException;
     void loadTemplateFromStream(InputStream stream) throws InvalidTemplateFormatException, UnableToReadTemplateException, TemplateIgnoredException;
 
-    void run() throws FilterFailedException;
+    void loadInstancesFromDisk();
+    void loadTemplatesFromDisk();
+    void run(TemplateInstance instance) throws FilterFailedException;
 
     Collection<Template> getTemplates();
 
+    TemplateInstance createTemplateInstance(Template template, final String name) throws TemplateNotFoundException, ErrorCreatingTemplateInstanceException;
+    void removeTemplateInstance(final TemplateInstance instance);
+
     void addTemplateLoadedListener(TemplateLoadedListener listener);
     void removeTemplateLoadedListener(TemplateLoadedListener listener);
+
+    void startRunner();
+    void stopRunner();
 }

@@ -39,6 +39,11 @@ public class TemplateData implements Template
         filterFactory.registerFilterType("and", AndFilter.class);
         filterFactory.registerFilterType("or", OrFilter.class);
         filterFactory.registerFilterType("isCategory", IsCategoryFilter.class);
+        filterFactory.registerFilterType("count", CountFilter.class);
+        filterFactory.registerFilterType("passCount", PassCountFilter.class);
+        filterFactory.registerFilterType("matchSymbolic", MatchSymbolicFilter.class);
+        filterFactory.registerFilterType("lookedAt", LookedAtFilter.class);
+        filterFactory.registerFilterType("remoteCompare", RemoteCompareFilter.class);
         filterFactory.registerFilterType("empty", EmptyFilter.class);
     }
 
@@ -52,10 +57,9 @@ public class TemplateData implements Template
         this.deviceManager = deviceManager;
     }
 
-    @Override
-    public void run() throws FilterFailedException
+    public void run(final TemplateInstanceImpl instance) throws FilterFailedException
     {
-        FilterContext context = new FilterContext(deviceManager);
+        FilterContext context = new FilterContext(deviceManager, instance);
 
         for (Rule rule : ruleContainer.getRules())
         {

@@ -4,7 +4,7 @@
     <template>
         <info>
             <author>Frigga Team</author>
-            <name>demonstration</name>
+            <name>DemoMisc</name>
             <site>localhost</site>
             <description>This is a basic example, to be used in our demonstration room</description>
         </info>

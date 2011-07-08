@@ -1,6 +1,8 @@
 package dk.itu.frigga.action.impl;
 
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
+import dk.itu.frigga.action.impl.filter.FilterContext;
+import dk.itu.frigga.action.impl.filter.FilterDeviceState;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.Parameter;
@@ -23,9 +25,6 @@ public class Function
     private Parameter[] parameters;
     private String function;
 
-    //@Requires
-    private DeviceManager deviceManager;
-
     public Function()
     {
     }
@@ -47,13 +46,28 @@ public class Function
             }
         }
 
-        this.parameters = parameters.toArray(new Parameter[0]);
+        this.parameters = parameters.toArray(new Parameter[parameters.size()]);
     }
 
-    public void execute(final VariableContainer variables, Collection<Device> devices)
+    public void execute(final VariableContainer variables, Collection<FilterDeviceState> devices, FilterContext context)
     {
         // Magic stuff happens here...
         System.out.println("Calling function: " + function + " called.");
-        deviceManager.callFunction(function, devices.toArray(new Device[0]), parameters);
+
+        Parameter[] paramCopy = new Parameter[parameters.length];
+        int idx = 0;
+
+        for (Parameter param : parameters)
+        {
+            paramCopy[idx++] = new Parameter(param.getName(), context.prepare(param.getData().toString()));
+        }
+
+        FilterDeviceState[] states = devices.toArray(new FilterDeviceState[devices.size()]);
+        Device[] d = new Device[devices.size()];
+        for (int i = 0; i < devices.size(); i++)
+        {
+            d[i] = states[i].getDevice();
+        }
+        context.getDeviceManager().callFunction(function, d, paramCopy);
     }
 }
