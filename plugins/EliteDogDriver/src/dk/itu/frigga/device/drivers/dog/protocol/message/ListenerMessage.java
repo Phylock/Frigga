@@ -2,35 +2,39 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog.protocol;
+package dk.itu.frigga.device.drivers.dog.protocol.message;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
  *
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
-public class ListDevices extends ConfigRequestMessage {
+public class ListenerMessage extends ConfigRequestMessage {
+
+  public enum ListenerActions {
+
+    ADD, REMOVE, MODIFY
+  }
 
   /**
-   * Generate a dog gateway to request known devices and where they are located
+   * Add or remove a listener to a device
    * @param session session id
-   * @param devices device filter, limit description to listed devices, use null to get all
+   * @param devices device filter, use null for all devices
+   * @param action can be "add" ...
    * @return the xml request
    * @throws ParserConfigurationException
    */
-  public ListDevices(String[] devices) {
-    super("alldevices");
+  public ListenerMessage(String[] devices, ListenerActions action) {
+    super("LISTENER");
     try {
       initialize();
-      //only one request tag in the doc
-      Node request = doc.getElementsByTagName("request").item(0);
+      Element request = (Element) doc.getElementsByTagName("request").item(0);
+      request.setAttribute("listeneraction", action.name());
       if (devices != null) {
         for (String device : devices) {
           Element d = doc.createElement("device");
@@ -39,9 +43,9 @@ public class ListDevices extends ConfigRequestMessage {
         }
       }
     } catch (SAXException ex) {
-      Logger.getLogger(ListDevices.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(ListenerMessage.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
-      Logger.getLogger(ListDevices.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(ListenerMessage.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 }

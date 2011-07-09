@@ -1,7 +1,7 @@
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.drivers.dog.protocol.Command;
-import dk.itu.frigga.device.drivers.dog.protocol.DogMessage;
+import dk.itu.frigga.device.drivers.dog.protocol.parser.Command;
+import dk.itu.frigga.device.drivers.dog.protocol.message.DogMessage;
 import dk.itu.frigga.device.DeviceId;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;
@@ -9,10 +9,10 @@ import dk.itu.frigga.device.InvalidFunctionException;
 import dk.itu.frigga.device.InvalidParameterException;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.UnknownDeviceException;
-import dk.itu.frigga.device.drivers.dog.protocol.CommandMessage;
-import dk.itu.frigga.device.drivers.dog.protocol.DescribeCategory;
-import dk.itu.frigga.device.drivers.dog.protocol.DescribeDevice;
-import dk.itu.frigga.device.drivers.dog.protocol.ListDevices;
+import dk.itu.frigga.device.drivers.dog.protocol.message.CommandMessage;
+import dk.itu.frigga.device.drivers.dog.protocol.message.DescribeCategory;
+import dk.itu.frigga.device.drivers.dog.protocol.message.DescribeDevice;
+import dk.itu.frigga.device.drivers.dog.protocol.message.ListDevices;
 import dk.itu.frigga.utility.ReflectionHelper;
 import java.util.Dictionary;
 import org.osgi.service.log.LogService;
@@ -84,6 +84,7 @@ public class DogDriver implements Driver {
     updateSubclassFields("log", connection.getParser(), log);
 
     updateSubclassFields("event", DogDeviceManager.instance(), event);
+    updateSubclassFields("connection", DogDeviceManager.instance(), connection);
 
     if (url != null && !url.isEmpty()) {
       connection.connect(url);

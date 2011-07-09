@@ -4,13 +4,13 @@
  */
 package dk.itu.frigga.device.drivers.dog;
 
-import dk.itu.frigga.device.drivers.dog.protocol.Command;
-import dk.itu.frigga.device.drivers.dog.protocol.DogMessage;
+import dk.itu.frigga.device.drivers.dog.protocol.parser.Command;
+import dk.itu.frigga.device.drivers.dog.protocol.message.DogMessage;
 import dk.itu.frigga.device.FunctionResult;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.Executable;
 import dk.itu.frigga.device.Parameter;
-import dk.itu.frigga.device.drivers.dog.protocol.CommandMessage;
+import dk.itu.frigga.device.drivers.dog.protocol.message.CommandMessage;
 import dk.itu.frigga.device.model.Device;
 
 /**

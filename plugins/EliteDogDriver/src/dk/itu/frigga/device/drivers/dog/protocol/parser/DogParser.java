@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog.protocol;
+package dk.itu.frigga.device.drivers.dog.protocol.parser;
 
 import dk.itu.frigga.device.drivers.dog.DogDeviceManager;
 import dk.itu.frigga.device.drivers.dog.DogDriver;
@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,12 +35,15 @@ public class DogParser implements Dog2MessageListener {
   private DogDriver driver;
   private LogService log;
   private static final Map<String, MessageParsable> parsers;
+  private final ThreadPoolExecutor messagehandlers;
+
 
   static {
     Map<String, MessageParsable> list = new HashMap<String, MessageParsable>();
 
     //fill
     list.put("configmessage", new ConfigMessageParser());
+    list.put("response", new ResponseMessageParser());
 
     //write protection + speed
     parsers = Collections.unmodifiableMap(list);
@@ -46,6 +52,7 @@ public class DogParser implements Dog2MessageListener {
 
   public DogParser(DogDriver driver) {
     this.driver = driver;
+    messagehandlers = new ThreadPoolExecutor(1, 5, 15, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
   }
 
   public void parseMessage(Document doc, Element message) {
@@ -64,7 +71,7 @@ public class DogParser implements Dog2MessageListener {
   @Override
   public void newMessage(final String message) {
     log.log(LogService.LOG_INFO, "Recived message");
-    new Thread(new Runnable() {
+    messagehandlers.execute(new Runnable() {
 
       public void run() {
         try {
@@ -83,7 +90,7 @@ public class DogParser implements Dog2MessageListener {
           Logger.getLogger(DogParser.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
-    }).start();
+    });
 
   }
 }

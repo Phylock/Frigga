@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog.protocol;
+package dk.itu.frigga.device.drivers.dog.protocol.message;
 
 import dk.itu.frigga.device.Parameter;
+import dk.itu.frigga.device.drivers.dog.protocol.parser.Command;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

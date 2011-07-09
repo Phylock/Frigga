@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dk.itu.frigga.device.drivers.dog.protocol;
+package dk.itu.frigga.device.drivers.dog.protocol.message;
 
 import dk.itu.frigga.utility.XmlHelper;
 import java.io.ByteArrayInputStream;
@@ -117,7 +117,7 @@ public abstract class DogMessage {
    * Helper class from:
    * http://www.coderanch.com/how-to/java/DocumentToString
    */
-  private static String xmlToString(Node node) {
+  public static String xmlToString(Node node) {
     try {
       Source source = new DOMSource(node);
       StringWriter stringWriter = new StringWriter();
