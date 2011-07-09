@@ -45,13 +45,14 @@ public class Rule
         Collection<ConditionContainer.RootFilterInformation> dependencyResolvedFilters = conditionContainer.getPrioritizedFilterList();
         for (ConditionContainer.RootFilterInformation rootFilter : dependencyResolvedFilters)
         {
+            if (rootFilter.isValidate()) context.allowValidation(rootFilter.getName());
             FilterOutput output = context.run(rootFilter.getFilter());
 
             context.storeOutput(rootFilter.getName(), output);
         }
 
         // Get the resulting output from all the filters.
-        FilterOutput output = context.getAllOutput();
+        FilterOutput output = context.getValidateOutput();
 
         // Find out which devices to validate and which to invalidate. We store the validated items so we can always
         // find out whether an item is changed from valid to invalid or invalid to valid since last run.
@@ -63,7 +64,7 @@ public class Rule
         // Find invalidated items.
         for (FilterDeviceState device : validDevices)
         {
-            if (validated.contains(device))
+            if (!validated.contains(device))
             {
                 invalidates.add(device);
             }
@@ -85,12 +86,12 @@ public class Rule
         // Call the associated actions
         if (invalidates.size() > 0)
         {
-            actionContainer.callEvent(variableContainer, "invalidate", invalidates, context);
+            actionContainer.callEvent(variableContainer, "invalidate", invalidates, context, invalidates);
         }
 
         if (validates.size() > 0)
         {
-            actionContainer.callEvent(variableContainer, "validate", validates, context);
+            actionContainer.callEvent(variableContainer, "validate", validates, context, validates);
         }
     }
 

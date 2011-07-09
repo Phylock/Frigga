@@ -44,9 +44,9 @@ public class HasVariableFilter extends Filter
         Matcher matcher1 = variableName.matcher("");
         Matcher matcher2 = variableType.matcher("");
 
-        for (Device device : input)
+        for (FilterDeviceState state : input)
         {
-            Set<Variable> variables = device.getVariables();
+            Set<Variable> variables = state.getDevice().getVariables();
             for (Variable variable : variables)
             {
                 String name = variable.getPrimaryKey().getVariabletype().getName();
@@ -55,7 +55,7 @@ public class HasVariableFilter extends Filter
                     String type = variable.getPrimaryKey().getVariabletype().getType();
                     if (matcher2.reset(type).matches())
                     {
-                        output.addDevice(device);
+                        output.addDevice(state);
                         break;
                     }
                 }

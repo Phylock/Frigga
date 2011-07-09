@@ -7,10 +7,7 @@ import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class description here...
@@ -26,11 +23,11 @@ public class ActionContainer
     {
     }
 
-    public void callEvent(final VariableContainer variables, final String event, final Collection<FilterDeviceState> devices, FilterContext context)
+    public void callEvent(final VariableContainer variables, final String event, final Collection<FilterDeviceState> devices, FilterContext context, Set<FilterDeviceState> validationSet)
     {
         if (actions.containsKey(event))
         {
-            actions.get(event).execute(variables, devices, context);
+            actions.get(event).execute(variables, devices, context, validationSet);
         }
     }
 

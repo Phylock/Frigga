@@ -51,26 +51,52 @@ public class RemoteCompareFilter extends Filter
     {
         FilterOutput output = new FilterOutput();
         FilterOutput remoteOutput = context.getStoredOutput(context.prepare(source));
+        String compare = context.prepare(variable);
+        String sourceVar = context.prepare(sourceVariable);
 
         for (FilterDeviceState state : input)
         {
-            for (Variable var : state.getDevice().getVariables())
+            String variableValue = null;
+            if ("symbolic".equals(compare))
             {
-                if (var.getPrimaryKey().getVariabletype().getName().equals(context.prepare(variable)))
+                variableValue = state.getDevice().getSymbolic();
+            }
+            else
+            {
+                for (Variable var : state.getDevice().getVariables())
                 {
-                    for (FilterDeviceState remoteState : remoteOutput)
+                    if (var.getPrimaryKey().getVariabletype().getName().equals(compare))
+                    {
+                        variableValue = var.getValue();
+                    }
+                }
+            }
+
+            if (variableValue != null)
+            {
+                String sourceValue = null;
+                for (FilterDeviceState remoteState : remoteOutput)
+                {
+                    if ("symbolic".equals(sourceVar))
+                    {
+                        sourceVar = remoteState.getDevice().getSymbolic();
+                    }
+                    else
                     {
                         for (Variable remoteVar : remoteState.getDevice().getVariables())
                         {
-                            if (remoteVar.getPrimaryKey().getVariabletype().getName().equals(context.prepare(sourceVariable)))
+                            if (remoteVar.getPrimaryKey().getVariabletype().getName().equals(sourceVar))
                             {
-                                if (remoteVar.getValue().equals(var.getValue()))
-                                {
-                                    state.storeTag(context.prepare(tagName), remoteState.getDevice());
-                                    output.addDevice(state);
-                                }
+                                sourceValue = remoteVar.getValue();
                             }
                         }
+
+                    }
+
+                    if (sourceValue != null && sourceValue.equals(variableValue))
+                    {
+                        state.storeTag(context.prepare(tagName), remoteState);
+                        output.addDevice(state);
                     }
                 }
             }

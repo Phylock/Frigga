@@ -6,7 +6,6 @@ import dk.itu.frigga.action.filter.NotANamedFilterException;
 import dk.itu.frigga.action.filter.UnknownFilterException;
 import dk.itu.frigga.action.impl.filter.*;
 import dk.itu.frigga.action.impl.filter.filters.EmptyFilter;
-import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
@@ -26,13 +25,15 @@ public class ConditionContainer implements FilterContainer
         private final String dependsOn;
         private final Filter filter;
         private final boolean pipeInput;
+        private final boolean validate;
 
-        public RootFilterInformation(final String name, final String dependsOn, final Filter filter, final boolean pipeInput)
+        public RootFilterInformation(final String name, final String dependsOn, final Filter filter, final boolean pipeInput, boolean validate)
         {
             this.name = name;
             this.dependsOn = dependsOn;
             this.filter = filter;
             this.pipeInput = pipeInput;
+            this.validate = validate;
         }
 
         public String getName()
@@ -53,6 +54,11 @@ public class ConditionContainer implements FilterContainer
         public boolean isPipeInput()
         {
             return pipeInput;
+        }
+
+        public boolean isValidate()
+        {
+            return validate;
         }
 
         @Override
@@ -82,7 +88,6 @@ public class ConditionContainer implements FilterContainer
         }
     }
 
-    private final Filter rootFilter = new EmptyFilter();
     private final Map<String, RootFilterInformation> rootFilters = Collections.synchronizedMap(new HashMap<String, RootFilterInformation>());
     private final Map<String, Filter> namedFilters = Collections.synchronizedMap(new HashMap<String, Filter>());
 
@@ -130,15 +135,11 @@ public class ConditionContainer implements FilterContainer
                     else
                     {
                         addDependencyResolvedFilter(rootFilters.get(filter.dependsOn), filters, depth);
+                        filters.addLast(filter.name);
                     }
                 }
             }
         }
-    }
-
-    public Filter getRootFilter()
-    {
-        return rootFilter;
     }
 
     public void parse(final Element element, final FilterFactory factory)
@@ -149,6 +150,7 @@ public class ConditionContainer implements FilterContainer
         String name = UUID.randomUUID().toString();
         String dependsOn = "";
         boolean pipeInput = false;
+        boolean validate = true;
         Filter filter = new EmptyFilter();
 
         if (element.hasAttribute("id"))
@@ -166,13 +168,18 @@ public class ConditionContainer implements FilterContainer
             pipeInput = Boolean.parseBoolean(element.getAttribute("pipeInput"));
         }
 
-        rootFilters.put(name, new RootFilterInformation(name, dependsOn, filter, pipeInput));
+        if (element.hasAttribute("validate"))
+        {
+            validate = Boolean.parseBoolean(element.getAttribute("validate"));
+        }
+
+        rootFilters.put(name, new RootFilterInformation(name, dependsOn, filter, pipeInput, validate));
 
         for (Element elem = XmlHelper.getFirstChildElement(element); elem != null; elem = XmlHelper.getNextSiblingElement(elem))
         {
             try
             {
-                rootFilter.addFilter(factory.createFilter(this, elem));
+                filter.addFilter(factory.createFilter(this, elem));
             }
             catch (UnknownFilterException e)
             {

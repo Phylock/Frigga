@@ -13,7 +13,7 @@ import java.util.*;
 public class FilterDeviceState
 {
     private final Device device;
-    private final Map<String, Device> storedTags = Collections.synchronizedMap(new HashMap<String, Device>());
+    private final Map<String, FilterDeviceState> storedTags = Collections.synchronizedMap(new HashMap<String, FilterDeviceState>());
 
     public FilterDeviceState(Device device)
     {
@@ -30,12 +30,12 @@ public class FilterDeviceState
         return storedTags.keySet();
     }
 
-    public Device getStoredDevice(final String tag)
+    public FilterDeviceState getStoredDevice(final String tag)
     {
         return storedTags.get(tag);
     }
 
-    public void storeTag(final String tag, final Device device)
+    public void storeTag(final String tag, final FilterDeviceState device)
     {
         storedTags.put(tag, device);
     }

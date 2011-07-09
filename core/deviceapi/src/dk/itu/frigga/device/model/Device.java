@@ -213,4 +213,22 @@ public class Device implements Serializable
     {
         return "Device{" + "id=" + id + ", name=" + name + ", symbolic=" + symbolic + ", last_update=" + last_update + ", online=" + online + '}';
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Device device = (Device) o;
+
+        return symbolic.equals(device.symbolic);
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return symbolic.hashCode();
+    }
 }

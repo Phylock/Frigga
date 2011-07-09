@@ -21,6 +21,7 @@ public class FilterContext
     private final TemplateInstanceImpl templateInstance;
     private final DeviceManager deviceManager;
     private final Map<String, FilterOutput> storedOutputs = Collections.synchronizedMap(new HashMap<String, FilterOutput>());
+    private final Set<String> allowedOutputs = Collections.synchronizedSet(new LinkedHashSet<String>());
 
     public FilterContext(DeviceManager deviceManager, TemplateInstanceImpl instance)
     {
@@ -54,6 +55,11 @@ public class FilterContext
         return storedOutputs.get(id);
     }
 
+    public void allowValidation(final String name)
+    {
+        allowedOutputs.add(name);
+    }
+
     public FilterOutput getSelectedOutput(final String selection)
     {
         FilterOutput output = new FilterOutput();
@@ -76,6 +82,21 @@ public class FilterContext
         for (Map.Entry<String, FilterOutput> entry : storedOutputs.entrySet())
         {
             output.devices.addAll(entry.getValue().devices);
+        }
+
+        return output;
+    }
+
+    public FilterOutput getValidateOutput()
+    {
+        FilterOutput output = new FilterOutput();
+
+        for (Map.Entry<String, FilterOutput> entry : storedOutputs.entrySet())
+        {
+            if (allowedOutputs.contains(entry.getKey()))
+            {
+                output.devices.addAll(entry.getValue().devices);
+            }
         }
 
         return output;

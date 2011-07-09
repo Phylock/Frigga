@@ -32,7 +32,7 @@ public class FilterDataGenerator
 
             for (Device device : devices)
             {
-                filterInput.devices.add(device);
+                filterInput.devices.add(new FilterDeviceState(device));
             }
         }
     }
@@ -46,7 +46,7 @@ public class FilterDataGenerator
             Iterable<Device> devices = deviceManager.getDevicesByType(category);
             for (Device device : devices)
             {
-                input.devices.add(device);
+                input.devices.add(new FilterDeviceState(device));
             }
         }
 

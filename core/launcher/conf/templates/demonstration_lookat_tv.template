@@ -22,7 +22,7 @@
                         <function selection="tvselection" function="off" />
                     </action>
                 </actions>
-                <condition id="eyetrackselection">
+                <condition id="eyetrackselection" validate="false">
                     <isCategory category="eyetrack" />
                 </condition>
                 <condition id="tvselection" dependsOn="eyetrackselection">
