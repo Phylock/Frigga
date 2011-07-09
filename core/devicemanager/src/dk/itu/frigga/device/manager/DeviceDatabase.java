@@ -156,7 +156,7 @@ public class DeviceDatabase {
 
   private void updateDevice(DeviceDAO devicedao, List<DeviceDescriptor> devices, String driver) {
     for (DeviceDescriptor dd : devices) {
-      Device device = new Device(dd.getName(), dd.getSymbolic(), new Date(), false, driver);
+      Device device = new Device(dd.getName(), dd.getSymbolic(), new Date(), true, driver);
       devicedao.makePersistent(device);
     }
   }
@@ -223,11 +223,13 @@ public class DeviceDatabase {
     for (LocationUpdate update : updates) {
       switch (update.getType()) {
         case Global:
+          Location glocation = new Location(/*TODO: maybe symbolic instead*/null, update.getPoint(), /*TODO: fix sender*/"", new Date());
+          global.makePersistent(glocation);
           devicemanager.fireDeviceChanged(update.getDevice(), DeviceManagerImpl.DeviceChangedType.GlobalLocation, "");
           break;
         case Local:
-          LocationLocal location = new LocationLocal(/*TODO: maybe symbolic instead*/null, update.getRoom(), update.getPoint(), /*TODO: fix sender*/"", new Date());
-          local.makePersistent(location);
+          LocationLocal llocation = new LocationLocal(/*TODO: maybe symbolic instead*/null, update.getRoom(), update.getPoint(), /*TODO: fix sender*/"", new Date());
+          local.makePersistent(llocation);
           devicemanager.fireDeviceChanged(update.getDevice(), DeviceManagerImpl.DeviceChangedType.LocalLocation, "");
           break;
       }

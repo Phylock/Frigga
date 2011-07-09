@@ -42,7 +42,6 @@ public class Activator implements BundleActivator {
         entries.add(e.nextElement());
       }
       window.fillLogEnties(entries.toArray(new LogEntry[entries.size()]));
-
     }
 
     String[] topics = new String[]{

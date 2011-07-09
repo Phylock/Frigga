@@ -23,6 +23,11 @@ import dk.itu.frigga.got.client.GotClient;
 import dk.itu.frigga.got.client.GotClientTcp;
 import dk.itu.frigga.got.event.SensorPackage;
 import dk.itu.frigga.got.event.SensorPackageListener;
+import dk.itu.frigga.got.sim.GotClientSimulate;
+import dk.itu.frigga.got.sim.LinearMovement;
+import dk.itu.frigga.got.sim.SimulateReciever;
+import dk.itu.frigga.got.sim.SimulateTransmitter;
+import dk.itu.frigga.got.sim.Simulator;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -102,7 +107,8 @@ public class GotDriver implements Driver, SensorPackageListener {
         {
           room = newroom;
         }
-        client = new GotClientTcp(host, port);
+        //client = new GotClientTcp(host, port);
+        client = new GotClientSimulate(createSimulator());
         client.addListener(this);
         client.connect();
       }
@@ -110,6 +116,18 @@ public class GotDriver implements Driver, SensorPackageListener {
       log.log(LogService.LOG_ERROR, ex.getLocalizedMessage(), ex);
       throw new IllegalArgumentException(ex);
     }
+  }
+
+  private Simulator createSimulator()
+  {
+    Simulator sim = new Simulator();
+    sim.addReciever(new SimulateReciever(1000, 800, 20202, new dk.itu.frigga.got.event.Point3(0, 0, 0)));
+    sim.addReciever(new SimulateReciever(1000, 800, 20191, new dk.itu.frigga.got.event.Point3(1000, 0, 0)));
+    sim.addReciever(new SimulateReciever(1000, 800, 20195, new dk.itu.frigga.got.event.Point3(1000, 500, 0)));
+
+    sim.addTransmitter(new SimulateTransmitter(new LinearMovement(new dk.itu.frigga.got.event.Point3(1.0,0.0, 0.0), 1000), 11003, 0.91f, new dk.itu.frigga.got.event.Point3(10, 10, 5)));
+    //sim.addTransmitter(new SimulateTransmitter(new LinearMovement(new dk.itu.frigga.got.event.Point3(1.0,0.5, 0.0), 50), 11004, 0.95f, new dk.itu.frigga.got.event.Point3(10, 10, 5)));
+    return sim;
   }
 
   /** Implements Driver **/
@@ -154,7 +172,6 @@ public class GotDriver implements Driver, SensorPackageListener {
 
   private DeviceDescriptor generateDeviceDescriptor(long id) {
     return new DeviceDescriptor("GoT " + id, "got_" + id, new String[]{CATEGORY});
-
   }
 
   private static String parseID(String filename) {
