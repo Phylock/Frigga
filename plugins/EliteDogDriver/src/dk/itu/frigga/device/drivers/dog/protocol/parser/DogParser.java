@@ -44,6 +44,7 @@ public class DogParser implements Dog2MessageListener {
     //fill
     list.put("configmessage", new ConfigMessageParser());
     list.put("response", new ResponseMessageParser());
+    list.put("statenotification", new StateMessageParser());
 
     //write protection + speed
     parsers = Collections.unmodifiableMap(list);
@@ -62,7 +63,7 @@ public class DogParser implements Dog2MessageListener {
       MessageParsable handler = parsers.get(type);
       StructureUpdate update = DogDeviceManager.instance().beginUpdate(driver.getDriverId());
       handler.parse(driver, update, doc, message);
-      DogDeviceManager.instance().commit(update);
+      DogDeviceManager.instance().commitUpdates(update);
     } else {
       log.log(LogService.LOG_INFO, "Unhandled dog event: " + type);
     }

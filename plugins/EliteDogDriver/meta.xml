@@ -18,6 +18,7 @@
 	</properties>
 
     <ev:publisher name="dog_device_event" field="event" topics="dk/itu/frigga/device/drivers" data-key="data" data-type="dk.itu.frigga.device.DeviceUpdateEvent"/>
+    <ev:publisher name="dog_update_event" field="vevent" topics="dk/itu/frigga/device/change" data-key="data" data-type="dk.itu.frigga.device.VariableChangedEvent"/>
     
   </component>
 </ipojo>

@@ -28,6 +28,7 @@ public class DogDriver implements Driver {
   //External services, initialized by DependencyManager
   private LogService log;
   private Publisher event;
+  private Publisher vevent;
   //Private member variables
   private Connection connection = null;
   private String url;
@@ -84,6 +85,7 @@ public class DogDriver implements Driver {
     updateSubclassFields("log", connection.getParser(), log);
 
     updateSubclassFields("event", DogDeviceManager.instance(), event);
+    updateSubclassFields("vevent", DogDeviceManager.instance(), vevent);
     updateSubclassFields("connection", DogDeviceManager.instance(), connection);
 
     if (url != null && !url.isEmpty()) {
