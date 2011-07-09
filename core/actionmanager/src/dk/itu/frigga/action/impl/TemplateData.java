@@ -44,6 +44,7 @@ public class TemplateData implements Template
         filterFactory.registerFilterType("matchSymbolic", MatchSymbolicFilter.class);
         filterFactory.registerFilterType("lookedAt", LookedAtFilter.class);
         filterFactory.registerFilterType("remoteCompare", RemoteCompareFilter.class);
+        filterFactory.registerFilterType("location", LocationFilter.class);
         filterFactory.registerFilterType("empty", EmptyFilter.class);
     }
 

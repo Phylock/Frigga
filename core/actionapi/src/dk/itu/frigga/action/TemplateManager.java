@@ -32,7 +32,4 @@ public interface TemplateManager
 
     void addTemplateLoadedListener(TemplateLoadedListener listener);
     void removeTemplateLoadedListener(TemplateLoadedListener listener);
-
-    void startRunner();
-    void stopRunner();
 }

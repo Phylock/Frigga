@@ -42,6 +42,11 @@ public class Device implements Serializable
     private boolean hasCategories = false;
     private boolean hasVariables = false;
 
+    private Location globalLocation;
+    private final List<LocationLocal> localLocations = new LinkedList<LocationLocal>();
+    private boolean hasGlobalLocation = false;
+    private boolean hasLocalLocation = false;
+
     //@OneToMany(cascade=CascadeType.ALL)
     //@JoinColumn(name="device_id")
     private Set<Variable> variables = new HashSet<Variable>(0);
@@ -206,6 +211,40 @@ public class Device implements Serializable
     public void setDriver(String driver)
     {
         this.driver = driver;
+    }
+
+    public Location getGlobalLocation()
+    {
+        if (!hasGlobalLocation)
+        {
+            synchronized (this)
+            {
+                if (!hasGlobalLocation)
+                {
+                    globalLocation = deviceDao.loadGlobalLocation(this);
+                    hasGlobalLocation = true;
+                }
+            }
+        }
+
+        return globalLocation;
+    }
+
+    public List<LocationLocal> getLocalLocations()
+    {
+        if (!hasLocalLocation)
+        {
+            synchronized (this)
+            {
+                if (!hasLocalLocation)
+                {
+                    deviceDao.loadLocalLocations(this, localLocations);
+                    hasLocalLocation = true;
+                }
+            }
+        }
+
+        return localLocations;
     }
 
     @Override

@@ -515,7 +515,6 @@ public class MainWindow extends JFrame {
                     TemplateInstance instance = actionmanager.createTemplateInstance(template, instanceInfo.getId());
                     instance.setReplacementValue("onLookAt", "on");
                     instance.setReplacementValue("onLookAway", "off");
-                    actionmanager.startRunner();
                 } catch (TemplateNotFoundException ex) {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ErrorCreatingTemplateInstanceException ex) {

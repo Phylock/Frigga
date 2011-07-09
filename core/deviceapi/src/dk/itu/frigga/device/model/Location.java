@@ -13,12 +13,12 @@ public class Location
 {
 
     protected Long device_id;
-    protected Point3 position;
-    protected Point3 velocity;
+    protected Point3<Double> position;
+    protected Point3<Double> velocity;
     protected String sender;
     protected Date updated;
 
-    public Location(Long device_id, Point3 position, Point3 velocity, String sender, Date updated)
+    public Location(Long device_id, Point3<Double> position, Point3<Double> velocity, String sender, Date updated)
     {
         this.device_id = device_id;
         this.position = position;
@@ -27,7 +27,7 @@ public class Location
         this.updated = updated;
     }
 
-    public Location(Long device_id, Point3 position, String sender, Date updated)
+    public Location(Long device_id, Point3<Double> position, String sender, Date updated)
     {
         this.device_id = device_id;
         this.position = position;
@@ -41,12 +41,12 @@ public class Location
         this.device_id = device_id;
     }
 
-    public void setPosition(Point3 position)
+    public void setPosition(Point3<Double> position)
     {
         this.position = position;
     }
 
-    public void setVelocity(Point3 velocity)
+    public void setVelocity(Point3<Double> velocity)
     {
         this.velocity = velocity;
     }
@@ -66,12 +66,12 @@ public class Location
         return device_id;
     }
 
-    public Point3 getPosition()
+    public Point3<Double> getPosition()
     {
         return position;
     }
 
-    public Point3 getVelocity()
+    public Point3<Double> getVelocity()
     {
         return velocity;
     }

@@ -5,15 +5,18 @@ import dk.itu.frigga.action.*;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.device.DeviceManager;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Templates;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Class description here...
@@ -32,9 +35,28 @@ public class TemplateManagerImpl implements TemplateManager
 
     private DeviceManager deviceManager;
     private InstanceRunner instanceRunner = new InstanceRunner();
+    private BundleContext bundleContext;
 
-    public TemplateManagerImpl()
+    public TemplateManagerImpl(BundleContext bundleContext)
     {
+        this.bundleContext = bundleContext;
+    }
+
+    private void validate()
+    {
+        String[] topics = new String[]{
+                "dk/itu/frigga/device/status/*"
+        };
+
+        Dictionary props = new Properties();
+        props.put(EventConstants.EVENT_TOPIC, topics);
+        bundleContext.registerService(EventHandler.class.getName(), instanceRunner, props);
+        instanceRunner.startRunner();
+    }
+
+    private void invalidate()
+    {
+        instanceRunner.stopRunner();
     }
 
     public void loadInstancesFromDisk()
@@ -242,22 +264,10 @@ public class TemplateManagerImpl implements TemplateManager
         templateLoadedListeners.remove(listener);
     }
 
-    @Override
-    public void startRunner()
-    {
-        instanceRunner.startRunner();
-    }
-
-    @Override
-    public void stopRunner()
-    {
-        instanceRunner.stopRunner();
-    }
-
-    private class InstanceRunner extends Thread
+    private class InstanceRunner extends Thread implements EventHandler
     {
         private boolean started = true;
-        private int delay = 1000;
+        private BlockingQueue<String> refreshQueue = new LinkedBlockingQueue<String>();
 
         public InstanceRunner()
         {
@@ -266,28 +276,30 @@ public class TemplateManagerImpl implements TemplateManager
         @Override
         public void run()
         {
-            while (started)
+            try
             {
-                for(TemplateInstanceImpl instance : templateInstances.values())
+                while (started)
                 {
-                    try
-                    {
-                        instance.run();
-                    }
-                    catch (FilterFailedException e)
-                    {
-                        // Failed
-                    }
-                }
+                    String deviceSymbolic = refreshQueue.take();
+                    System.out.println("Handling update of device: " + deviceSymbolic);
 
-                try
-                {
-                    Thread.sleep(delay);
+                    for (TemplateInstanceImpl instance : templateInstances.values())
+                    {
+                        try
+                        {
+                            instance.run();
+                        }
+                        catch (FilterFailedException e)
+                        {
+                            // Failed
+                        }
+                    }
                 }
-                catch (InterruptedException e)
-                {
-                    // Interupted
-                }
+            }
+            catch (InterruptedException e)
+            {
+                // Stop the running
+                started = false;
             }
         }
 
@@ -300,6 +312,23 @@ public class TemplateManagerImpl implements TemplateManager
         public void stopRunner()
         {
             started = false;
+        }
+
+        @Override
+        public void handleEvent(Event event)
+        {
+            try
+            {
+                System.out.println("Queueing event.topic: " + event.getTopic());
+                System.out.println("Queueing device: " + String.valueOf(event.getProperty("device")));
+                System.out.println("Queueing device.value: " + String.valueOf(event.getProperty("value")));
+                System.out.println("Queueing device.time: " + String.valueOf(event.getProperty("time")));
+                refreshQueue.put(String.valueOf(event.getProperty("device")));
+            }
+            catch (InterruptedException e)
+            {
+                // Ignore
+            }
         }
     }
 }

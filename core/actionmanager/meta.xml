@@ -13,8 +13,8 @@
         <requires field="datamanager"/>
         <requires field="devicemanager"/>-->
 
-        <!--<callback transition="validate" method="validate"/>
-        <callback transition="invalidate" method="invalidate"/>-->
+        <callback transition="validate" method="validate"/>
+        <callback transition="invalidate" method="invalidate"/>
 
     </component>
     <instance component="TemplateManagerImpl" name="TemplateManager"/>

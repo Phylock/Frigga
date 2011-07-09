@@ -33,6 +33,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Osmorc/Felic/org.apache.felix.eventadmin-1.2.10" level="application" />
   </component>
 </module>
 

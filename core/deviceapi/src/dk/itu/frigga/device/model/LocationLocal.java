@@ -14,12 +14,12 @@ import java.util.Date;
 public class LocationLocal extends Location{
   private String room;
 
-  public LocationLocal(Long device_id, String room, Point3 position, String sender, Date updated) {
+  public LocationLocal(Long device_id, String room, Point3<Double> position, String sender, Date updated) {
     super(device_id, position,sender, updated);
     this.room = room;
   }
 
-  public LocationLocal(Long device_id, String room, Point3 position, Point3 velocity, String sender, Date updated) {
+  public LocationLocal(Long device_id, String room, Point3<Double> position, Point3<Double> velocity, String sender, Date updated) {
     super(device_id, position, velocity,sender, updated);
     this.room = room;
   }

@@ -7,6 +7,8 @@ package dk.itu.frigga.device.dao;
 import dk.itu.frigga.data.dao.GenericDAO;
 import dk.itu.frigga.device.model.Category;
 import dk.itu.frigga.device.model.Device;
+import dk.itu.frigga.device.model.Location;
+import dk.itu.frigga.device.model.LocationLocal;
 import dk.itu.frigga.device.model.Variable;
 import dk.itu.frigga.device.model.VariableType;
 
@@ -42,5 +44,9 @@ public interface DeviceDAO extends GenericDAO<Device, Long> {
   void setState(String symbolic, boolean state);
 
   void setStateByDriver(String driver, boolean state);
+
+  void loadLocalLocations(final Device device, final List<LocationLocal> locations);
+
+  Location loadGlobalLocation(final Device device);
   
 }
