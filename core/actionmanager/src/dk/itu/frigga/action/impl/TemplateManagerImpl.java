@@ -5,6 +5,7 @@ import dk.itu.frigga.action.*;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.device.DeviceManager;
+import dk.itu.frigga.utility.FileExtensionFilter;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
@@ -62,7 +63,7 @@ public class TemplateManagerImpl implements TemplateManager
     public void loadInstancesFromDisk()
     {
         File path = new File("conf/instances/");
-        File[] files = path.listFiles();
+        File[] files = path.listFiles(new FileExtensionFilter(new String[]{"prop"}));
 
         for (File file : files)
         {
@@ -179,7 +180,10 @@ public class TemplateManagerImpl implements TemplateManager
                 listener.templateLoaded(this, templateData);
             }
 
-            templates.add(templateData);
+            if (!templates.contains(templateData))
+            {
+                templates.add(templateData);
+            }
         }
         catch (ParserConfigurationException e)
         {

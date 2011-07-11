@@ -3,8 +3,8 @@ package dk.itu.frigga.action.impl;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.FilterContext;
 import dk.itu.frigga.action.impl.filter.FilterDeviceState;
-import dk.itu.frigga.action.impl.runtime.ExecutableAction;
-import dk.itu.frigga.action.impl.runtime.actions.Function;
+import dk.itu.frigga.action.impl.runtime.AbstractAction;
+import dk.itu.frigga.action.impl.runtime.actions.FunctionAction;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
 
@@ -19,7 +19,7 @@ import java.util.*;
 public class Action
 {
     private String event;
-    private final List<ExecutableAction> executableActions = Collections.synchronizedList(new LinkedList<ExecutableAction>());
+    private final List<AbstractAction> executableActions = Collections.synchronizedList(new LinkedList<AbstractAction>());
 
     public Action()
     {
@@ -41,21 +41,21 @@ public class Action
         {
             if (elem.getTagName().equals("function"))
             {
-                Function function = new Function();
-                function.parse(elem);
-                executableActions.add(function);
+                FunctionAction functionAction = new FunctionAction();
+                functionAction.parse(elem);
+                executableActions.add(functionAction);
             }
         }
     }
 
-    public void execute(final VariableContainer variables, Collection<FilterDeviceState> devices, FilterContext context, Set<FilterDeviceState> validationSet)
+    public void execute(Collection<FilterDeviceState> devices, FilterContext context)
     {
         // Magic stuff happens here...
         System.out.println("Event: " + event + " called.");
 
-        for (ExecutableAction action : executableActions)
+        for (AbstractAction action : executableActions)
         {
-            action.execute(variables, devices, context, validationSet);
+            action.execute(devices, context);
         }
     }
 }

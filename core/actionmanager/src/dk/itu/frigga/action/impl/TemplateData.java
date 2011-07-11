@@ -45,6 +45,7 @@ public class TemplateData implements Template
         filterFactory.registerFilterType("lookedAt", LookedAtFilter.class);
         filterFactory.registerFilterType("remoteCompare", RemoteCompareFilter.class);
         filterFactory.registerFilterType("location", LocationFilter.class);
+        filterFactory.registerFilterType("time", TimeFilter.class);
         filterFactory.registerFilterType("empty", EmptyFilter.class);
     }
 
@@ -60,12 +61,27 @@ public class TemplateData implements Template
 
     public void run(final TemplateInstanceImpl instance) throws FilterFailedException
     {
-        FilterContext context = new FilterContext(deviceManager, instance);
-
         for (Rule rule : ruleContainer.getRules())
         {
-            rule.run(context);
+            rule.run(deviceManager, instance);
         }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TemplateData that = (TemplateData) o;
+
+        return templateInfo.getName().equals(that.templateInfo.getName());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return templateInfo.hashCode();
     }
 
     public void loadFromStream(final InputStream stream) throws ParserConfigurationException, IOException, SAXException, InvalidTemplateFormatException, FilterSyntaxErrorException

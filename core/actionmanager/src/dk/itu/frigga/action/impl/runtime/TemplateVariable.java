@@ -108,6 +108,13 @@ public class TemplateVariable
         this.name = name;
     }
 
+    public TemplateVariable(final TemplateVariable other)
+    {
+        this.name = other.name;
+        this.source = other.getSource();
+        this.value = new Value(other.value);
+    }
+
     public TemplateVariable.Value getValue()
     {
         return value;

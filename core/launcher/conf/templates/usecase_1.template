@@ -3,7 +3,7 @@
         xsi:schemaLocation="http://www.example.com template.xsd">
     <template>
         <info>
-            <name>Use case #1 test</name>
+            <name>usecase1</name>
             <author>Mikkel Wendt-Larsen (miwe@itu.dk)</author>
             <author>Tommy Andersen (toan@itu.dk)</author>
             <site>localhost</site>
@@ -21,14 +21,14 @@
                          criteria. The function to run is switch television 
                          on. -->
                     <action event="validate">
-                        <function selection="tvselection" function="on" />
+                        <function selection="tvselection" function="{#onLookAt}" />
                     </action>
                     <!-- Run these actions for each device no longer being 
                          validated. We can expect the invalidate to be called
                          at most 1 time for each call to validate. The 
                          function we call is to turn the television off. -->
                     <action event="invalidate">
-                        <function selection="tvselection" function="off" />
+                        <function selection="tvselection" function="{#onLookAway}" />
                     </action>
                 </actions>
 

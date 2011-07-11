@@ -32,6 +32,8 @@ public class FileExtensionFilter extends javax.swing.filechooser.FileFilter impl
   }
 
   public boolean accept(File f) {
+      if (f.isHidden()) return false;
+
     if (f.isDirectory()) {
       return true;
     }

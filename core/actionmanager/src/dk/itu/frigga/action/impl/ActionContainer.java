@@ -23,11 +23,11 @@ public class ActionContainer
     {
     }
 
-    public void callEvent(final VariableContainer variables, final String event, final Collection<FilterDeviceState> devices, FilterContext context, Set<FilterDeviceState> validationSet)
+    public void callEvent(final String event, final Collection<FilterDeviceState> devices, FilterContext context)
     {
         if (actions.containsKey(event))
         {
-            actions.get(event).execute(variables, devices, context, validationSet);
+            actions.get(event).execute(devices, context);
         }
     }
 

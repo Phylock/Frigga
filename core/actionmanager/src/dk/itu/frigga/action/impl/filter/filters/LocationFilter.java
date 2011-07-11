@@ -22,7 +22,8 @@ public class LocationFilter extends Filter
     private String type = "global";
     private String room = "";
     private String position = "0,0,0";
-    private String radius = "1m";
+    private String minRadius = "0m";
+    private String maxRadius = "999999m";
     private boolean matchCoords = false;
 
     @Override
@@ -46,9 +47,14 @@ public class LocationFilter extends Filter
             matchCoords = true;
         }
 
-        if (attributes.containsKey("radius"))
+        if (attributes.containsKey("minRadius"))
         {
-            radius = attributes.get("radius");
+            minRadius = attributes.get("minRadius");
+        }
+
+        if (attributes.containsKey("maxRadius"))
+        {
+            maxRadius = attributes.get("maxRadius");
         }
     }
 
@@ -122,18 +128,29 @@ public class LocationFilter extends Filter
         String localType = context.prepare(type);
         String localRoom = context.prepare(room);
         Point3<Double> localPosition = parseToDouble(context.prepare(position));
-        String localRadiusStr = context.prepare(radius);
-        double radiusNumber = 1.0;
-        String unit = "m";
+        String localMinRadiusStr = context.prepare(minRadius);
+        String localMaxRadiusStr = context.prepare(maxRadius);
+        double minRadiusNumber = 1.0;
+        String minUnit = "m";
+        double maxRadiusNumber = 1.0;
+        String maxUnit = "m";
 
-        Matcher matcher = PATTERN.matcher(localRadiusStr);
+        Matcher matcher = PATTERN.matcher(localMinRadiusStr);
         if (matcher.matches())
         {
-            radiusNumber = Double.parseDouble(matcher.group(1));
-            unit = matcher.group(2);
+            minRadiusNumber = Double.parseDouble(matcher.group(1));
+            minUnit = matcher.group(2);
         }
 
-        radiusNumber = normalizeValue(radiusNumber, unit, "local".equals(localType) ? "mm" : "m");
+        matcher.reset(localMaxRadiusStr);
+        if (matcher.matches())
+        {
+            maxRadiusNumber = Double.parseDouble(matcher.group(1));
+            maxUnit = matcher.group(2);
+        }
+
+        minRadiusNumber = normalizeValue(minRadiusNumber, minUnit, "local".equals(localType) ? "mm" : "m");
+        maxRadiusNumber = normalizeValue(maxRadiusNumber, maxUnit, "local".equals(localType) ? "mm" : "m");
 
         for (FilterDeviceState state : input)
         {
@@ -147,7 +164,7 @@ public class LocationFilter extends Filter
                         {
                             double dist = calculateDistance(localPosition, l.getPosition());
 
-                            if (dist <= radiusNumber)
+                            if (dist >= minRadiusNumber && dist <= maxRadiusNumber)
                             {
                                 output.addDevice(state);
                             }
@@ -163,7 +180,7 @@ public class LocationFilter extends Filter
             {
                 double dist = calculateDistance(localPosition, state.getDevice().getGlobalLocation().getPosition());
 
-                if (dist <= radiusNumber)
+                if (dist >= minRadiusNumber && dist <= maxRadiusNumber)
                 {
                     output.addDevice(state);
                 }

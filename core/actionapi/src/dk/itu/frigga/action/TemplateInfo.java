@@ -39,18 +39,32 @@ public class TemplateInfo
         String n = "Unnamed";
         String s = "none";
         String d = "No description.";
+        boolean hasAuthors = false;
 
         if (element.getTagName().equals("info"))
         {
-            Element elemName = XmlHelper.getFirstChildElement(element, "name");
-            Element elemAuthor = XmlHelper.getFirstChildElement(element, "author");
-            Element elemSite = XmlHelper.getFirstChildElement(element, "site");
-            Element elemDescription = XmlHelper.getFirstChildElement(element, "description");
-
-            if (elemName != null) n = elemName.getTextContent();
-            if (elemAuthor != null) a = elemAuthor.getTextContent();
-            if (elemSite != null) s = elemSite.getTextContent();
-            if (elemDescription != null) d = elemDescription.getTextContent();
+            for (Element elem = XmlHelper.getFirstChildElement(element); elem != null; elem = XmlHelper.getNextSiblingElement(elem))
+            {
+                if ("name".equals(elem.getTagName()))
+                {
+                    n = elem.getTextContent();
+                }
+                else if ("author".equals(elem.getTagName()))
+                {
+                    if (hasAuthors) a = a + ", ";
+                    else a = "";
+                    a = a + elem.getTextContent();
+                    hasAuthors = true;
+                }
+                else if ("site".equals(elem.getTagName()))
+                {
+                    s = elem.getTextContent();
+                }
+                else if ("description".equals(elem.getTagName()))
+                {
+                    d = elem.getTextContent();
+                }
+            }
         }
 
         author = a;

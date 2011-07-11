@@ -8,6 +8,7 @@ package dk.itu.frigga.action.impl;
 import dk.itu.frigga.action.filter.FilterFailedException;
 import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.*;
+import dk.itu.frigga.device.DeviceManager;
 import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
@@ -39,8 +40,12 @@ public class Rule
         this.filterFactory = factory;
     }
 
-    public void run(final FilterContext context) throws FilterFailedException
+    public void run(final DeviceManager deviceManager, final TemplateInstanceImpl instance) throws FilterFailedException
     {
+        FilterContext context = new FilterContext(deviceManager, instance, variableContainer);
+
+        actionContainer.callEvent("initialize", context.getUsedStates(), context);
+
         // Run all filters in a way so that filters depending on each other will be run in the right order.
         Collection<ConditionContainer.RootFilterInformation> dependencyResolvedFilters = conditionContainer.getPrioritizedFilterList();
         for (ConditionContainer.RootFilterInformation rootFilter : dependencyResolvedFilters)
@@ -86,12 +91,17 @@ public class Rule
         // Call the associated actions
         if (invalidates.size() > 0)
         {
-            actionContainer.callEvent(variableContainer, "invalidate", invalidates, context, invalidates);
+            actionContainer.callEvent("invalidate", invalidates, context);
         }
 
         if (validates.size() > 0)
         {
-            actionContainer.callEvent(variableContainer, "validate", validates, context, validates);
+            actionContainer.callEvent("validate", validates, context);
+        }
+
+        if (validDevices.size() > 0)
+        {
+            actionContainer.callEvent("iteration", validDevices, context);
         }
     }
 

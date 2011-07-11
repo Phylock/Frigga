@@ -467,7 +467,7 @@ public class MainWindow extends JFrame {
     private void btn_refresh2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refresh2ActionPerformed
       File path = new File("conf/instances/");
       List<InstanceInfoItem> items = new LinkedList<InstanceInfoItem>();
-      File[] files = path.listFiles();
+      File[] files = path.listFiles(new FileExtensionFilter(new String[]{"prop"}));
       for (File file : files) {
         Properties properties = new Properties();
         try {
@@ -485,6 +485,19 @@ public class MainWindow extends JFrame {
     private void lst_templates1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_templates1ValueChanged
       // TODO add your handling code here:
 }//GEN-LAST:event_lst_templates1ValueChanged
+    private void btn_refresh1ActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        lst_templates.removeAll();
+        Collection<Template> templates = actionmanager.getTemplates();
+        actionmanager.loadTemplatesFromDisk();
+        actionmanager.loadInstancesFromDisk();
+        lst_templates.setListData(templates.toArray());
+        /*Collection<Template> templates = actionmanager.getTemplates();
+        Vector<TemplateItem> list = new Vector<TemplateItem>();
+        for (Template t : templates) {
+        list.add(new TemplateItem(t));
+        }
+        lst_templates.setListData(list);*/
+    }                                            
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
       try {
@@ -519,18 +532,6 @@ public class MainWindow extends JFrame {
       actionmanager.loadTemplatesFromDisk();
       btn_refresh1ActionPerformed(null);
 }//GEN-LAST:event_btn_template_openActionPerformed
-
-    private void btn_refresh1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refresh1ActionPerformed
-      lst_templates.removeAll();
-      Collection<Template> templates = actionmanager.getTemplates();
-      lst_templates.setListData(templates.toArray());
-      /*Collection<Template> templates = actionmanager.getTemplates();
-      Vector<TemplateItem> list = new Vector<TemplateItem>();
-      for (Template t : templates) {
-      list.add(new TemplateItem(t));
-      }
-      lst_templates.setListData(list);*/
-}//GEN-LAST:event_btn_refresh1ActionPerformed
 
     private void lst_templatesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lst_templatesValueChanged
       Object obj = lst_templates.getSelectedValue();

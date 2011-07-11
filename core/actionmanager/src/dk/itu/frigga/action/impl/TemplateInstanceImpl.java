@@ -79,7 +79,7 @@ public class TemplateInstanceImpl implements TemplateInstance
         try
 
         {
-            Pattern regex = Pattern.compile("\\{([^}\\{]+)\\}");
+            Pattern regex = Pattern.compile("\\{([^}\\{\\$]+)\\}");
             Matcher regexMatcher = regex.matcher(source);
             while (regexMatcher.find())
             {
@@ -110,7 +110,6 @@ public class TemplateInstanceImpl implements TemplateInstance
         {
             // Syntax error in the regular expression
         }
-
 
         return resultString.toString();
     }

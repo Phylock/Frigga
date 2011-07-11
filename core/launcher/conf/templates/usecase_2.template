@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.example.com template.xsd">
+    <template>
+        <info>
+            <name>usecase2</name>
+            <author>Mikkel Wendt-Larsen (miwe@itu.dk)</author>
+            <author>Tommy Andersen (toan@itu.dk)</author>
+            <site>localhost</site>
+            <description>Adjust volume of tv depending on the distance to the television.</description>
+        </info>
+        <replacements>
+            <replace name="tvPosition" description="Position of television." type="string" />
+        </replacements>
+        <rules>
+            <rule id="rule1" description="Perform action when looking at and away from television.">
+                <actions>
+                    <!-- Adjust volume -->
+                    <action event="validate">
+                        <function selection="neartv" function="setVolume">
+                            <param name="volume">10</param>
+                        </function>
+                        <function selection="mediumtv" function="setVolume">
+                            <param name="volume">20</param>
+                        </function>
+                        <function selection="fartv" function="setVolume">
+                            <param name="volume">30</param>
+                        </function>
+                    </action>
+                </actions>
+
+                <condition id="neartv">
+                    <location type="local" room="demoroom" position="{#tvPosition}" maxRadius="1m">
+                        <isCategory category="tv" />
+                    </location>
+                </condition>
+                <condition id="mediumtv">
+                    <location type="local" room="demoroom" position="{#tvPosition}" minRadius="1m" maxRadius="2m">
+                        <isCategory category="tv" />
+                    </location>
+                </condition>
+                <condition id="fartv">
+                    <location type="local" room="demoroom" position="{#tvPosition}" minRadius="2m">
+                        <isCategory category="tv" />
+                    </location>
+                </condition>
+            </rule>
+        </rules>
+    </template>
+</frigga>
