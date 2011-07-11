@@ -8,8 +8,8 @@
 <target depends="generate-jar" name="jar"/>
 
 ** To add automatic deployment, add one of the following lines 
-<target depends="deploy-boundle-auto" name="-post-jar"/>
-<target depends="deploy-boundle-manual" name="-post-jar"/>
+<target depends="deploy-bundle-core" name="-post-jar"/>
+<target depends="deploy-bundle-plugins" name="-post-jar"/>
 
 ** deploy scrips has default parameters but looks for 
    project specific overwrites in nbproject/deploy.properties
