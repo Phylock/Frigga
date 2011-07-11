@@ -564,13 +564,17 @@ public class MainWindow extends JFrame {
       if (objDevice instanceof DeviceItem) {
         Device device = ((DeviceItem) objDevice).getDevice();
         String function = txt_function.getText();
-        String[] param = txt_param.getText().split(";");
-        Parameter[] parameters = new Parameter[param.length];
-        for(int i =0; i < param.length; i++)
-        {
-          parameters[i] = new Parameter("", param[i]);
+        if (txt_param.getText().isEmpty()) {
+          devicemanager.callFunction(function, new Device[]{device});
+        } else {
+          String[] param = txt_param.getText().split(";");
+          Parameter[] parameters = new Parameter[param.length];
+          for (int i = 0; i < param.length; i++) {
+            parameters[i] = new Parameter("", param[i]);
+          }
+          devicemanager.callFunction(function, new Device[]{device}, parameters);
         }
-        devicemanager.callFunction(function, new Device[]{device}, parameters);
+
       }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -578,6 +582,8 @@ public class MainWindow extends JFrame {
     txt_name.setText(device.getName());
     txt_symbolic.setText(device.getSymbolic());
     Connection conn = null;
+
+
     try {
       conn = cpool.getConnection();
       DeviceDaoFactory ddf = devicemanager.getDeviceDaoFactory();
@@ -588,27 +594,36 @@ public class MainWindow extends JFrame {
       List<Variable> variables = vd.findByDevice(device);
 
       Vector<String> list = new Vector<String>();
+
+
       for (Variable v : variables) {
         list.add(v.getPrimaryKey().getVariabletype().getName() + ": " + v.getValue());
+
+
       }
       lst_device_variable.setListData(list);
 
       /*Vector<String> listfunc = new Vector<String>();
       for (Category cat : dd.getCategories(device)) {
-        List<Function> findByCategory = fd.findByCategory(cat);
-        for (Function f : findByCategory) {
-          if (!listfunc.contains(f.getName())) {
-            listfunc.add(f.getName());
-          }
-        }
+      List<Function> findByCategory = fd.findByCategory(cat);
+      for (Function f : findByCategory) {
+      if (!listfunc.contains(f.getName())) {
+      listfunc.add(f.getName());
+      }
+      }
       }
       lst_device_functions.setListData(list);*/
+
+
+
 
 
     } catch (SQLException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     } finally {
       cpool.releaseConnection(conn);
+
+
     }
   }
 
@@ -622,8 +637,12 @@ public class MainWindow extends JFrame {
     Vector<Replacement> rep = new Vector<Replacement>();
     lst_replacement.removeAll();
     Collection<Replacement> replacements = t.getReplacements();
+
+
     for (Replacement replacement : replacements) {
       rep.add(replacement);
+
+
     }
     lst_replacement.setListData(rep);
 
@@ -634,6 +653,8 @@ public class MainWindow extends JFrame {
     r.add(entry.getValue());
     }
     lst_rules.setListData(r);*/
+
+
 
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -692,8 +713,13 @@ public class MainWindow extends JFrame {
 
   private void start() {
     this.setVisible(true);
+
+
     try {
       cpool = datamanager.requestConnection("device");
+
+
+
     } catch (SQLException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     } catch (DataGroupNotFoundException ex) {
@@ -701,17 +727,28 @@ public class MainWindow extends JFrame {
     } catch (UnknownDataDriverException ex) {
       Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+
   }
 
   private void stop() {
     this.dispose();
+
+
+
+
+
+
+
+
   }
 
   private class DeviceItem {
 
     private final Device d;
 
-    public DeviceItem(Device d) {
+    public DeviceItem(
+            Device d) {
       this.d = d;
     }
 
