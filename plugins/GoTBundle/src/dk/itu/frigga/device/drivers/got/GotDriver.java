@@ -14,6 +14,7 @@ import dk.itu.frigga.device.LocationUpdate;
 import dk.itu.frigga.device.Parameter;
 import dk.itu.frigga.device.UnknownDeviceException;
 import dk.itu.frigga.device.VariableChangedEvent;
+import dk.itu.frigga.device.VariableUpdate;
 import dk.itu.frigga.device.descriptor.CategoryDescriptor;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
 import dk.itu.frigga.device.descriptor.FunctionDescriptor;
@@ -108,8 +109,8 @@ public class GotDriver implements Driver, SensorPackageListener {
         if (newroom.equals(room)) {
           room = newroom;
         }
-        //client = new GotClientTcp(host, port);
-        client = new GotClientSimulate(createSimulator());
+        client = new GotClientTcp(host, port);
+        //client = new GotClientSimulate(createSimulator());
         client.addListener(this);
         client.connect();
       }
@@ -138,6 +139,9 @@ public class GotDriver implements Driver, SensorPackageListener {
         if (recievers.containsKey(deviceid)) {
           GotDevice get = recievers.get(deviceid);
           get.attachedto = parameters[0].getData().toString();
+          VariableChangedEvent v = new VariableChangedEvent();
+          v.getVariables().add(new VariableUpdate(d, "attachedto", get.attachedto));
+          vevent.sendData(v);
         }
       }
     }
