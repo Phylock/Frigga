@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public abstract class GenericSqlDao<T, ID extends Serializable> implements GenericDAO<T, ID> {
 
-  private static final String SET_EXTENSION = " = ? ";
+  protected static final String SET_EXTENSION = " = ? ";
   protected Connection connection;
   protected PreparedStatementProxy SELECT_ALL;
   protected PreparedStatementProxy SELECT_BY_ID;

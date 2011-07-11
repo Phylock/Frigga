@@ -27,9 +27,12 @@ public class FunctionDaoSql extends GenericSqlDao<Function, Long> implements Fun
   private static final int FIELD_NAME = 0;
   private static final String[] FIELDS = new String[]{"name"};
   private final PreparedStatementProxy SELECT_BY_NAME;
+  //private final PreparedStatementProxy SELECT_BY_CATEGORY;
 
   public FunctionDaoSql() {
     SELECT_BY_NAME = new PreparedStatementProxy("SELECT * FROM %s WHERE %s = ?", TABLE, FIELDS[FIELD_NAME]);
+    //SELECT_BY_CATEGORY = new PreparedStatementProxy("SELECT * FROM %s WHERE %s = ?", TABLE, FIELDS[FIELD_NAME]);
+
   }
 
   @Override

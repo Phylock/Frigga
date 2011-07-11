@@ -56,8 +56,9 @@ public class LocationDaoSql extends GenericSqlDao<Location, Long> implements Loc
 
     Date updated = new Date(rs.getDate("updated").getTime());
     String sender = rs.getString("sender");
+    String device = rs.getString("device");
 
-    return new Location(id, new Point3(px,py,pz), new Point3(vx,vy,vz), sender, updated);
+    return new Location(id, device, new Point3(px,py,pz), new Point3(vx,vy,vz), sender, updated);
   }
 
   public List<Location> findByExample(Location exampleInstance) {

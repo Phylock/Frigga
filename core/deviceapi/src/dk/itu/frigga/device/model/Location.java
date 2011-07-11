@@ -9,82 +9,94 @@ import java.util.Date;
 /**
  * @author phylock
  */
-public class Location
-{
+public class Location {
 
-    protected Long device_id;
-    protected Point3<Double> position;
-    protected Point3<Double> velocity;
-    protected String sender;
-    protected Date updated;
+  protected Long device_id;
+  protected String device;
+  protected Point3<Double> position;
+  protected Point3<Double> velocity;
+  protected String sender;
+  protected Date updated;
 
-    public Location(Long device_id, Point3<Double> position, Point3<Double> velocity, String sender, Date updated)
-    {
-        this.device_id = device_id;
-        this.position = position;
-        this.velocity = velocity;
-        this.sender = sender;
-        this.updated = updated;
-    }
+  public Location(Long device_id, String device, Point3<Double> position, Point3<Double> velocity, String sender, Date updated) {
+    this.device_id = device_id;
+    this.device = device;
+    this.position = position;
+    this.velocity = velocity;
+    this.sender = sender;
+    this.updated = updated;
+  }
 
-    public Location(Long device_id, Point3<Double> position, String sender, Date updated)
-    {
-        this.device_id = device_id;
-        this.position = position;
-        this.sender = sender;
-        this.updated = updated;
-    }
+  public Location(Long device_id, String device, Point3<Double> position, String sender, Date updated) {
+    this.device_id = device_id;
+    this.device = device;
+    this.position = position;
+    this.sender = sender;
+    this.updated = updated;
+  }
 
+  public Location(String device, Point3<Double> position, Point3<Double> velocity, String sender, Date updated) {
+    this.device_id = new Long(-1);
+    this.device = device;
+    this.position = position;
+    this.velocity = velocity;
+    this.sender = sender;
+    this.updated = updated;
+  }
 
-    public void setDeviceId(Long device_id)
-    {
-        this.device_id = device_id;
-    }
+  public Location(String device, Point3<Double> position, String sender, Date updated) {
+    this.device_id = this.device_id = new Long(-1);;
+    this.device = device;
+    this.position = position;
+    this.sender = sender;
+    this.updated = updated;
+  }
 
-    public void setPosition(Point3<Double> position)
-    {
-        this.position = position;
-    }
+  public void setDevice(String device) {
+    this.device = device;
+  }
 
-    public void setVelocity(Point3<Double> velocity)
-    {
-        this.velocity = velocity;
-    }
+  public void setDeviceId(Long id) {
+    this.device_id = id;
+  }
 
-    public void setSender(String sender)
-    {
-        this.sender = sender;
-    }
+  public void setPosition(Point3<Double> position) {
+    this.position = position;
+  }
 
-    public void setUpdated(Date updated)
-    {
-        this.updated = updated;
-    }
+  public void setVelocity(Point3<Double> velocity) {
+    this.velocity = velocity;
+  }
 
-    public Long getDeviceId()
-    {
-        return device_id;
-    }
+  public void setSender(String sender) {
+    this.sender = sender;
+  }
 
-    public Point3<Double> getPosition()
-    {
-        return position;
-    }
+  public void setUpdated(Date updated) {
+    this.updated = updated;
+  }
 
-    public Point3<Double> getVelocity()
-    {
-        return velocity;
-    }
+  public String getDevice() {
+    return device;
+  }
 
-    public String getSender()
-    {
-        return sender;
-    }
+  public Long getDeviceId() {
+    return device_id;
+  }
 
-    public Date getUpdated()
-    {
-        return updated;
-    }
+  public Point3<Double> getPosition() {
+    return position;
+  }
 
+  public Point3<Double> getVelocity() {
+    return velocity;
+  }
 
+  public String getSender() {
+    return sender;
+  }
+
+  public Date getUpdated() {
+    return updated;
+  }
 }

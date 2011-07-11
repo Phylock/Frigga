@@ -71,7 +71,7 @@ public class DeviceDaoFactorySql implements DeviceDaoFactory
 
     public LocationLocalDao getLocationLocalDao(Connection conn)
     {
-        LocationLocalDao loc = null;//new LocationLocalDaoSql();
+        LocationLocalDao loc = new LocalLocationDaoSql();
         loc.setConnection(conn);
         return loc;
     }

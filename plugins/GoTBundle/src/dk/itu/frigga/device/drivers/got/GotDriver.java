@@ -64,6 +64,8 @@ public class GotDriver implements Driver, SensorPackageListener {
   private String host = "";
   private int port = 0;
   private String room = "";
+  private long delay = 5000;
+  private long last;
   private final Map<String, GotDevice> recievers;
 
   public GotDriver(BundleContext context) {
@@ -103,8 +105,7 @@ public class GotDriver implements Driver, SensorPackageListener {
             Logger.getLogger(GotDriver.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
-        if(newroom.equals(room))
-        {
+        if (newroom.equals(room)) {
           room = newroom;
         }
         //client = new GotClientTcp(host, port);
@@ -118,27 +119,23 @@ public class GotDriver implements Driver, SensorPackageListener {
     }
   }
 
-  private Simulator createSimulator()
-  {
+  private Simulator createSimulator() {
     Simulator sim = new Simulator();
     sim.addReciever(new SimulateReciever(1000, 800, 20202, new dk.itu.frigga.got.event.Point3(0, 0, 0)));
     sim.addReciever(new SimulateReciever(1000, 800, 20191, new dk.itu.frigga.got.event.Point3(1000, 0, 0)));
     sim.addReciever(new SimulateReciever(1000, 800, 20195, new dk.itu.frigga.got.event.Point3(1000, 500, 0)));
 
-    sim.addTransmitter(new SimulateTransmitter(new LinearMovement(new dk.itu.frigga.got.event.Point3(1.0,0.0, 0.0), 1000), 11003, 0.91f, new dk.itu.frigga.got.event.Point3(10, 10, 5)));
+    sim.addTransmitter(new SimulateTransmitter(new LinearMovement(new dk.itu.frigga.got.event.Point3(1.0, 0.0, 0.0), 1000), 11003, 0.91f, new dk.itu.frigga.got.event.Point3(10, 10, 5)));
     //sim.addTransmitter(new SimulateTransmitter(new LinearMovement(new dk.itu.frigga.got.event.Point3(1.0,0.5, 0.0), 50), 11004, 0.95f, new dk.itu.frigga.got.event.Point3(10, 10, 5)));
     return sim;
   }
 
   /** Implements Driver **/
   public FunctionResult callFunction(String[] device, String function, Parameter... parameters) throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
-    if(parameters.length == 1 && "attachedto".equals(function))
-    {
-      for(String d: device)
-      {
-        String deviceid = d.split("_")[2];
-        if(recievers.containsKey(deviceid))
-        {
+    if (parameters.length == 1 && "attach".equals(function)) {
+      for (String d : device) {
+        String deviceid = d.split("_")[1];
+        if (recievers.containsKey(deviceid)) {
           GotDevice get = recievers.get(deviceid);
           get.attachedto = parameters[0].getData().toString();
         }
@@ -186,7 +183,7 @@ public class GotDriver implements Driver, SensorPackageListener {
     //Is it a known sender?
     if (recievers.containsKey("" + sensorpackage.getSender())) {
       d = recievers.get("" + sensorpackage.getSender());
-    }else{
+    } else {
       d = new GotDevice(sensorpackage.getSender());
       recievers.put("" + sensorpackage.getSender(), d);
       LinkedList<DeviceDescriptor> dd = new LinkedList<DeviceDescriptor>();
@@ -194,12 +191,16 @@ public class GotDriver implements Driver, SensorPackageListener {
       DeviceUpdateEvent due = new DeviceUpdateEvent(getDriverId(), dd, cd, fd, vd);
       devent.sendData(due);
     }
-    if (sensorpackage.getValidation() && (!"".equals(d.attachedto))) {
-      d.valid_packages++;
-      Point3 p = new Point3(sensorpackage.getPosition().getX(), sensorpackage.getPosition().getY(), sensorpackage.getPosition().getZ());
-      VariableChangedEvent evt = new VariableChangedEvent();
-      evt.getLocation().add(new LocationUpdate(d.attachedto, p));
-      vevent.sendData(evt);
+    long now = System.currentTimeMillis();
+    if (now > last + delay) {
+      if (sensorpackage.getValidation() && (!"".equals(d.attachedto))) {
+        d.valid_packages++;
+        Point3 p = new Point3(sensorpackage.getPosition().getX(), sensorpackage.getPosition().getY(), sensorpackage.getPosition().getZ());
+        VariableChangedEvent evt = new VariableChangedEvent();
+        evt.getLocation().add(new LocationUpdate(d.attachedto, p, room));
+        vevent.sendData(evt);
+      }
+      last = now;
     }
   }
 

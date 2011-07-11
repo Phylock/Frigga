@@ -228,7 +228,7 @@ public class DeviceDatabase {
           devicemanager.fireDeviceChanged(update.getDevice(), DeviceManagerImpl.DeviceChangedType.GlobalLocation, "");
           break;
         case Local:
-          LocationLocal llocation = new LocationLocal(/*TODO: maybe symbolic instead*/null, update.getRoom(), update.getPoint(), /*TODO: fix sender*/"", new Date());
+          LocationLocal llocation = new LocationLocal(update.getDevice(), update.getPoint(), /*TODO: fix sender*/"sender1", new Date(), update.getRoom());
           local.makePersistent(llocation);
           devicemanager.fireDeviceChanged(update.getDevice(), DeviceManagerImpl.DeviceChangedType.LocalLocation, "");
           break;

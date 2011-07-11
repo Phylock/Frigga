@@ -218,10 +218,10 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                LocationLocal loc = new LocationLocal(device.getId(), rs.getString("room"),
+                LocationLocal loc = new LocationLocal(device.getSymbolic(),
                         new Point3<Double>(rs.getDouble("pos_x"), rs.getDouble("pos_y"), rs.getDouble("pos_z")),
                         new Point3<Double>(rs.getDouble("vel_x"), rs.getDouble("vel_y"), rs.getDouble("vel_z")),
-                        rs.getString("sender"), rs.getDate("updated"));
+                        rs.getString("sender"), rs.getDate("updated"), rs.getString("room"));
                 locations.add(loc);
             }
         } catch (SQLException ex) {
@@ -246,7 +246,7 @@ public class DeviceDaoSql extends GenericSqlDao<Device, Long> implements DeviceD
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                location = new Location(device.getId(),
+                location = new Location(device.getSymbolic(),
                         new Point3<Double>(rs.getDouble("pos_x"), rs.getDouble("pos_y"), rs.getDouble("pos_z")),
                         new Point3<Double>(rs.getDouble("vel_x"), rs.getDouble("vel_y"), rs.getDouble("vel_z")),
                         rs.getString("sender"), rs.getDate("updated"));

@@ -24,7 +24,6 @@ public class PreparedStatementProxy {
     this.statement = statement;
   }
 
-
   public PreparedStatement createPreparedStatement(Connection connection)
   {
     if(connection != null)
@@ -36,6 +35,14 @@ public class PreparedStatementProxy {
       }
     }
     return null;
+  }
+
+  public String getStatement() {
+    return statement;
+  }
+
+  public void setStatement(String statement) {
+    this.statement = statement;
   }
 
   @Override
