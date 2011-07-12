@@ -31,17 +31,17 @@
 
                 <condition id="neartv">
                     <location type="local" room="demoroom" position="{#tvPosition}" maxRadius="1m">
-                        <isCategory category="tv" />
+                        <matchSymbolic pattern="got_11004" />
                     </location>
                 </condition>
                 <condition id="mediumtv">
                     <location type="local" room="demoroom" position="{#tvPosition}" minRadius="1m" maxRadius="2m">
-                        <isCategory category="tv" />
+                        <matchSymbolic pattern="got_11004" />
                     </location>
                 </condition>
                 <condition id="fartv">
                     <location type="local" room="demoroom" position="{#tvPosition}" minRadius="2m">
-                        <isCategory category="tv" />
+                        <matchSymbolic pattern="got_11004" />
                     </location>
                 </condition>
             </rule>
