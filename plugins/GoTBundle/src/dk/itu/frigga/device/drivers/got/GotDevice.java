@@ -14,14 +14,14 @@ class GotDevice {
 
   long id;
   String attachedto;
-  Date lastSeen;
+  long lastSeen;
   long valid_packages;
   long lost_packages;
 
   public GotDevice(long id) {
     this.id = id;
     this.attachedto = "";
-    this.lastSeen = new Date();
+    this.lastSeen = 0;
     this.valid_packages = 0;
     this.lost_packages = 0;
   }

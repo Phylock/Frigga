@@ -186,8 +186,11 @@ public class FunctionAction extends AbstractAction
             {
                 for (FilterDeviceState state : validationSet)
                 {
+                        if (state.getConditionId().equals(select))
+                        {
                     devices.add(state.getDevice());
                     parseSelection(localQueue, state, devices);
+                  }
                 }
             }
         }

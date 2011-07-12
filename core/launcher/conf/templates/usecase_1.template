@@ -21,14 +21,14 @@
                          criteria. The function to run is switch television 
                          on. -->
                     <action event="validate">
-                        <function selection="tvselection" function="{#onLookAt}" />
+                        <function selection="tvselection" function="on" />
                     </action>
                     <!-- Run these actions for each device no longer being 
                          validated. We can expect the invalidate to be called
                          at most 1 time for each call to validate. The 
                          function we call is to turn the television off. -->
                     <action event="invalidate">
-                        <function selection="tvselection" function="{#onLookAway}" />
+                        <function selection="tvselection" function="off" />
                     </action>
                 </actions>
 

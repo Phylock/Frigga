@@ -63,7 +63,7 @@ public class TemplateManagerImpl implements TemplateManager
     public void loadInstancesFromDisk()
     {
         File path = new File("conf/instances/");
-        File[] files = path.listFiles(new FileExtensionFilter(new String[]{"prop"}));
+        File[] files = path.listFiles(new FileExtensionFilter(new String[]{"prop"},false));
 
         for (File file : files)
         {

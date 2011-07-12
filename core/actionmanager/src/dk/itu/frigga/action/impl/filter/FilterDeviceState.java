@@ -67,6 +67,10 @@ public class FilterDeviceState
         this.conditionId = conditionId;
     }
 
+  public String getConditionId() {
+    return conditionId;
+  }
+
     @Override
     public boolean equals(Object o)
     {

@@ -66,7 +66,6 @@ public class GotDriver implements Driver, SensorPackageListener {
   private int port = 0;
   private String room = "";
   private long delay = 5000;
-  private long last;
   private final Map<String, GotDevice> recievers;
 
   public GotDriver(BundleContext context) {
@@ -106,7 +105,7 @@ public class GotDriver implements Driver, SensorPackageListener {
             Logger.getLogger(GotDriver.class.getName()).log(Level.SEVERE, null, ex);
           }
         }
-        if (newroom.equals(room)) {
+        if (!newroom.equals(room)) {
           room = newroom;
         }
         client = new GotClientTcp(host, port);
@@ -196,15 +195,15 @@ public class GotDriver implements Driver, SensorPackageListener {
       devent.sendData(due);
     }
     long now = System.currentTimeMillis();
-    if (now > last + delay) {
+    if (now > d.lastSeen + delay) {
       if (sensorpackage.getValidation() && (!"".equals(d.attachedto))) {
         d.valid_packages++;
+        d.lastSeen = now;
         Point3 p = new Point3(sensorpackage.getPosition().getX(), sensorpackage.getPosition().getY(), sensorpackage.getPosition().getZ());
         VariableChangedEvent evt = new VariableChangedEvent();
         evt.getLocation().add(new LocationUpdate(d.attachedto, p, room));
         vevent.sendData(evt);
       }
-      last = now;
     }
   }
 

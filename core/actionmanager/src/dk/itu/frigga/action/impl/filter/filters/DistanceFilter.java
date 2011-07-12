@@ -129,8 +129,8 @@ public class DistanceFilter extends Filter
             maxDistanceUnit = matcher.group(2);
         }
 
-        localMinDistance = normalizeValue(localMinDistance, minDistanceUnit, "mm");
-        localMaxDistance = normalizeValue(localMaxDistance, maxDistanceUnit, "mm");
+        localMinDistance = normalizeValue(localMinDistance, "mm", minDistanceUnit);
+        localMaxDistance = normalizeValue(localMaxDistance, "mm", maxDistanceUnit);
 
         String localTagName = context.prepare(tagName);
 
@@ -140,7 +140,7 @@ public class DistanceFilter extends Filter
 
             for (FilterDeviceState remoteState : remoteOutput)
             {
-                List<LocationLocal> remoteLocations = state.getDevice().getLocalLocations();
+                List<LocationLocal> remoteLocations = remoteState.getDevice().getLocalLocations();
 
                 for (LocationLocal localLocation : locations)
                 {

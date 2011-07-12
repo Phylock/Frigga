@@ -30,22 +30,22 @@
                 </actions>
 
                 <condition id="users" validate="false">
-                    <matchSymbolic pattern="got_11004" />
+                    <isCategory category="indoor_location" />
                 </condition>
 
                 <condition id="neartv" dependsOn="users">
                     <distance source="users" maxRadius="1m" tagName="user" type="local">
-                        <isCategory="tv" />
+                        <isCategory category="Tv" />
                     </distance>
                 </condition>
                 <condition id="mediumtv" dependsOn="users">
                     <distance source="users" minRadius="1m" maxRadius="2m" tagName="user" type="local">
-                        <isCategory="tv" />
+                        <isCategory category="Tv" />
                     </distance>
                 </condition>
                 <condition id="fartv" dependsOn="users">
                     <distance source="users" minRadius="2m" tagName="user" type="local">
-                        <isCategory="tv" />
+                        <isCategory category="Tv" />
                     </distance>
                 </condition>
             </rule>

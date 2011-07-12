@@ -467,7 +467,7 @@ public class MainWindow extends JFrame {
     private void btn_refresh2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refresh2ActionPerformed
       File path = new File("conf/instances/");
       List<InstanceInfoItem> items = new LinkedList<InstanceInfoItem>();
-      File[] files = path.listFiles(new FileExtensionFilter(new String[]{"prop"}));
+      File[] files = path.listFiles(new FileExtensionFilter(new String[]{"prop"}, false));
       for (File file : files) {
         Properties properties = new Properties();
         try {
@@ -475,7 +475,7 @@ public class MainWindow extends JFrame {
           items.add(new InstanceInfoItem(properties));
           //properties.
         } catch (IOException ex) {
-          Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+          log.log(LogService.LOG_WARNING, "File access errer", ex);
         }
       }
 
