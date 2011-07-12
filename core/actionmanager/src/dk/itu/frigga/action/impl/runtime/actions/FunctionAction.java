@@ -202,7 +202,7 @@ public class FunctionAction extends AbstractAction
 
         if (devices.size() > 0)
         {
-            System.out.println("Calling function: " + function + " called.");
+            context.debugMsg("Calling function: " + function + " called.");
 
             Parameter[] paramCopy = new Parameter[parameters.size()];
             int idx = 0;

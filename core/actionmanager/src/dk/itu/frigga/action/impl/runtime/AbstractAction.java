@@ -22,7 +22,7 @@ public abstract class AbstractAction
     private String resultVariable = "";
     protected List<AbstractAction> childActions = Collections.synchronizedList(new LinkedList<AbstractAction>());
 
-    public void parse(final Element element) throws FilterSyntaxErrorException
+    public final void parse(final Element element) throws FilterSyntaxErrorException
     {
         final Map<String, String> attributes = new HashMap<String, String>();
         NamedNodeMap map = element.getAttributes();
@@ -59,6 +59,21 @@ public abstract class AbstractAction
                 loadChild(childElement.getTagName(), childAttributes, childElement.getTextContent());
             }
         }
+        else
+        {
+            ActionFactory factory = new ActionFactory();
+
+            // Read children as data for the element
+            for (Element childElement = XmlHelper.getFirstChildElement(element); childElement != null;
+                 childElement = XmlHelper.getNextSiblingElement(childElement))
+            {
+                AbstractAction action = factory.parse(childElement);
+                if (action != null)
+                {
+                    childActions.add(action);
+                }
+            }
+        }
     }
 
     protected void loadAction(final Map<String, String> attributes)
@@ -91,12 +106,24 @@ public abstract class AbstractAction
 
     public void execute(Collection<FilterDeviceState> devices, FilterContext context)
     {
-        ActionResult result = run(devices, context);
-
-        if (!result.isVoid() && !resultVariable.isEmpty())
+        do
         {
-            context.setVariableValue(resultVariable, result.getValue());
+            ActionResult result = run(devices, context);
+
+            if (!result.isVoid() && !resultVariable.isEmpty())
+            {
+                context.setVariableValue(resultVariable, result.getValue());
+            }
+
+            if (canHaveChildActions() && allowRunChildren())
+            {
+                for (AbstractAction childAction : childActions)
+                {
+                    childAction.execute(devices, context);
+                }
+            }
         }
+        while (runAgain());
     }
 
     public abstract ActionResult run(final Collection<FilterDeviceState> deviceStates, final FilterContext context);

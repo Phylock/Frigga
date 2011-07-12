@@ -57,9 +57,30 @@ public class FilterContext
         variable.set(value);
     }
 
+    public void setVariableValue(final String name, final double value)
+    {
+        TemplateVariable variable = variableValues.get(name);
+        variable.set(value);
+    }
+
     public TemplateVariable.Value getVariableValue(final String name)
     {
         return variableValues.get(name).getValue();
+    }
+
+    public boolean hasVariable(final String name)
+    {
+        return variableValues.containsKey(name);
+    }
+
+    public void addVariable(final TemplateVariable variable)
+    {
+        variableValues.put(variable.getName(), variable);
+    }
+
+    public void removeVariable(final String name)
+    {
+        variableValues.remove(name);
     }
 
     public void storeOutput(final String id, final FilterOutput output)
@@ -234,6 +255,7 @@ public class FilterContext
     public void debugMsg(final String message)
     {
         // Ignore for now
+        System.out.println("Debug: " + message);
     }
 
     public void debugMsg(final String format, final String... parameters)

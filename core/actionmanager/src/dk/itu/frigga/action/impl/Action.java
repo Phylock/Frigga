@@ -4,6 +4,7 @@ import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.filter.FilterContext;
 import dk.itu.frigga.action.impl.filter.FilterDeviceState;
 import dk.itu.frigga.action.impl.runtime.AbstractAction;
+import dk.itu.frigga.action.impl.runtime.ActionFactory;
 import dk.itu.frigga.action.impl.runtime.actions.FunctionAction;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Element;
@@ -37,13 +38,14 @@ public class Action
         if (!element.hasAttribute("event")) throw new FilterSyntaxErrorException();
         event = element.getAttribute("event");
 
+        ActionFactory factory = new ActionFactory();
+
         for (Element elem = XmlHelper.getFirstChildElement(element); elem != null; elem = XmlHelper.getNextSiblingElement(elem))
         {
-            if (elem.getTagName().equals("function"))
+            AbstractAction action = factory.parse(elem);
+            if (action != null)
             {
-                FunctionAction functionAction = new FunctionAction();
-                functionAction.parse(elem);
-                executableActions.add(functionAction);
+                executableActions.add(action);
             }
         }
     }

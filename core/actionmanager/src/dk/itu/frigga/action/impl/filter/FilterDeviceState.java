@@ -14,6 +14,7 @@ public class FilterDeviceState
 {
     private final Device device;
     private final Map<String, FilterDeviceState> storedTags = Collections.synchronizedMap(new HashMap<String, FilterDeviceState>());
+    private final Map<String, String> localVariables = Collections.synchronizedMap(new HashMap<String, String>());
 
     public FilterDeviceState(Device device)
     {
@@ -38,6 +39,26 @@ public class FilterDeviceState
     public void storeTag(final String tag, final FilterDeviceState device)
     {
         storedTags.put(tag, device);
+    }
+
+    public void setLocalVariable(final String name, final String value)
+    {
+        localVariables.put(name, value);
+    }
+
+    public String getLocalVariable(final String name)
+    {
+        return localVariables.get(name);
+    }
+
+    public boolean hasLocalVariable(final String name)
+    {
+        return localVariables.containsKey(name);
+    }
+
+    public Set<String> getLocalVariableNames()
+    {
+        return localVariables.keySet();
     }
 
     @Override
