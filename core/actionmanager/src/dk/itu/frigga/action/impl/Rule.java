@@ -53,6 +53,7 @@ public class Rule
             if (rootFilter.isValidate()) context.allowValidation(rootFilter.getName());
             FilterOutput output = context.run(rootFilter.getFilter());
 
+            output.setConditionId(rootFilter.getName());
             context.storeOutput(rootFilter.getName(), output);
         }
 

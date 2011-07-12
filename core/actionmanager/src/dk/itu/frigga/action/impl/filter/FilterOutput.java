@@ -48,6 +48,14 @@ public class FilterOutput implements Iterable<FilterDeviceState>
         devices.addAll(input.devices);
     }
 
+    public void setConditionId(final String id)
+    {
+        for (FilterDeviceState state : devices)
+        {
+            state.setConditionId(id);
+        }
+    }
+
     @Override
     public Iterator<FilterDeviceState> iterator()
     {

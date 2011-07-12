@@ -12,6 +12,7 @@ import java.util.*;
  */
 public class FilterDeviceState
 {
+    private String conditionId = "";
     private final Device device;
     private final Map<String, FilterDeviceState> storedTags = Collections.synchronizedMap(new HashMap<String, FilterDeviceState>());
     private final Map<String, String> localVariables = Collections.synchronizedMap(new HashMap<String, String>());
@@ -61,6 +62,11 @@ public class FilterDeviceState
         return localVariables.keySet();
     }
 
+    public void setConditionId(String conditionId)
+    {
+        this.conditionId = conditionId;
+    }
+
     @Override
     public boolean equals(Object o)
     {
@@ -69,16 +75,17 @@ public class FilterDeviceState
 
         FilterDeviceState that = (FilterDeviceState) o;
 
+        if (!conditionId.equals(that.conditionId)) return false;
         if (!device.equals(that.device)) return false;
-        if (!storedTags.equals(that.storedTags)) return false;
+        return storedTags.equals(that.storedTags);
 
-        return true;
     }
 
     @Override
     public int hashCode()
     {
-        int result = device.hashCode();
+        int result = conditionId.hashCode();
+        result = 31 * result + device.hashCode();
         result = 31 * result + storedTags.hashCode();
         return result;
     }
