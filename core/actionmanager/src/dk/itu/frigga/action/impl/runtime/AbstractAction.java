@@ -50,7 +50,7 @@ public abstract class AbstractAction
                  childElement = XmlHelper.getNextSiblingElement(childElement))
             {
                 final Map<String, String> childAttributes = new HashMap<String, String>();
-                NamedNodeMap childMap = element.getAttributes();
+                NamedNodeMap childMap = childElement.getAttributes();
                 for (int i = 0; i < childMap.getLength(); i++)
                 {
                     final Attr attr = (Attr)childMap.item(i);
