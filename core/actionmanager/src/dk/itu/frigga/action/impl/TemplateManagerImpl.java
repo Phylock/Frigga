@@ -323,10 +323,10 @@ public class TemplateManagerImpl implements TemplateManager
         {
             try
             {
-                System.out.println("Queueing event.topic: " + event.getTopic());
-                System.out.println("Queueing device: " + String.valueOf(event.getProperty("device")));
-                System.out.println("Queueing device.value: " + String.valueOf(event.getProperty("value")));
-                System.out.println("Queueing device.time: " + String.valueOf(event.getProperty("time")));
+                //System.out.println("Queueing event.topic: " + event.getTopic());
+                //System.out.println("Queueing device: " + String.valueOf(event.getProperty("device")));
+                //System.out.println("Queueing device.value: " + String.valueOf(event.getProperty("value")));
+                //System.out.println("Queueing device.time: " + String.valueOf(event.getProperty("time")));
                 refreshQueue.put(String.valueOf(event.getProperty("device")));
             }
             catch (InterruptedException e)

@@ -29,6 +29,8 @@ import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.device.dao.DeviceDAO;
 import dk.itu.frigga.device.model.*;
 import dk.itu.frigga.utility.ReflectionHelper;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.osgi.service.log.LogService;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -95,8 +97,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   }
 
   public final boolean deviceIsOnline(final Device device) {
-    if(drivers.containsKey(device.getSymbolic()))
-    {
+    if (drivers.containsKey(device.getSymbolic())) {
       //TODO: check the real value from the database ...
       return true;
     }
@@ -238,6 +239,18 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
 
     pool = connection.initialize();
     variable_update_pool = new ThreadPoolExecutor(pool.totalConnections(), pool.totalConnections(), 15, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+    Connection conn = null;
+    try {
+      conn = pool.getConnection();
+      DeviceDAO deviceDao = DeviceDaoFactorySql.instance().getDeviceDao(conn);
+      deviceDao.setStateByDriver("", false);
+    } catch (SQLException ex) {
+      Logger.getLogger(DeviceManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (conn != null) {
+        pool.releaseConnection(conn);
+      }
+    }
   }
 
   public void invalidate() {

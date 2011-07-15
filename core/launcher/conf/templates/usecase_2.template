@@ -26,6 +26,7 @@
                         <function selection="fartv" function="setVolume">
                             <param name="volume">30</param>
                         </function>
+                        <function selection="out_of_range" function="off"/>
                     </action>
                 </actions>
 
@@ -44,10 +45,16 @@
                     </distance>
                 </condition>
                 <condition id="fartv" dependsOn="users">
-                    <distance source="users" minRadius="2m" tagName="user" type="local">
+                    <distance source="users" minRadius="2m" maxRadius="3m" tagName="user" type="local">
                         <isCategory category="Tv" />
                     </distance>
                 </condition>
+                <condition id="out_of_range" dependsOn="users">
+                    <distance source="users" minRadius="3m" tagName="user" type="local">
+                        <isCategory category="Tv" />
+                    </distance>
+                </condition>
+
             </rule>
         </rules>
     </template>
