@@ -5,6 +5,7 @@
 package dk.itu.frigga.device.drivers.got;
 
 import dk.itu.frigga.device.DeviceId;
+import dk.itu.frigga.device.DeviceUpdate;
 import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.Driver;
 import dk.itu.frigga.device.FunctionResult;
@@ -24,7 +25,6 @@ import dk.itu.frigga.got.client.GotClient;
 import dk.itu.frigga.got.client.GotClientTcp;
 import dk.itu.frigga.got.event.SensorPackage;
 import dk.itu.frigga.got.event.SensorPackageListener;
-import dk.itu.frigga.got.sim.GotClientSimulate;
 import dk.itu.frigga.got.sim.LinearMovement;
 import dk.itu.frigga.got.sim.SimulateReciever;
 import dk.itu.frigga.got.sim.SimulateTransmitter;
@@ -65,7 +65,7 @@ public class GotDriver implements Driver, SensorPackageListener {
   private String host = "";
   private int port = 0;
   private String room = "";
-  private long delay = 5000;
+  private long delay = 1000;
   private final Map<String, GotDevice> recievers;
 
   public GotDriver(BundleContext context) {
@@ -132,7 +132,7 @@ public class GotDriver implements Driver, SensorPackageListener {
 
   /** Implements Driver **/
   public FunctionResult callFunction(String[] device, String function, Parameter... parameters) throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
-    if (parameters.length == 1 && "attach".equals(function)) {
+    if (parameters.length <= 1 && "attach".equals(function)) {
       for (String d : device) {
         String deviceid = d.split("_")[1];
         if (recievers.containsKey(deviceid)) {
@@ -190,9 +190,15 @@ public class GotDriver implements Driver, SensorPackageListener {
       d = new GotDevice(sensorpackage.getSender());
       recievers.put("" + sensorpackage.getSender(), d);
       LinkedList<DeviceDescriptor> dd = new LinkedList<DeviceDescriptor>();
-      dd.add(generateDeviceDescriptor(sensorpackage.getSender()));
+      DeviceDescriptor device = generateDeviceDescriptor(sensorpackage.getSender());
+      dd.add(device);
       DeviceUpdateEvent due = new DeviceUpdateEvent(getDriverId(), dd, cd, fd, vd);
       devent.sendData(due);
+
+      VariableChangedEvent evt = new VariableChangedEvent();
+      evt.getState().add(new DeviceUpdate(device.getSymbolic(), true));
+      evt.getVariables().add(new VariableUpdate(device.getSymbolic(), "attachedto", ""));
+      vevent.sendData(evt);
     }
     long now = System.currentTimeMillis();
     if (now > d.lastSeen + delay) {

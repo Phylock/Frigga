@@ -31,7 +31,9 @@
                 </actions>
 
                 <condition id="users" validate="false">
-                    <isCategory category="indoor_location" />
+                   <isOnline>
+                      <isCategory category="indoor_location" />
+                    </isOnline>
                 </condition>
 
                 <condition id="neartv" dependsOn="users">

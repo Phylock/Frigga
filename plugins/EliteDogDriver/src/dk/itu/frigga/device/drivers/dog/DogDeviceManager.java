@@ -6,6 +6,7 @@ package dk.itu.frigga.device.drivers.dog;
 
 import dk.itu.frigga.Singleton;
 import dk.itu.frigga.device.DeviceId;
+import dk.itu.frigga.device.DeviceUpdate;
 import dk.itu.frigga.device.DeviceUpdateEvent;
 import dk.itu.frigga.device.VariableChangedEvent;
 import dk.itu.frigga.device.descriptor.DeviceDescriptor;
@@ -62,13 +63,14 @@ public class DogDeviceManager extends Singleton {
     if (!newDevices.isEmpty()) {
       connection.send(new ListenerMessage(newDevices.toArray(new String[0]), ListenerMessage.ListenerActions.ADD));
       connection.send(new StatusMessage(newDevices.toArray(new String[0])));
-
-
+      VariableChangedEvent beginVariableUpdate = beginVariableUpdate();
+      for(String device : newDevices){
+        beginVariableUpdate.getState().add(new DeviceUpdate(device, true));
+      }
+      commitVariableUpdate(beginVariableUpdate);
     }
 
     event.sendData((DeviceUpdateEvent) update);
-
-
   }
 
   public static DogDeviceManager instance() {
