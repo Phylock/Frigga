@@ -46,6 +46,7 @@ public class TemplateData implements Template
         filterFactory.registerFilterType("remoteCompare", RemoteCompareFilter.class);
         filterFactory.registerFilterType("location", LocationFilter.class);
         filterFactory.registerFilterType("distance", DistanceFilter.class);
+        filterFactory.registerFilterType("isOnline", IsOnlineFilter.class);
         filterFactory.registerFilterType("time", TimeFilter.class);
         filterFactory.registerFilterType("empty", EmptyFilter.class);
     }
