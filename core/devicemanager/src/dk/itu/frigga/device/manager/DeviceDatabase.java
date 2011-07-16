@@ -107,7 +107,7 @@ public class DeviceDatabase {
         DeviceDAO ddao = DeviceDaoFactorySql.instance().getDeviceDao(conn);
         for (DeviceUpdate d : event.getState()) {
           ddao.setState(d.getDevice(), d.isOnline());
-          devicemanager.fireDeviceChanged(d.getDevice(), DeviceManagerImpl.DeviceChangedType.Online, (d.isOnline())?"Online":"Offline");
+          devicemanager.fireDeviceChanged(d.getDevice(), DeviceManagerImpl.DeviceChangedType.Online, (d.isOnline()) ? "Online" : "Offline");
         }
       }
 
@@ -197,13 +197,17 @@ public class DeviceDatabase {
   private void updateCategoryLinks(CategoryDAO categorydao, List<CategoryDescriptor> categories) {
     for (CategoryDescriptor cd : categories) {
       Category category = categorydao.findByName(cd.getName());
-      for (String fd : cd.getFunctions()) {
-        Function function = new Function(fd);
-        categorydao.addFunction(category, function);
+      if (cd.getFunctions() != null) {
+        for (String fd : cd.getFunctions()) {
+          Function function = new Function(fd);
+          categorydao.addFunction(category, function);
+        }
       }
-      for (String vd : cd.getVariables()) {
-        VariableType variable = new VariableType(vd, null);
-        categorydao.addVariableType(category, variable);
+      if (cd.getVariables() != null) {
+        for (String vd : cd.getVariables()) {
+          VariableType variable = new VariableType(vd, null);
+          categorydao.addVariableType(category, variable);
+        }
       }
     }
   }
@@ -223,12 +227,12 @@ public class DeviceDatabase {
     for (LocationUpdate update : updates) {
       switch (update.getType()) {
         case Global:
-          Location glocation = new Location(/*TODO: maybe symbolic instead*/null, update.getPoint(), /*TODO: fix sender*/"", new Date());
+          Location glocation = new Location(/*TODO: maybe symbolic instead*/null, update.getPoint(), /*TODO: fix sender*/ "", new Date());
           global.makePersistent(glocation);
           devicemanager.fireDeviceChanged(update.getDevice(), DeviceManagerImpl.DeviceChangedType.GlobalLocation, "");
           break;
         case Local:
-          LocationLocal llocation = new LocationLocal(update.getDevice(), update.getPoint(), /*TODO: fix sender*/"sender1", new Date(), update.getRoom());
+          LocationLocal llocation = new LocationLocal(update.getDevice(), update.getPoint(), /*TODO: fix sender*/ "sender1", new Date(), update.getRoom());
           local.makePersistent(llocation);
           devicemanager.fireDeviceChanged(update.getDevice(), DeviceManagerImpl.DeviceChangedType.LocalLocation, "");
           break;

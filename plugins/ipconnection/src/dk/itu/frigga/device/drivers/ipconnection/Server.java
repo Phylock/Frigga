@@ -31,6 +31,7 @@ public class Server {
   private final ServerSocket server;
   private final UUID server_id;
   private final FriggaConnectionListener handle;
+  private boolean alive = false;
 
   public Server(Dictionary prop, FriggaConnectionListener handle) throws IOException {
     this.handle = handle;
@@ -75,16 +76,27 @@ public class Server {
   }
 
   public void activate() {
-    announcer.start();
-    serverconnection.activate();
+    if (!alive) {
+      announcer.start();
+      serverconnection.activate();
+      alive = true;
+    }
+
   }
 
   private void configure() {
   }
 
   public void deactivate() {
-    announcer.stop();
-    serverconnection.deactivate();
+    if (alive) {
+      announcer.stop();
+      serverconnection.deactivate();
+      alive = false;
+    }
+  }
+
+  public boolean isAlive() {
+    return alive;
   }
 
   private class ConnectionListener extends Thread {
@@ -97,21 +109,21 @@ public class Server {
       }
     }
 
-    public void deactivate()
-    {
+    public void deactivate() {
       running = false;
       this.interrupt();
     }
 
     @Override
     public void run() {
+      Thread.currentThread().setName(THREAD_NAME);
       running = true;
       while (running) {
         try {
           Socket socket = server.accept();
           FriggaConnection conn = new FriggaConnection(infoprovider.getServerPeer(), socket);
 
-          handle.newConnection(conn);
+          handle.newUnknownConnection(conn);
         } catch (IOException ex) {
           //ignore and continue
         }

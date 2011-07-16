@@ -56,7 +56,6 @@
                         <isCategory category="Tv" />
                     </distance>
                 </condition>
-
             </rule>
         </rules>
     </template>

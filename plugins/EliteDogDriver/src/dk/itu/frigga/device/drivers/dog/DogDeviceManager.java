@@ -75,6 +75,5 @@ public class DogDeviceManager extends Singleton {
 
   public static DogDeviceManager instance() {
     return instance;
-
   }
 }

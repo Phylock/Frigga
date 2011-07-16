@@ -69,7 +69,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
   private final Map<String, Driver> drivers = new HashMap<String, Driver>();
   private DeviceDatabase connection;
   private ConnectionPool pool;
-  private ThreadPoolExecutor variable_update_pool;
+  private ThreadPoolExecutor event_handler_pool;
   private BundleContext context;
 
   /**
@@ -110,17 +110,20 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
 
   public void onDeviceEvent(final DeviceUpdateEvent event) {
     log.log(LogService.LOG_INFO, "Device Update Event recieved: " + event.getResponsible());
-    try {
-      connection.update(event);
-    } catch (SQLException ex) {
-      log.log(LogService.LOG_WARNING, "Device Update Event - SQL Error", ex);
-    }
+    event_handler_pool.execute(new Runnable() {
+      public void run() {
+        try {
+          connection.update(event);
+        } catch (SQLException ex) {
+          log.log(LogService.LOG_WARNING, "Variable Changed Event - SQL Error", ex);
+        }
+      }
+    });
   }
 
   public void onVariableChangeEvent(final VariableChangedEvent event) {
 
-    variable_update_pool.execute(new Runnable() {
-
+    event_handler_pool.execute(new Runnable() {
       public void run() {
         try {
           connection.update(event);
@@ -238,7 +241,7 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     }
 
     pool = connection.initialize();
-    variable_update_pool = new ThreadPoolExecutor(pool.totalConnections(), pool.totalConnections(), 15, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+    event_handler_pool = new ThreadPoolExecutor(pool.totalConnections(), pool.totalConnections(), 15, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
     Connection conn = null;
     try {
       conn = pool.getConnection();
@@ -257,8 +260,8 @@ public final class DeviceManagerImpl extends Singleton implements DeviceManager 
     connection.close();
     connection = null;
 
-    variable_update_pool.shutdown();
-    variable_update_pool = null;
+    event_handler_pool.shutdown();
+    event_handler_pool = null;
 
     pool = null;
 

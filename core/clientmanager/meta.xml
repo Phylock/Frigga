@@ -5,7 +5,7 @@
    xsi:schemaLocation='org.apache.felix.ipojo http://felix.apache.org/ipojo/schemas/CURRENT/core.xsd'>
 
     <component name="ClientManagerImpl" classname="dk.itu.frigga.client.manager.ClientManagerImpl">
-
+        <provides/>
         <requires field="log" optional="true"/>
     </component>
     <instance component="ClientManagerImpl" name="ClientManager"/>
