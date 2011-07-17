@@ -6,6 +6,7 @@ package dk.itu.frigga.device.drivers.ipconnection;
 
 import dk.itu.frigga.core.clientapi.Client;
 import dk.itu.frigga.core.clientapi.ClientManager;
+import dk.itu.frigga.core.clientapi.RequestFunctionCall;
 import dk.itu.frigga.protocol.ActionReceivedListener;
 import dk.itu.frigga.protocol.FriggaConnection;
 import dk.itu.frigga.protocol.InformationReceivedListener;
@@ -13,18 +14,19 @@ import dk.itu.frigga.protocol.Lookups;
 import dk.itu.frigga.protocol.Message;
 import dk.itu.frigga.protocol.MessageResult;
 import dk.itu.frigga.protocol.MessageSource;
-import dk.itu.frigga.protocol.Option;
 import dk.itu.frigga.protocol.ProtocolException;
 import dk.itu.frigga.protocol.QueryReceivedListener;
 import dk.itu.frigga.protocol.Report;
 import dk.itu.frigga.protocol.ReportNotFoundException;
 import dk.itu.frigga.protocol.Reports;
 import dk.itu.frigga.protocol.Requests;
-import dk.itu.frigga.protocol.Require;
 import dk.itu.frigga.protocol.Requires;
 import dk.itu.frigga.protocol.Resources;
 import dk.itu.frigga.protocol.Selection;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +57,12 @@ public class FriggaConnectionHandler implements ActionReceivedListener, Informat
 
   public void requestsReceived(MessageSource source, MessageResult result, Requests requests) {
     System.out.println("source: " + source + ", request: " + requests);
+    for (int i = 0; i < requests.count(); i++) {
+      List<Selection> selections = requests.get(i).getSelections();
+      Map<String,Object> params = new HashMap<String, Object>();
+      params.put("value", requests.get(i).getValue());
+      manager.handleUserRequest(client, new RequestFunctionCall(selections, null, params));
+    }
   }
 
   public void resourcesReceived(MessageSource source, MessageResult result, Resources resources) {

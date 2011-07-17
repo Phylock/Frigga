@@ -9,6 +9,6 @@ package dk.itu.frigga.core.clientapi;
  *
  * @author Mikkel Wendt-Larsen (miwe@itu.dk)
  */
-public class UserRequest {
+public interface UserRequest {
 
 }

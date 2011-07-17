@@ -97,9 +97,9 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
         } else if ("significance".equalsIgnoreCase(param)) {
           significance = Float.parseFloat(String.valueOf(p.getData()));
         } else if (param.startsWith("selection.")) {
-          int lastidx = param.lastIndexOf(".");
-          String subparam = param.substring(lastidx + 1);
-          String selection = param.substring(0, lastidx);
+          int split = param.lastIndexOf(".");
+          String subparam = param.substring(split + 1);
+          String selection = param.substring(0, split);
           if (!selections.containsKey(selection)) {
             selections.put(selection, new TempSelection());
           }

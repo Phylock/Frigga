@@ -59,4 +59,11 @@ public class Session {
   public Status getStatus() {
     return status;
   }
+
+  @Override
+  public String toString() {
+    return "Session{" + "sessionId=" + sessionId + ", userId=" + userId + ", deviceId=" + deviceId + ", initialized=" + initialized + ", last_action=" + last_action + ", status=" + status + '}';
+  }
+
+
 }
