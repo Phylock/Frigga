@@ -93,11 +93,14 @@ public class OpenDialogAction extends AbstractAction
         parseSelection(selectionClients, clients, context, deviceStates);
         parseSelection(selectionDevices, devices, context, deviceStates);
 
-        for (Device device : devices)
+        if (clients.size() > 0)
         {
-            Parameter[] parameters = handleDeviceTv(device);
+            for (Device device : devices)
+            {
+                Parameter[] parameters = handleDeviceTv(device);
 
-            context.getDeviceManager().callFunction("openDialog", clients.toArray(new Device[clients.size()]), parameters);
+                context.getDeviceManager().callFunction("openDialog", clients.toArray(new Device[clients.size()]), parameters);
+            }
         }
 
         return new ActionResult(resultStr);
