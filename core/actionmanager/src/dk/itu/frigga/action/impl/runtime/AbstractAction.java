@@ -4,6 +4,8 @@ import dk.itu.frigga.action.filter.FilterSyntaxErrorException;
 import dk.itu.frigga.action.impl.VariableContainer;
 import dk.itu.frigga.action.impl.filter.FilterContext;
 import dk.itu.frigga.action.impl.filter.FilterDeviceState;
+import dk.itu.frigga.action.impl.filter.FilterOutput;
+import dk.itu.frigga.device.model.Device;
 import dk.itu.frigga.utility.XmlHelper;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -124,6 +126,147 @@ public abstract class AbstractAction
             }
         }
         while (runAgain());
+    }
+
+    private void getAllDevicesRecursivelyFromHere(final FilterDeviceState state, final Collection<Device> devices)
+    {
+        devices.add(state.getDevice());
+        for (String tag : state.getStoredTags())
+        {
+            getAllDevicesRecursivelyFromHere(state.getStoredDevice(tag), devices);
+        }
+    }
+
+    private Collection<Device> getAllDevicesRecursivelyFromHere(final FilterOutput output)
+    {
+        LinkedHashSet<Device> devices = new LinkedHashSet<Device>();
+
+        for (FilterDeviceState state : output)
+        {
+            getAllDevicesRecursivelyFromHere(state, devices);
+        }
+
+        return devices;
+    }
+
+    private void parseSelection(final Queue<String> selection, final FilterDeviceState state, final Set<Device> devices)
+    {
+        String selected = selection.poll();
+        Queue<String> localQueue = new LinkedList<String>(selection);
+        if (selected != null)
+        {
+            if (selected.equals("*"))
+            {
+                for (String tag : state.getStoredTags())
+                {
+                    FilterDeviceState localState = state.getStoredDevice(tag);
+                    devices.add(localState.getDevice());
+                    parseSelection(localQueue, localState, devices);
+                }
+            }
+            else if (selected.equals("**"))
+            {
+                for (String tag : state.getStoredTags())
+                {
+                    getAllDevicesRecursivelyFromHere(state.getStoredDevice(tag), devices);
+                }
+            }
+            else
+            {
+                if (state.getStoredTags().contains(selected))
+                {
+                    FilterDeviceState localState = state.getStoredDevice(selected);
+                    devices.add(localState.getDevice());
+                    parseSelection(localQueue, localState, devices);
+                }
+            }
+        }
+    }
+
+    private void parseSelection(final String[] selection, final Set<Device> devices, final FilterContext context)
+    {
+        Queue<String> localQueue = new LinkedList<String>();
+        for (String selector : selection)
+        {
+            localQueue.add(context.prepare(selector));
+        }
+
+        String select = localQueue.poll();
+
+        if (select != null)
+        {
+            if (select.equals("*"))
+            {
+                for (FilterDeviceState state : context.getAllOutput())
+                {
+                    devices.add(state.getDevice());
+                    parseSelection(localQueue, state, devices);
+                }
+            }
+            else if (select.equals("**"))
+            {
+                devices.addAll(getAllDevicesRecursivelyFromHere(context.getAllOutput()));
+            }
+            else
+            {
+                FilterOutput output = context.getStoredOutput(select);
+                if (output != null)
+                {
+                    for (FilterDeviceState state : output.matchingDevices())
+                    {
+                        devices.add(state.getDevice());
+                        parseSelection(localQueue, state, devices);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void parseSelection(final String[] selection, final Set<Device> devices, final FilterContext context, final Collection<FilterDeviceState> validationSet)
+    {
+        Queue<String> localQueue = new LinkedList<String>();
+        for (String selector : selection)
+        {
+            localQueue.add(context.prepare(selector));
+        }
+
+        String select = localQueue.poll();
+
+        if (select != null)
+        {
+            if (select.equals("*"))
+            {
+                for (FilterDeviceState state : validationSet)
+                {
+                    devices.add(state.getDevice());
+                    parseSelection(localQueue, state, devices);
+                }
+            }
+            else if (select.equals("**"))
+            {
+                for (FilterDeviceState state : validationSet)
+                {
+                    getAllDevicesRecursivelyFromHere(state, devices);
+                }
+            }
+            else
+            {
+                for (FilterDeviceState state : validationSet)
+                {
+                    if (state.getConditionId().equals(select))
+                    {
+                        devices.add(state.getDevice());
+                        parseSelection(localQueue, state, devices);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void parseSelection(final String selection, final Set<Device> devices, final FilterContext context, final Collection<FilterDeviceState> validationSet)
+    {
+        String[] localSelection = selection.split("\\.");
+        parseSelection(localSelection, devices, context, validationSet);
     }
 
     public abstract ActionResult run(final Collection<FilterDeviceState> deviceStates, final FilterContext context);

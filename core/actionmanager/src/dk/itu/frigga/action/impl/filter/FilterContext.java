@@ -5,6 +5,9 @@ import dk.itu.frigga.action.impl.TemplateInstanceImpl;
 import dk.itu.frigga.action.impl.VariableContainer;
 import dk.itu.frigga.action.impl.runtime.TemplateVariable;
 import dk.itu.frigga.device.DeviceManager;
+import dk.itu.frigga.device.model.Device;
+import dk.itu.frigga.device.model.Variable;
+
 import java.sql.SQLException;
 
 import java.util.*;
@@ -65,6 +68,37 @@ public class FilterContext
 
     public TemplateVariable.Value getVariableValue(final String name)
     {
+        return getVariableValue(name, null);
+    }
+
+    public TemplateVariable.Value getVariableValue(final String name, final Device device)
+    {
+        if (device != null)
+        {
+            if (name.indexOf("this.") == 0)
+            {
+                String variableName = name.substring(5);
+                if (variableName.equals("symbolic"))
+                {
+                    TemplateVariable var = new TemplateVariable("symbolic");
+                    var.set(device.getSymbolic());
+                    return var.getValue();
+                }
+                else
+                {
+                    Set<Variable> variables = device.getVariables();
+                    for (Variable variable : variables)
+                    {
+                        if (variable.getPrimaryKey().getVariabletype().getName().equals(variableName))
+                        {
+                            TemplateVariable var = new TemplateVariable(variableName);
+                            var.set(variable.getValue());
+                            return var.getValue();
+                        }
+                    }
+                }
+            }
+        }
         return variableValues.get(name).getValue();
     }
 
@@ -152,6 +186,11 @@ public class FilterContext
 
     public String prepare(final String input)
     {
+        return prepare(input, null);
+    }
+
+    public String prepare(final String input, final Device device)
+    {
         StringBuffer resultString = new StringBuffer();
         try
         {
@@ -170,7 +209,7 @@ public class FilterContext
                     }
                     else if (variable != null)
                     {
-                        regexMatcher.appendReplacement(resultString, getVariableValue(variable).asString());
+                        regexMatcher.appendReplacement(resultString, getVariableValue(variable, device).asString());
                     }
                 }
                 catch (IllegalStateException ex)
@@ -194,6 +233,7 @@ public class FilterContext
         }
 
         return resultString.toString();
+
     }
 
     public FilterOutput run(final Filter filter) throws FilterFailedException

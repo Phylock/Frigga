@@ -194,7 +194,11 @@ public abstract class Filter
         return output;
     }
 
-    protected abstract FilterOutput run(final FilterContext context, final FilterInput input) throws FilterFailedException;
+    protected boolean allowChildFilters()
+    {
+        // Overwrite this to disallow child filters.
+        return true;
+    }
 
-    protected abstract boolean allowChildFilters();
+    protected abstract FilterOutput run(final FilterContext context, final FilterInput input) throws FilterFailedException;
 }

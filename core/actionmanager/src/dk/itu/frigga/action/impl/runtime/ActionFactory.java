@@ -25,6 +25,13 @@ public class ActionFactory
             return action;
         }
 
+        if ("openDialog".equals(element.getTagName()))
+        {
+            AbstractAction action = new OpenDialogAction();
+            action.parse(element);
+            return action;
+        }
+
         if ("sleep".equals(element.getTagName()))
         {
             AbstractAction action = new SleepAction();
