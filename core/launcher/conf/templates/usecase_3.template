@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.example.com template.xsd">
+    <template>
+        <info>
+            <name>usecase3</name>
+            <author>Mikkel Wendt-Larsen (miwe@itu.dk)</author>
+            <author>Tommy Andersen (toan@itu.dk)</author>
+            <site>localhost</site>
+            <description>This is a basic example, to be used in our demonstration room. It displays how an action can be chosen by the user for the eyetracking by first looking at, and then looking away from the television.</description>
+        </info>
+        <replacements>
+            <replace name="onLookAt" description="Action to perform when looking at television" type="enum(on,off)" />
+            <replace name="onLookAway" description="Action to perform when looking away from television" type="enum(on,off)"/>
+        </replacements>
+        <rules>
+            <rule id="rule1" description="Perform action when looking at and away from television.">
+                <actions>
+                    <!-- Run these actions for each device being validated, 
+                         that is for each device matching the condition 
+                         criteria. The function to run is switch television 
+                         on. -->
+                    <action event="validate">
+                        <function selection="controllerselection" function="openDialog">
+                            <param name="id">tvoption1</param>
+                            <param name="onoff">onoff</param>
+                            <param name="subject">On</param>
+                            <param name="description">Switch television on.</param>
+                            <param name="current">off</param>
+                            <param name="significance">100</param>
+
+                            <param name="selection.0.value">/device:tv/id:{$this.symbolic}</param>
+                            <param name="selection.0.subject">Flatpanel television in demonstration room.</param>
+                            <param name="selection.0.selected">true</param>
+                        </function>
+                    </action>
+                </actions>
+
+                <!-- Find all the eye trackers. But do not use the resulting 
+                     list of devices for validation. -->
+                <condition id="eyetrackselection" validate="false">
+                    <isCategory category="eyetrack" />
+                </condition>
+                <!-- Find all the televisions that are currently being looked 
+                     upon. Store the eyetracker looking at the television in 
+                     the tag "eyeTrack" for each television. -->
+                <condition id="tvselection" dependsOn="eyetrackselection">
+                    <remoteCompare source="eyetrackselection" sourceVariable="lookat" variable="symbolic" tagName="eyeTracker">
+                        <isCategory category="tv" />
+                    </remoteCompare>
+                </condition>
+
+                <condition id="controllerselection" dependOn="tvselection">
+                    <remoteCompare source="tvselection" sourceVariable="attachto" variable="symbolic" tagName="tv">
+                        <isCategory category="client" />
+                    </remoteCompare>
+                </condition>
+            </rule>
+        </rules>
+    </template>
+</frigga>
