@@ -41,6 +41,8 @@ public class TemplateManagerImpl implements TemplateManager
     public TemplateManagerImpl(BundleContext bundleContext)
     {
         this.bundleContext = bundleContext;
+
+        loadInstancesFromDisk();
     }
 
     private void validate()
@@ -62,6 +64,8 @@ public class TemplateManagerImpl implements TemplateManager
 
     public void loadInstancesFromDisk()
     {
+        loadTemplatesFromDisk();
+
         File path = new File("conf/instances/");
         File[] files = path.listFiles(new FileExtensionFilter(new String[]{"prop"},false));
 
