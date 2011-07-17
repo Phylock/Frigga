@@ -80,6 +80,7 @@ public class ClientManagerImpl implements ClientManager {
               break;
             case FUNCTION:
               function = element.getSpecifier();
+              break;
             case LOCATION:
               //TODO: Ignore for now, implements later
               break;

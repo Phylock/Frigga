@@ -47,7 +47,7 @@ public class DeviceUpdateEvent {
   }
 
   public boolean hasDevices() {
-    return ((categories != null) && categories.size() > 0);
+    return ((devices != null) && devices.size() > 0);
   }
 
   public List<FunctionDescriptor> getFunctions() {
