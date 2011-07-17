@@ -90,7 +90,7 @@ public class OpenDialogAction extends AbstractAction
         Set<Device> clients = new LinkedHashSet<Device>();
         Set<Device> devices = new LinkedHashSet<Device>();
 
-        parseSelection(selectionClients, clients, context, deviceStates);
+        parseSelection(selectionClients, clients, context, context.getStoredOutput(selectionClients).matchingDevices());
         parseSelection(selectionDevices, devices, context, deviceStates);
 
         if (clients.size() > 0)
