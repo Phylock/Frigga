@@ -68,12 +68,17 @@ public class OpenDialogAction extends AbstractAction
             selectionValue = selectionValue + "on";
         }
 
+        if (current.equalsIgnoreCase("on"))
+        {
+            subject = "Off";
+        }
+
         Parameter[] parameters = new Parameter[9];
         parameters[0] = new Parameter("id", "dialogCall1");
         parameters[1] = new Parameter("type", type);
         parameters[2] = new Parameter("subject", subject);
         parameters[3] = new Parameter("description", description);
-        parameters[4] = new Parameter("current", current);
+        parameters[4] = new Parameter("current", "");
         parameters[5] = new Parameter("significance", significance);
         parameters[6] = new Parameter("selection.0.value", selectionValue);
         parameters[7] = new Parameter("selection.0.subject", "Television in " + device.getLocalLocations().get(0).getRoom());
