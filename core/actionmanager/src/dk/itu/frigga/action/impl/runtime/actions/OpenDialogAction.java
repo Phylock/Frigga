@@ -48,8 +48,7 @@ public class OpenDialogAction extends AbstractAction
         String description = "Turn on television.";
         String type = "onoff";
         String significance = "100";
-        String selectionValue = "/device:Tv/id:" + device.getSymbolic() + "/function:";
-
+        String selectionValue = "/device:" + device.getCategories().get(0).getName() + "/id:" + device.getSymbolic() + "/function:";
 
         for (Variable variable : device.getVariables())
         {
