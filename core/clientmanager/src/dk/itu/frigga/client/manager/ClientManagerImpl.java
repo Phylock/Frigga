@@ -20,6 +20,8 @@ import dk.itu.frigga.protocol.Selection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -94,13 +96,16 @@ public class ClientManagerImpl implements ClientManager {
         }
         if (function != null && !devices.isEmpty()) {
           Map<String, Object> params = functioncall.getParams();
-          Parameter parameters[] = new Parameter[params.size()];
+          List<Parameter> parameters = new LinkedList<Parameter>();
           int i = 0;
           for (Entry<String, Object> entry : params.entrySet()) {
-            parameters[i++] = new Parameter(entry.getKey(), entry.getValue());
+            if(entry.getValue() != null)
+            {
+              parameters.add(new Parameter(entry.getKey(), entry.getValue()));
+            }
           }
 
-          devicemanager.callFunction(function, devices.toArray(new Device[0]), parameters);
+          devicemanager.callFunction(function, devices.toArray(new Device[0]), parameters.toArray(new Parameter[0]));
         }
       }
     }

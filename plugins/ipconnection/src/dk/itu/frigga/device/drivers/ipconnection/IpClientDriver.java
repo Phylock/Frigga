@@ -66,18 +66,19 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
   public IpClientDriver(BundleContext context) {
     this.context = context;
 
-    cd.add(new CategoryDescriptor(CATEGORY_CLIENT, null, new String[]{"showdialog", "closedialog"}));
-    fd.add(new FunctionDescriptor("showdialog", new String[]{"id"}));
+    cd.add(new CategoryDescriptor(CATEGORY_CLIENT, null, new String[]{"opendialog", "closedialog"}));
+    fd.add(new FunctionDescriptor("opendialog", new String[]{"id"}));
     fd.add(new FunctionDescriptor("closedialog", new String[]{"id"}));
 
-    cd.add(new CategoryDescriptor(CATEGORY_IPCLIENT, new String[]{"ip"}, new String[]{"showdialog", "closedialog"}));
+    cd.add(new CategoryDescriptor(CATEGORY_IPCLIENT, new String[]{"ip"}, new String[]{"opendialog", "closedialog"}));
     vd.add(new VariableDescriptor("ip", "String"));
   }
 
   public FunctionResult callFunction(String[] devices, String function, Parameter... parameters) throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
-    if ("showdialog".equalsIgnoreCase(function)) {
+    if ("opendialog".equalsIgnoreCase(function)) {
       String type = "";
       String id = "";
+      String subject = "";
       String description = "";
       String current = "";
 
@@ -92,6 +93,8 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
           id = String.valueOf(p.getData());
         } else if ("description".equalsIgnoreCase(param)) {
           description = String.valueOf(p.getData());
+        } else if ("subject".equalsIgnoreCase(param)) {
+          subject = String.valueOf(p.getData());
         } else if ("current".equalsIgnoreCase(param)) {
           current = String.valueOf(p.getData());
         } else if ("significance".equalsIgnoreCase(param)) {
@@ -103,7 +106,7 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
           if (!selections.containsKey(selection)) {
             selections.put(selection, new TempSelection());
           }
-          if ("filter".equalsIgnoreCase(subparam)) {
+          if ("value".equalsIgnoreCase(subparam)) {
             selections.get(selection).filter = String.valueOf(p.getData());
           } else if ("subject".equalsIgnoreCase(subparam)) {
             selections.get(selection).subject = String.valueOf(p.getData());
@@ -114,7 +117,7 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
       }
 
       Message m = new Message();
-      Option opt = new Option(id, current, type, current, description, significance);
+      Option opt = new Option(id, subject, type, current, description, significance);
       for (TempSelection s : selections.values()) {
         try {
           opt.addSelection(new Selection(s.filter, s.subject, s.selected));

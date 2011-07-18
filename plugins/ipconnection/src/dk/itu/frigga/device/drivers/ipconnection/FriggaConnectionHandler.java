@@ -59,8 +59,10 @@ public class FriggaConnectionHandler implements ActionReceivedListener, Informat
     System.out.println("source: " + source + ", request: " + requests);
     for (int i = 0; i < requests.count(); i++) {
       List<Selection> selections = requests.get(i).getSelections();
-      Map<String,Object> params = new HashMap<String, Object>();
-      params.put("value", requests.get(i).getValue());
+      Map<String, Object> params = new HashMap<String, Object>();
+      if (!requests.get(i).getValue().isEmpty()) {
+        params.put("value", requests.get(i).getValue());
+      }
       manager.handleUserRequest(client, new RequestFunctionCall(selections, null, params));
     }
   }
