@@ -1,0 +1,8 @@
+Bundle-Version: 0.2.0.SNAPSHOT
+Bundle-Name: Frigga SyntheticSpeech Device Driver
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.device.drivers.espeak
+
+Private-Package: dk.itu.frigga.device.drivers.espeak.*
+Include-Resource: ESpeak.jar
+Bundle-ClassPath: ESpeak.jar,.
