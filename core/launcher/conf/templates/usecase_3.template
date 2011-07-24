@@ -7,37 +7,39 @@
             <author>Mikkel Wendt-Larsen (miwe@itu.dk)</author>
             <author>Tommy Andersen (toan@itu.dk)</author>
             <site>localhost</site>
-            <description>This usecase allows the user to turn on a television by looking at it, and if already turned on, turn it off.</description>
+            <description>This usecase adjusts the channel and volume of a television depending on the user being near it.</description>
         </info>
+        <replacements>
+            <replace name="username" description="The user to apply this rule to" type="user" />
+            <replace name="channel" description="The channel to watch" type="integer(0,100)"/>
+            <replace name="volume" description="The voume to set on the television" type="integer(0,99)" />
+        </replacements>        
         <rules>
-            <rule id="rule1" description="Perform action when looking at and away from television.">
+            <rule id="rule1" description="Adjust channel and volume according to user.">
                 <actions>
-                    <!-- Run these actions for each device being validated, 
-                         that is for each device matching the condition 
-                         criteria. The function to run is switch television 
-                         on. -->
+                    <!-- Run these actions for each device being validated, that is for each device matching the condition criteria. The functions to run to adjust volume and channel. -->
                     <action event="validate">
-                        <openDialog clients="controllerselection" devices="tvselection" />
+                        <function selection="tvselection" function="setVolume">
+                            <param name="volume">{#volume}</param>
+                        </function>
+                        <function selection="tvselection" function="setChannel">
+                            <param name="channel">{#channel}</param>
+                        </function>
                     </action>
                 </actions>
 
-                <!-- Find all the eye trackers. But do not use the resulting 
-                     list of devices for validation. -->
-                <condition id="eyetrackselection" validate="false">
-                    <isCategory category="eyetrack" />
+                <!-- Find the user we have specified in the replacement. -->
+                <condition id="clientselection" validate="false">
+                    <variableIs name="username" value="{#username}">
+                        <isCategory category="client" />
+                    </variableIs>
                 </condition>
 
-                <!-- Find all the televisions that are currently being looked 
-                     upon. Store the eyetracker looking at the television in 
-                     the tag "eyeTrack" for each television. -->
-                <condition id="tvselection" dependsOn="eyetrackselection">
-                    <remoteCompare source="eyetrackselection" sourceVariable="lookat" variable="symbolic" tagName="eyeTracker">
+                <!-- Find televisions in the same room as the user. -->
+                <condition id="tvselection" dependsOn="clientselection">
+                    <sameRoom source="clientselection" tagName="client">
                         <isCategory category="tv" />
-                    </remoteCompare>
-                </condition>
-
-                <condition id="controllerselection" validate="false">
-                    <isCategory category="client" />
+                    </sameRoom>
                 </condition>
             </rule>
         </rules>
