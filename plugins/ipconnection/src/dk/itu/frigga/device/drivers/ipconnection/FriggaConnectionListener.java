@@ -15,4 +15,6 @@ public interface FriggaConnectionListener {
   void newUnknownConnection(FriggaConnection connection);
 
   void newIdentifiedConnection(FriggaConnectionHandler handler);
+
+  void variableChanged(String symbolic, String variable, String value);
 }

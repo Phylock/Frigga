@@ -13,16 +13,27 @@ import java.util.UUID;
 public class Client {
 
   private final Session session;
+  private String username;
 
   public Client(Session session) {
     this.session = session;
+    username = "";
   }
 
-  public Client(UUID clientId, String deviceId) {
-    session = null;
+  public Client(Session session, String Username) {
+    this.session = session;
+    this.username = Username;
   }
 
   public Session getSession() {
     return session;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 }

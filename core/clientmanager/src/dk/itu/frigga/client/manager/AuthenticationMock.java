@@ -14,6 +14,7 @@ import dk.itu.frigga.core.clientapi.Client;
  */
 public class AuthenticationMock implements AuthenticationHandler{
   public void authenticate(Client client, Authentication auth) {
-    //TODO: add authentication status to session
+    //Accept all 
+    client.setUsername(auth.getUsername());
   }
 }

@@ -66,11 +66,12 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
   public IpClientDriver(BundleContext context) {
     this.context = context;
 
-    cd.add(new CategoryDescriptor(CATEGORY_CLIENT, null, new String[]{"opendialog", "closedialog"}));
+    cd.add(new CategoryDescriptor(CATEGORY_CLIENT, new String[]{"username"}, new String[]{"opendialog", "closedialog"}));
+    vd.add(new VariableDescriptor("username", "String"));
     fd.add(new FunctionDescriptor("opendialog", new String[]{"id"}));
     fd.add(new FunctionDescriptor("closedialog", new String[]{"id"}));
 
-    cd.add(new CategoryDescriptor(CATEGORY_IPCLIENT, new String[]{"ip"}, new String[]{"opendialog", "closedialog"}));
+    cd.add(new CategoryDescriptor(CATEGORY_IPCLIENT, new String[]{"username", "ip"}, new String[]{"opendialog", "closedialog"}));
     vd.add(new VariableDescriptor("ip", "String"));
   }
 
@@ -216,6 +217,13 @@ public class IpClientDriver implements Driver, FriggaConnectionListener {
     VariableChangedEvent evt = new VariableChangedEvent();
     evt.getState().add(new DeviceUpdate(device.getSymbolic(), true));
     evt.getVariables().add(new VariableUpdate(device.getSymbolic(), "ip", handler.getConnection().getPeer().getHost()));
+    evt.getVariables().add(new VariableUpdate(device.getSymbolic(), "username", ""));
+    vevent.sendData(evt);
+  }
+
+  public void variableChanged(String symbolic, String variable, String value) {
+    VariableChangedEvent evt = new VariableChangedEvent();
+    evt.getVariables().add(new VariableUpdate(symbolic, variable, value));
     vevent.sendData(evt);
   }
 

@@ -4,6 +4,7 @@
  */
 package dk.itu.frigga.device.drivers.ipconnection;
 
+import dk.itu.frigga.core.clientapi.Authentication;
 import dk.itu.frigga.core.clientapi.Client;
 import dk.itu.frigga.core.clientapi.ClientManager;
 import dk.itu.frigga.core.clientapi.RequestFunctionCall;
@@ -145,6 +146,8 @@ public class FriggaConnectionHandler implements ActionReceivedListener, Informat
       this.device = UUID.fromString(device);
       client = manager.enter(this.device, this.user);
       driver.newIdentifiedConnection(this);
+      //TODO: move login to where challange where challange respons is done
+      login(client, user, "", "");
       Message m = new Message();
       m.associateSessionId(client.getSession().getSessionId());
       connection.sendMessage(m);
@@ -154,6 +157,13 @@ public class FriggaConnectionHandler implements ActionReceivedListener, Informat
       Logger.getLogger(FriggaConnectionHandler.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {
       Logger.getLogger(FriggaConnectionHandler.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  private void login(Client client, String user, String password, String challange) {
+    manager.login(client, new Authentication(challange, user, password));
+    if (client.getUsername().equals(user)) {
+      driver.variableChanged(device.toString(), "username", user);
     }
   }
 }
