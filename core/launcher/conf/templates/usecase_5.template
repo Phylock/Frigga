@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.example.com template.xsd">
+    <template>
+        <info>
+            <name>usecase3</name>
+            <author>Mikkel Wendt-Larsen (miwe@itu.dk)</author>
+            <author>Tommy Andersen (toan@itu.dk)</author>
+            <site>localhost</site>
+            <description>This usecase adjusts the channel and volume of a television depending on the user being near it.</description>
+        </info>
+        <rules>
+            <rule id="rule1" description="Perform action when looking at and away from television.">
+                <actions>
+                    <!-- Run these actions for each device being validated, 
+                         that is for each device matching the condition 
+                         criteria. The function to run is switch television 
+                         on. -->
+                    <action event="validate">
+                        <openDialog clients="tvselection.eyeTracker.client" devices="tvselection" />
+                    </action>
+                </actions>
+
+                <!-- Find all the eye trackers. But do not use the resulting 
+                     list of devices for validation. -->
+                <condition id="eyetrackselection" validate="false" dependsOn="controllerselection">
+                    <remoteCompare source="controllerselection" sourceVariable="symbolic" variable="attachto" tagName="client">
+                        <isCategory category="eyetrack" />
+                    </remoteCompare>
+                </condition>
+
+                <condition id="controllerselection" validate="false">
+                    <isCategory category="client" />
+                </condition>
+
+                <!-- Find all the televisions that are currently being looked 
+                     upon. Store the eyetracker looking at the television in 
+                     the tag "eyeTrack" for each television. -->
+                <condition id="tvselection" dependsOn="eyetrackselection">
+                    <remoteCompare source="eyetrackselection" sourceVariable="lookat" variable="symbolic" tagName="eyeTracker">
+                        <isCategory category="tv" />
+                    </remoteCompare>
+                </condition>
+            </rule>
+        </rules>
+    </template>
+</frigga>

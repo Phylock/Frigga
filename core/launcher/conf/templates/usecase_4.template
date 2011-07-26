@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frigga xmlns="http://www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.example.com template.xsd">
+    <template>
+        <info>
+            <name>usecase4</name>
+            <author>Mikkel Wendt-Larsen (miwe@itu.dk)</author>
+            <author>Tommy Andersen (toan@itu.dk)</author>
+            <site>localhost</site>
+            <description>This usecase adjusts light, shutters and the television depending on the time of day.</description>
+        </info>
+        <rules>
+            <rule id="rule1" description="Adjust room according to time of day.">
+                <actions>
+                    <!-- Run these actions for each device being validated, that is for each device matching the condition criteria. -->
+                    <action event="validate">
+                        <filter selection="nightfilter">
+                            <filter category="tv simplelamp">
+                                <function selection="*" function="off" />
+                            </filter>
+                            <filter category="simplelamp">
+                                <!-- Only select one lamp -->
+                                <function selection="*#1" function="on" />
+                            </filter>
+                            <filter category="WindowActuator">
+                                <function selection="*" function="close" />
+                            </filter>
+                        </filter>
+
+                        <filter selection="dayfilter">
+                            <filter category="tv">
+                                <function selection="*" function="on" />
+                            </filter>
+                            <filter category="simplelamp">
+                                <function selection="*" function="off" />
+                            </filter>
+                            <filter category="WindowActuator">
+                                <function selection="*" function="open" />
+                            </filter>
+                        </filter>
+
+                        <filter selection="eveningfilter">
+                            <filter category="tv">
+                                <function selection="*" function="on" />
+                            </filter>
+                            <filter category="simplelamp">
+                                <function selection="*" function="on" />
+                            </filter>
+                            <filter category="WindowActuator">
+                                <function selection="*" function="close" />
+                            </filter>
+                        </filter>
+                    </action>
+
+                    <action event="invalidate">
+                        <filter category="tv simplelamp">
+                            <function selection="*" function="off" />
+                        </filter>
+                    </action>
+                </actions>
+
+                <!-- Find the user we have specified in the replacement. -->
+                <condition id="clientselection" validate="false">
+                        <isCategory category="client" />
+                </condition>
+
+                <!-- Find televisions, lamps and shutters during night -->
+                <condition id="nightfilter" dependsOn="clientselection">
+                    <time atLeast="22:00:00" atMost="07:00:00">
+                        <sameRoom source="clientselection" tagName="client">
+                            <or>
+                                <isCategory category="tv" />
+                                <isCategory category="simplelamp" />
+                                <isCategory category="WindowActuator" />
+                            </or>
+                        </sameRoom>
+                    </time>
+                </condition>
+
+                <!-- Find televisions, lamps and shutters during night -->
+                <condition id="dayfilter" dependsOn="clientselection">
+                    <time atLeast="07:00:00" atMost="18:00:00">
+                        <sameRoom source="clientselection" tagName="client">
+                            <or>
+                                <isCategory category="tv" />
+                                <isCategory category="simplelamp" />
+                                <isCategory category="WindowActuator" />
+                            </or>
+                        </sameRoom>
+                    </time>
+                </condition>
+
+                <!-- Find televisions, lamps and shutters during night -->
+                <condition id="eveningfilter" dependsOn="clientselection">
+                    <time atLeast="18:00:00" atMost="22:00:00">
+                        <sameRoom source="clientselection" tagName="client">
+                            <or>
+                                <isCategory category="tv" />
+                                <isCategory category="simplelamp" />
+                                <isCategory category="WindowActuator" />
+                            </or>
+                        </sameRoom>
+                    </time>
+                </condition>
+            </rule>
+        </rules>
+    </template>
+</frigga>
