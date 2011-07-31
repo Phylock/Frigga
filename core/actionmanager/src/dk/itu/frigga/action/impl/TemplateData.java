@@ -50,6 +50,7 @@ public class TemplateData implements Template
         filterFactory.registerFilterType("variableIs", VariableIsFilter.class);
         filterFactory.registerFilterType("time", TimeFilter.class);
         filterFactory.registerFilterType("empty", EmptyFilter.class);
+        filterFactory.registerFilterType("sameRoom", SameRoomFilter.class);
     }
 
     private TemplateInfo templateInfo = new TemplateInfo();

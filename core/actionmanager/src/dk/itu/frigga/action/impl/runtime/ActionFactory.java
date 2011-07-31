@@ -60,6 +60,13 @@ public class ActionFactory
             return action;
         }
 
+        if ("filter".equals(element.getTagName()))
+        {
+            AbstractAction action = new FilterAction();
+            action.parse(element);
+            return action;
+        }
+
         return null;
     }
 }

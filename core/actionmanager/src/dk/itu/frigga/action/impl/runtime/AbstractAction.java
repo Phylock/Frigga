@@ -106,6 +106,12 @@ public abstract class AbstractAction
         return true;
     }
 
+    public Collection<FilterDeviceState> getListOfDevices(final Collection<FilterDeviceState> devices, FilterContext context)
+    {
+        // Override to filter devices
+        return devices;
+    }
+
     public void execute(Collection<FilterDeviceState> devices, FilterContext context)
     {
         do
@@ -117,11 +123,13 @@ public abstract class AbstractAction
                 context.setVariableValue(resultVariable, result.getValue());
             }
 
+            Collection<FilterDeviceState> filteredDevices = getListOfDevices(devices, context);
+
             if (canHaveChildActions() && allowRunChildren())
             {
                 for (AbstractAction childAction : childActions)
                 {
-                    childAction.execute(devices, context);
+                    childAction.execute(filteredDevices, context);
                 }
             }
         }
