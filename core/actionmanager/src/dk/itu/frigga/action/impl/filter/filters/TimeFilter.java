@@ -21,20 +21,13 @@ import java.util.Map;
  */
 public class TimeFilter extends Filter
 {
-    private String value = "@now";
-    private String atLeast = "@now";
-    private String atMost = "@now";
-    private String formatToUse = "yyyy-MM-dd HH:mm:ss.S";
+    private String atLeast = "00:00:01";
+    private String atMost = "00:00:00";
 
     @Override
     protected void loadFilter(Map<String, String> attributes)
     {
         super.loadFilter(attributes);
-
-        if (attributes.containsKey("value"))
-        {
-            value = attributes.get("value");
-        }
 
         if (attributes.containsKey("atLeast"))
         {
@@ -45,11 +38,6 @@ public class TimeFilter extends Filter
         {
             atMost = attributes.get("atMost");
         }
-
-        if (attributes.containsKey("format"))
-        {
-            formatToUse = attributes.get("format");
-        }
     }
 
     @Override
@@ -57,34 +45,47 @@ public class TimeFilter extends Filter
     {
         FilterOutput output = new FilterOutput();
 
-        String localValue = context.prepare(value);
         String localAtLeast = context.prepare(atLeast);
         String localAtMost = context.prepare(atMost);
-        String localFormatToUse = context.prepare(formatToUse);
 
         Calendar calendar = Calendar.getInstance();
-        Date now = calendar.getTime();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        long now = hour * 60 * 60 + minute * 60 + second;
 
-        if (localValue.equals("@now")) localValue = now.toString();
-        if (localAtLeast.equals("@now")) localAtLeast = now.toString();
-        if (localAtMost.equals("@now")) localAtMost = now.toString();
+        String[] minParts = localAtLeast.split(":");
+        int minHour = Integer.parseInt(minParts[0]);
+        int minMinute = Integer.parseInt(minParts[1]);
+        int minSecond = Integer.parseInt(minParts[2]);
+        long min = minHour * 60 * 60 + minMinute * 60 + minSecond;
 
-        DateFormat format = new SimpleDateFormat(localFormatToUse);
+        String[] maxParts = localAtMost.split(":");
+        int maxHour = Integer.parseInt(maxParts[0]);
+        int maxMinute = Integer.parseInt(maxParts[1]);
+        int maxSecond = Integer.parseInt(maxParts[2]);
+        long max = maxHour * 60 * 60 + maxMinute * 60 + maxSecond;
 
-        try
+        if (max > min)
         {
-            Date dateValue = format.parse(localValue);
-            Date dateAtLeast = format.parse(localAtLeast);
-            Date dateAtMost = format.parse(localAtMost);
-
-            if (dateValue.compareTo(dateAtLeast) >= 0 && dateValue.compareTo(dateAtMost) <= 0)
+            if (now >= min && now < max)
             {
                 output.useInput(input);
             }
         }
-        catch (ParseException e)
+        else if (max < min)
         {
-            context.reportFilterError(this, "Error parsing date format: " + e.getMessage());
+            if (now >= min || now < max)
+            {
+                output.useInput(input);
+            }
+        }
+        else
+        {
+            if (max == now)
+            {
+                output.useInput(input);
+            }
         }
 
         return output;
