@@ -70,6 +70,14 @@ CREATE TABLE IF NOT EXISTS functions
   PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS function_param
+(
+  function_id INTEGER NOT NULL,
+  name VARCHAR(25) NOT NULL,
+  type VARCHAR(25) NOT NULL,
+  PRIMARY KEY (function_id, name)
+);
+
 CREATE TABLE IF NOT EXISTS device_category
 (
   device_id INTEGER NOT NULL,

@@ -21,6 +21,7 @@ public class LocationUpdate {
   private final Point3 point;
   private final String room;
   private final String device;
+  private final boolean static_location;
 
   /**
    * update the global position of a device
@@ -32,6 +33,7 @@ public class LocationUpdate {
     this.device = device;
     this.point = point;
     this.room = "";
+    this.static_location = false;
   }
 /**
  * update the local position of the device
@@ -44,6 +46,15 @@ public class LocationUpdate {
     this.device = device;
     this.room = room;
     this.point = point;
+    this.static_location = false;
+  }
+
+  public LocationUpdate(String device, Point3 point, String room, boolean static_location) {
+    type = Type.Local;
+    this.device = device;
+    this.room = room;
+    this.point = point;
+    this.static_location = static_location;
   }
 
   public Point3 getPoint() {
@@ -61,4 +72,9 @@ public class LocationUpdate {
   public String getDevice() {
     return device;
   }
+
+  public boolean isStaticLocation() {
+    return static_location;
+  }
+
 }

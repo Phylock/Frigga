@@ -17,6 +17,7 @@ class GotDevice {
   long lastSeen;
   long valid_packages;
   long lost_packages;
+  boolean once = false;
 
   public GotDevice(long id) {
     this.id = id;

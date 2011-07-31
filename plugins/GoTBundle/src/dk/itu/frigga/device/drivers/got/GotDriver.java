@@ -22,9 +22,9 @@ import dk.itu.frigga.device.descriptor.FunctionDescriptor;
 import dk.itu.frigga.device.descriptor.VariableDescriptor;
 import dk.itu.frigga.device.model.Point3;
 import dk.itu.frigga.got.client.GotClient;
-import dk.itu.frigga.got.client.GotClientTcp;
 import dk.itu.frigga.got.event.SensorPackage;
 import dk.itu.frigga.got.event.SensorPackageListener;
+import dk.itu.frigga.got.sim.GotClientSimulate;
 import dk.itu.frigga.got.sim.LinearMovement;
 import dk.itu.frigga.got.sim.SimulateReciever;
 import dk.itu.frigga.got.sim.SimulateTransmitter;
@@ -70,8 +70,9 @@ public class GotDriver implements Driver, SensorPackageListener {
 
   public GotDriver(BundleContext context) {
     this.context = context;
-    cd.add(new CategoryDescriptor(CATEGORY, new String[]{"attachedto"}, new String[]{"attach"}));
+    cd.add(new CategoryDescriptor(CATEGORY, new String[]{"attachedto"}, new String[]{"attach", "attachonce"}));
     fd.add(new FunctionDescriptor("attach", new String[]{"device"}));
+    fd.add(new FunctionDescriptor("attachonce", new String[]{"device"}));
     vd.add(new VariableDescriptor("attachedto", "string"));
 
     recievers = new HashMap<String, GotDevice>();
@@ -108,8 +109,8 @@ public class GotDriver implements Driver, SensorPackageListener {
         if (!newroom.equals(room)) {
           room = newroom;
         }
-        client = new GotClientTcp(host, port);
-        //client = new GotClientSimulate(createSimulator());
+        //client = new GotClientTcp(host, port);
+        client = new GotClientSimulate(createSimulator());
         client.addListener(this);
         client.connect();
       }
@@ -132,15 +133,24 @@ public class GotDriver implements Driver, SensorPackageListener {
 
   /** Implements Driver **/
   public FunctionResult callFunction(String[] device, String function, Parameter... parameters) throws UnknownDeviceException, InvalidFunctionException, InvalidParameterException {
-    if (parameters.length <= 1 && "attach".equals(function)) {
+    if ("attach".equals(function) || "attachonce".equals(function)) {
       for (String d : device) {
         String deviceid = d.split("_")[1];
         if (recievers.containsKey(deviceid)) {
           GotDevice get = recievers.get(deviceid);
-          get.attachedto = parameters[0].getData().toString();
-          VariableChangedEvent v = new VariableChangedEvent();
-          v.getVariables().add(new VariableUpdate(d, "attachedto", get.attachedto));
-          vevent.sendData(v);
+          if (parameters.length > 0) {
+            get.attachedto = parameters[0].getData().toString();
+          } else {
+            get.attachedto = "";
+          }
+
+          get.once = ("attachonce".equals(function));
+          if (!get.once) {
+            VariableChangedEvent v = new VariableChangedEvent();
+            v.getVariables().add(new VariableUpdate(d, "attachedto", get.attachedto));
+            vevent.sendData(v);
+            get.resetPackageCount();
+          }
         }
       }
     }
@@ -207,7 +217,10 @@ public class GotDriver implements Driver, SensorPackageListener {
         d.lastSeen = now;
         Point3 p = new Point3(sensorpackage.getPosition().getX(), sensorpackage.getPosition().getY(), sensorpackage.getPosition().getZ());
         VariableChangedEvent evt = new VariableChangedEvent();
-        evt.getLocation().add(new LocationUpdate(d.attachedto, p, room));
+        evt.getLocation().add(new LocationUpdate(d.attachedto, p, room, d.once));
+        if (d.once) {
+          d.attachedto = "";
+        }
         vevent.sendData(evt);
       }
     }
