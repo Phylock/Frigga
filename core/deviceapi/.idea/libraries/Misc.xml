@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Misc">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../dataapi/dist/dataapi.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../common/out/production/Common.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$ITU_THESIS$/projects/frigga/core/common/Common.iml" filepath="$ITU_THESIS$/projects/frigga/core/common/Common.iml" />
+      <module fileurl="file://$ITU_THESIS$/projects/frigga/core/dataapi/Dataapi.iml" filepath="$ITU_THESIS$/projects/frigga/core/dataapi/Dataapi.iml" />
+      <module fileurl="file://$ITU_THESIS$/projects/frigga/core/deviceapi/Deviceapi.iml" filepath="$ITU_THESIS$/projects/frigga/core/deviceapi/Deviceapi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Devicemanager.iml" filepath="$PROJECT_DIR$/Devicemanager.iml" />
+    </modules>
+  </component>
+</project>
+

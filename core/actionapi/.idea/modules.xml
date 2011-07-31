@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$ITU_THESIS$/projects/frigga/core/common/Common.iml" filepath="$ITU_THESIS$/projects/frigga/core/common/Common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/actionapi.iml" filepath="$PROJECT_DIR$/actionapi.iml" />
+    </modules>
+  </component>
+</project>
+
