@@ -1,0 +1,5 @@
+echo "Usecase 3 - init"
+echo "attach got_11003 to client"
+frigga:call got_11003 attach client
+
+

@@ -1,0 +1,3 @@
+echo "Usecase 3 - clean"
+echo "detach got_11003"
+frigga:call got_11003 attach ""
