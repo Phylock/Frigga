@@ -3,7 +3,7 @@
         xsi:schemaLocation="http://www.example.com template.xsd">
     <template>
         <info>
-            <name>usecase3</name>
+            <name>usecase5</name>
             <author>Mikkel Wendt-Larsen (miwe@itu.dk)</author>
             <author>Tommy Andersen (toan@itu.dk)</author>
             <site>localhost</site>
@@ -24,7 +24,7 @@
                 <!-- Find all the eye trackers. But do not use the resulting 
                      list of devices for validation. -->
                 <condition id="eyetrackselection" validate="false" dependsOn="controllerselection">
-                    <remoteCompare source="controllerselection" sourceVariable="symbolic" variable="attachto" tagName="client">
+                    <remoteCompare source="controllerselection" sourceVariable="symbolic" variable="attachedto" tagName="client">
                         <isCategory category="eyetrack" />
                     </remoteCompare>
                 </condition>
@@ -38,7 +38,7 @@
                      the tag "eyeTrack" for each television. -->
                 <condition id="tvselection" dependsOn="eyetrackselection">
                     <remoteCompare source="eyetrackselection" sourceVariable="lookat" variable="symbolic" tagName="eyeTracker">
-                        <isCategory category="tv" />
+                        <isCategory category="Tv" />
                     </remoteCompare>
                 </condition>
             </rule>

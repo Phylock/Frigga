@@ -15,12 +15,12 @@
                     <!-- Run these actions for each device being validated, that is for each device matching the condition criteria. -->
                     <action event="validate">
                         <filter selection="nightfilter">
-                            <filter category="tv simplelamp">
+                            <filter category="Tv">
                                 <function selection="*" function="off" />
                             </filter>
                             <filter category="simplelamp">
                                 <!-- Only select one lamp -->
-                                <function selection="*#1" function="on" />
+                                <function selection="**" function="on" />
                             </filter>
                             <filter category="WindowActuator">
                                 <function selection="*" function="close" />
@@ -28,7 +28,7 @@
                         </filter>
 
                         <filter selection="dayfilter">
-                            <filter category="tv">
+                            <filter category="Tv">
                                 <function selection="*" function="on" />
                             </filter>
                             <filter category="simplelamp">
@@ -40,7 +40,7 @@
                         </filter>
 
                         <filter selection="eveningfilter">
-                            <filter category="tv">
+                            <filter category="Tv">
                                 <function selection="*" function="on" />
                             </filter>
                             <filter category="simplelamp">

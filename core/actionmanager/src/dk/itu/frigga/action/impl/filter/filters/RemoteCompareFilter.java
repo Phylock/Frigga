@@ -79,7 +79,7 @@ public class RemoteCompareFilter extends Filter
                 {
                     if ("symbolic".equals(sourceVar))
                     {
-                        sourceVar = remoteState.getDevice().getSymbolic();
+                        sourceValue = remoteState.getDevice().getSymbolic();
                     }
                     else
                     {

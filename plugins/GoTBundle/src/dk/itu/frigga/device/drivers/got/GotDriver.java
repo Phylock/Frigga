@@ -22,9 +22,9 @@ import dk.itu.frigga.device.descriptor.FunctionDescriptor;
 import dk.itu.frigga.device.descriptor.VariableDescriptor;
 import dk.itu.frigga.device.model.Point3;
 import dk.itu.frigga.got.client.GotClient;
+import dk.itu.frigga.got.client.GotClientTcp;
 import dk.itu.frigga.got.event.SensorPackage;
 import dk.itu.frigga.got.event.SensorPackageListener;
-import dk.itu.frigga.got.sim.GotClientSimulate;
 import dk.itu.frigga.got.sim.LinearMovement;
 import dk.itu.frigga.got.sim.SimulateReciever;
 import dk.itu.frigga.got.sim.SimulateTransmitter;
@@ -109,8 +109,8 @@ public class GotDriver implements Driver, SensorPackageListener {
         if (!newroom.equals(room)) {
           room = newroom;
         }
-        //client = new GotClientTcp(host, port);
-        client = new GotClientSimulate(createSimulator());
+        client = new GotClientTcp(host, port);
+        //client = new GotClientSimulate(createSimulator());
         client.addListener(this);
         client.connect();
       }

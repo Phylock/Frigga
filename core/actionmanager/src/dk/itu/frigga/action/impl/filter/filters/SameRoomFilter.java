@@ -36,11 +36,11 @@ public class SameRoomFilter extends Filter
 
     private boolean IsInRoom(final Date date, long now)
     {
-        if (date != null)
+        /*if (date.getTime() != 0)
         {
             long delta = now - date.getTime();
             return delta < 3000;
-        }
+        }*/
 
         return true;
     }
@@ -50,7 +50,7 @@ public class SameRoomFilter extends Filter
     {
         FilterOutput output = new FilterOutput();
 
-        long now = System.currentTimeMillis();
+        final long now = new Date().getTime();//System.currentTimeMillis();
         FilterOutput remoteOutput = context.getStoredOutput(context.prepare(source));
         String localTag = context.prepare(tagName);
 

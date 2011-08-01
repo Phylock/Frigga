@@ -42,9 +42,9 @@ public class FilterAction extends AbstractAction
     {
         ArrayList<FilterDeviceState> states = new ArrayList<FilterDeviceState>(devices.size());
 
-        if (!category.isEmpty())
+        if (!selection.isEmpty())
         {
-            FilterOutput output = context.getStoredOutput(category);
+            FilterOutput output = context.getStoredOutput(selection);
             for (FilterDeviceState state: output)
             {
                 states.add(state);
@@ -79,4 +79,10 @@ public class FilterAction extends AbstractAction
     {
         return new ActionResult();
     }
+
+  @Override
+  public boolean canHaveChildActions() {
+    return true;
+  }
+
 }

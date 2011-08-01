@@ -1,5 +1,5 @@
 echo "Usecase 3 - init"
 echo "attach got_11003 to client"
-frigga:call got_11003 attach client
+frigga:call got_11003 attach 00616e64-726f-6963-0000-000000007b80
 
 
