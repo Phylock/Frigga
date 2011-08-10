@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-Version: 0.1.0.SNAPSHOT
+Bundle-Name: Frigga Device Tui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: dk.itu.frigga.tui.data
+Import-Package: \
+ dk.itu.frigga.data, \
+ org.osgi.framework
+
+Private-Package: dk.itu.frigga.tui.data.*
+
+Bundle-Activator: dk.itu.frigga.tui.data.Activator
