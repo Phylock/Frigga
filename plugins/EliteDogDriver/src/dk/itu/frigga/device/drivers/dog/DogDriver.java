@@ -13,6 +13,7 @@ import dk.itu.frigga.device.drivers.dog.protocol.message.CommandMessage;
 import dk.itu.frigga.device.drivers.dog.protocol.message.DescribeCategory;
 import dk.itu.frigga.device.drivers.dog.protocol.message.DescribeDevice;
 import dk.itu.frigga.device.drivers.dog.protocol.message.ListDevices;
+import dk.itu.frigga.device.drivers.dog.protocol.message.StatusMessage;
 import dk.itu.frigga.utility.ReflectionHelper;
 import java.util.Dictionary;
 import org.osgi.service.log.LogService;
@@ -50,7 +51,7 @@ public class DogDriver implements Driver {
     Command command = new Command(devices, function, parameters);
     DogMessage message = new CommandMessage(command);
     connection.send(message);
-
+    connection.send(new StatusMessage(devices));
     return new FunctionResult();
   }
 
